@@ -3,6 +3,12 @@
     "description": "Official LIKYLY SDK for PHP: items, users, events and recommendations.",
     "type": "library",
     "license": "MIT",
+    "homepage": "https://likyly.com/docs/sdk/php",
+    "support": {
+        "source": "https://github.com/Likyly/likyly-php",
+        "issues": "https://github.com/Likyly/sdks/issues",
+        "docs": "https://likyly.com/docs/sdk/php"
+    },
     "keywords": ["recommendations", "recommender", "personalization", "likyly"],
     "require": {
         "php": "^8.1",

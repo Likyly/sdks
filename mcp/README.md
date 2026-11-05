@@ -9,7 +9,7 @@ out-of-stock") - and then get a structured integration recipe for a real codebas
 (`get_integration_recipe`) and verify the result from LIKYLY's own data instead of guessing
 from the source (`validate_integration`). LIKYLY doesn't ship its own chat - the coding agent
 calling these tools *is* the conversational interface; see
-[`docs/getting-started.md`](../../docs/getting-started.md) for the full "zero to working
+[the getting-started guide](https://likyly.com/docs/installation) for the full "zero to working
 recommendations" walkthrough.
 
 Two tiers of tools, gated by which key you give `LIKYLY_API_KEY` - the server itself doesn't
@@ -110,7 +110,7 @@ Recommendations/events - work with the public key:
 | `track_event` | `POST /events/{event_type}` (impression, view, click, add_to_cart, remove_from_cart, purchase, ...) |
 
 Admin - data source integrations - need the secret key or a developer key with `sources:read`/
-`sources:write` (see [`docs/data-sources.md`](../../docs/data-sources.md) for the full
+`sources:write` (see [the API reference](https://api.likyly.com/docs) for the full
 architecture, source types and config shapes):
 
 | Tool | Maps to |
@@ -130,7 +130,7 @@ architecture, source types and config shapes):
 | `rotate_push_secret` | `POST /data-sources/{id}/push-secret/rotate` |
 
 Admin - placements (the recommended way to wire up recommendations - see
-[`docs/placements.md`](../../docs/placements.md)) - need the secret key or a developer key
+[the documentation](https://likyly.com/docs)) - need the secret key or a developer key
 with `placements:read`/`placements:write`:
 
 | Tool | Maps to |
@@ -145,7 +145,7 @@ with `placements:read`/`placements:write`:
 | `purge_recommendation_cache` | `POST /placements/{slug}/cache/purge`, or `POST /placements/cache/purge` for all - empties the anonymous recommendation cache (see docs/placements.md, "Caching") |
 
 Admin - integration recipe & validator (writing and verifying the client-side integration -
-see [`docs/getting-started.md`](../../docs/getting-started.md)) - same `placements:read`/
+see [the getting-started guide](https://likyly.com/docs/installation)) - same `placements:read`/
 `placements:write` requirement:
 
 | Tool | Maps to |

@@ -1,0 +1,25 @@
+name: Ruby
+
+on:
+  pull_request:
+    paths: ["ruby/**", "conformance/scenarios.json", ".github/workflows/ruby.yml"]
+  push:
+    branches: [main]
+    paths: ["ruby/**", "conformance/scenarios.json", ".github/workflows/ruby.yml"]
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: ruby } }
+    strategy:
+      matrix: { ruby: ["3.0", "3.3"] }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with: { ruby-version: "${{ matrix.ruby }}", bundler-cache: true, working-directory: ruby }
+      - run: bundle exec rake test
+      - run: gem build likyly.gemspec

@@ -2,7 +2,7 @@ using Xunit;
 
 namespace Likyly.Tests;
 
-/// <summary>End-to-end against a REAL LIKYLY API (sdk/conformance/local-api.sh starts one). Skipped unless LIKYLY_TEST_* are set.</summary>
+/// <summary>End-to-end against a REAL LIKYLY API (conformance/local-api.sh starts one). Skipped unless LIKYLY_TEST_* are set.</summary>
 public class LiveTests
 {
     private const string Gid = "gid://shopify/Product/123456";

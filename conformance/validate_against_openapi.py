@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Checks every scenario in scenarios.json against docs/openapi.json - the contract the SDKs
+"""Checks every scenario in scenarios.json against conformance/openapi.json (a copy of the API's published OpenAPI) - the contract the SDKs
 are built on. For each scenario: the request's method+path must exist, its query parameters
 must be declared (and required ones present), its body must validate against the operation's
 requestBody schema, and its mocked response must validate against the operation's response
 schema. If this fails, the SDK scenarios (or the API) are wrong - fix that before any SDK.
 
-    python sdk/conformance/validate_against_openapi.py [path/to/openapi.json | https://.../openapi.json]
+    python conformance/validate_against_openapi.py [path/to/openapi.json | https://.../openapi.json]
 """
 import json
 import re
@@ -17,7 +17,7 @@ from urllib.parse import unquote
 from jsonschema import Draft202012Validator
 
 HERE = Path(__file__).resolve().parent
-source = sys.argv[1] if len(sys.argv) > 1 else str(HERE.parents[1] / "docs" / "openapi.json")
+source = sys.argv[1] if len(sys.argv) > 1 else str(HERE / "openapi.json")
 if source.startswith("http"):
     spec = json.load(urllib.request.urlopen(source, timeout=30))
 else:

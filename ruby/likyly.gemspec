@@ -14,6 +14,8 @@ Gem::Specification.new do |spec|
   spec.metadata = {
     "homepage_uri" => spec.homepage,
     "documentation_uri" => "https://likyly.com/docs/sdk/ruby",
+    "source_code_uri" => "https://github.com/Likyly/sdks/tree/main/ruby",
+    "bug_tracker_uri" => "https://github.com/Likyly/sdks/issues",
     "rubygems_mfa_required" => "true"
   }
   spec.files = Dir["lib/**/*.rb"] + ["README.md", "LICENSE"].select { |f| File.exist?(f) }

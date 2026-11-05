@@ -1,14 +1,18 @@
 #!/usr/bin/env bash
-# Starts a throwaway LIKYLY API (Postgres+pgvector in Docker, uvicorn from this repo) and writes
-# .local-api.env with the URL and a fresh tenant's keys, for the SDKs' live tests.
+# Starts a throwaway LIKYLY API (Postgres+pgvector in Docker, uvicorn from the PRIVATE backend repository)
+# and writes .local-api.env with the URL and a fresh tenant's keys, for the SDKs' live tests.
 #
-#   sdk/conformance/local-api.sh start   # then: source sdk/conformance/.local-api.env
-#   sdk/conformance/local-api.sh stop
+#   conformance/local-api.sh start   # then: source conformance/.local-api.env
+#   conformance/local-api.sh stop
 #
-# Never touches a real database: it is a new container on port 54329. Needs the repo's .venv.
+# Needs a checkout of the backend (LIKYLY_BACKEND, default: ../likyly-recsys next to this repo) with its .venv,
+# so it only works for the LIKYLY team. Everyone else runs the SDKs' offline tests, which need nothing.
+# Never touches a real database: it is a new container on port 54329.
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
-ROOT="$(cd "$HERE/../.." && pwd)"
+ROOT="${LIKYLY_BACKEND:-$HERE/../../likyly-recsys}"
+[ -d "$ROOT/application/api" ] || { echo "backend not found at $ROOT - set LIKYLY_BACKEND to a likyly-recsys checkout" >&2; exit 2; }
+ROOT="$(cd "$ROOT" && pwd)"
 PY="${PYTHON:-$ROOT/.venv/bin/python}"
 DB_URL="postgresql://test:test@localhost:54329/likyly_sdk_live"
 PID_FILE="$HERE/.local-api.pid"
@@ -37,7 +41,7 @@ export LIKYLY_TEST_URL_DOCKER=http://host.docker.internal:$PORT
 export LIKYLY_TEST_SECRET_KEY=$SECRET
 export LIKYLY_TEST_PUBLIC_KEY=$PUBLIC
 ENVEOF
-    echo "API up on :$PORT - keys written to sdk/conformance/.local-api.env"
+    echo "API up on :$PORT - keys written to conformance/.local-api.env"
     ;;
   stop)
     [ -f "$PID_FILE" ] && kill "$(cat "$PID_FILE")" 2>/dev/null || true

@@ -3,7 +3,7 @@ import { describe, it } from "node:test";
 import { AuthenticationError, Likyly, NotFoundError, PermissionDeniedError, ValidationError } from "../src/index.js";
 
 /**
- * End-to-end against a REAL LIKYLY API (sdk/conformance/local-api.sh starts one). Skipped unless
+ * End-to-end against a REAL LIKYLY API (conformance/local-api.sh starts one). Skipped unless
  * LIKYLY_TEST_URL, LIKYLY_TEST_SECRET_KEY and LIKYLY_TEST_PUBLIC_KEY are set.
  */
 const url = process.env.LIKYLY_TEST_URL;

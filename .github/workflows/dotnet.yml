@@ -1,0 +1,23 @@
+name: .NET
+
+on:
+  pull_request:
+    paths: ["dotnet/**", "conformance/scenarios.json", ".github/workflows/dotnet.yml"]
+  push:
+    branches: [main]
+    paths: ["dotnet/**", "conformance/scenarios.json", ".github/workflows/dotnet.yml"]
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: dotnet } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: 8.0.x }
+      - run: dotnet test tests/Likyly.Tests --nologo
+      - run: dotnet pack src/Likyly -c Release -o ../dist --nologo

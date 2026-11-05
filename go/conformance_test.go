@@ -12,8 +12,10 @@ import (
 	"testing"
 )
 
-// Runs the language-neutral scenarios in sdk/conformance/scenarios.json - the same file every SDK runs, and
-// that validate_against_openapi.py checks against the OpenAPI document.
+// Runs the language-neutral scenarios in conformance/scenarios.json - the same file every SDK runs, and
+// that validate_against_openapi.py checks against the OpenAPI document. Go reads its copy in
+// testdata/ so the module stays self-contained once mirrored to github.com/likyly/likyly-go;
+// CI fails if that copy differs from conformance/scenarios.json.
 
 type scenario struct {
 	ID   string `json:"id"`
@@ -57,7 +59,7 @@ type scenarioFile struct {
 
 func loadScenarios(t *testing.T) scenarioFile {
 	t.Helper()
-	raw, err := os.ReadFile("../conformance/scenarios.json")
+	raw, err := os.ReadFile("testdata/scenarios.json")
 	if err != nil {
 		t.Fatal(err)
 	}

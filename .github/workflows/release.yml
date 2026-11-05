@@ -1,0 +1,240 @@
+name: Release
+
+# One workflow for every SDK, each with its own version (release-please, manifest mode):
+#   1. Every push to main: release-please keeps one release pull request per package that has changes
+#      (`fix:` -> patch, `feat:` -> minor, `feat!:` -> major). Nothing is published at this stage.
+#   2. Merging one of those pull requests tags that package only (e.g. python-v1.2.1) and starts this run again.
+#   3. The run tests the released packages again, then WAITS for a manual approval on the `publish`
+#      environment (Settings > Environments > publish > Required reviewers). Nothing leaves before that.
+#   4. Once approved, each released package goes to its registry, without stored tokens wherever the registry
+#      supports it (OIDC "trusted publishing"): npm, PyPI, crates.io, RubyGems, NuGet. Maven Central still needs
+#      a token and a GPG key; PHP and Go are git mirrors (Packagist and the Go proxy read tags).
+#
+# Run it by hand (Actions > Release > Run workflow) to publish the CURRENT version of one package, e.g. the
+# first publication of each package. It goes through the same tests and the same approval.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Package to publish at its current version
+        required: true
+        type: choice
+        options: [typescript, react, mcp, python, php, dotnet, java, go, ruby, rust]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      paths: ${{ steps.rp.outputs.paths_released }}
+    steps:
+      - id: rp
+        uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  plan:
+    needs: release-please
+    if: always() && (needs.release-please.result == 'success' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    outputs:
+      pkgs: ${{ steps.p.outputs.pkgs }}
+    steps:
+      - id: p
+        env:
+          RELEASED: ${{ needs.release-please.outputs.paths }}
+          INPUT: ${{ inputs.package }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then pkgs="[\"$INPUT\"]"; else pkgs="${RELEASED:-[]}"; fi
+          [ -n "$pkgs" ] || pkgs='[]'
+          echo "pkgs=$pkgs" >> "$GITHUB_OUTPUT"
+          echo "Packages to publish: $pkgs" >> "$GITHUB_STEP_SUMMARY"
+
+  # The same CI as on pull requests, for the released packages only.
+  test-typescript: { needs: plan, if: "contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'typescript') || contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'react')", uses: ./.github/workflows/typescript.yml }
+  test-react:      { needs: plan, if: "contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'react')",  uses: ./.github/workflows/react.yml }
+  test-mcp:        { needs: plan, if: "contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'mcp')",    uses: ./.github/workflows/mcp.yml }
+  test-python:     { needs: plan, if: "contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'python')", uses: ./.github/workflows/python.yml }
+  test-php:        { needs: plan, if: "contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'php')",    uses: ./.github/workflows/php.yml }
+  test-dotnet:     { needs: plan, if: "contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'dotnet')", uses: ./.github/workflows/dotnet.yml }
+  test-java:       { needs: plan, if: "contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'java')",   uses: ./.github/workflows/java.yml }
+  test-go:         { needs: plan, if: "contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'go')",     uses: ./.github/workflows/go.yml }
+  test-ruby:       { needs: plan, if: "contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'ruby')",   uses: ./.github/workflows/ruby.yml }
+  test-rust:       { needs: plan, if: "contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'rust')",   uses: ./.github/workflows/rust.yml }
+  test-contract:   { needs: plan, if: "needs.plan.outputs.pkgs != '[]'", uses: ./.github/workflows/contract.yml }
+
+  # Manual validation: one approval for the whole run.
+  approval:
+    needs: [plan, test-typescript, test-react, test-mcp, test-python, test-php, test-dotnet, test-java, test-go, test-ruby, test-rust, test-contract]
+    if: always() && needs.plan.outputs.pkgs != '[]' && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+    runs-on: ubuntu-latest
+    environment: publish
+    steps:
+      - run: echo "Approved publication of ${{ needs.plan.outputs.pkgs }}"
+
+  npm-typescript:
+    needs: [plan, approval]
+    if: always() && needs.approval.result == 'success' && contains(fromJSON(needs.plan.outputs.pkgs), 'typescript')
+    runs-on: ubuntu-latest
+    permissions: { contents: read, id-token: write }
+    defaults: { run: { working-directory: typescript } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, registry-url: "https://registry.npmjs.org" }
+      - run: npm install -g npm@^11.5.1   # trusted publishing needs npm 11.5.1+
+      - run: npm ci && npm run build
+      - run: npm publish
+
+  npm-react:
+    # after @likyly/sdk when both are released together
+    needs: [plan, approval, npm-typescript]
+    if: always() && needs.approval.result == 'success' && contains(fromJSON(needs.plan.outputs.pkgs), 'react') && needs.npm-typescript.result != 'failure'
+    runs-on: ubuntu-latest
+    permissions: { contents: read, id-token: write }
+    defaults: { run: { working-directory: react } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, registry-url: "https://registry.npmjs.org" }
+      - run: npm install -g npm@^11.5.1
+      - run: npm install --no-audit --no-fund && npm run build
+      - run: npm publish
+
+  npm-mcp:
+    needs: [plan, approval]
+    if: always() && needs.approval.result == 'success' && contains(fromJSON(needs.plan.outputs.pkgs), 'mcp')
+    runs-on: ubuntu-latest
+    permissions: { contents: read, id-token: write }
+    defaults: { run: { working-directory: mcp } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, registry-url: "https://registry.npmjs.org" }
+      - run: npm install -g npm@^11.5.1
+      - run: npm install --no-audit --no-fund && npm run build
+      - run: npm publish
+
+  pypi:
+    needs: [plan, approval]
+    if: always() && needs.approval.result == 'success' && contains(fromJSON(needs.plan.outputs.pkgs), 'python')
+    runs-on: ubuntu-latest
+    permissions: { contents: read, id-token: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      - run: pip install build && python -m build
+        working-directory: python
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with: { packages-dir: python/dist }
+
+  crates:
+    needs: [plan, approval]
+    if: always() && needs.approval.result == 'success' && contains(fromJSON(needs.plan.outputs.pkgs), 'rust')
+    runs-on: ubuntu-latest
+    permissions: { contents: read, id-token: write }
+    defaults: { run: { working-directory: rust } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - id: auth
+        uses: rust-lang/crates-io-auth-action@v1
+      - run: cargo publish
+        env: { CARGO_REGISTRY_TOKEN: "${{ steps.auth.outputs.token }}" }
+
+  rubygems:
+    needs: [plan, approval]
+    if: always() && needs.approval.result == 'success' && contains(fromJSON(needs.plan.outputs.pkgs), 'ruby')
+    runs-on: ubuntu-latest
+    permissions: { contents: read, id-token: write }
+    defaults: { run: { working-directory: ruby } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with: { ruby-version: "3.3" }
+      - uses: rubygems/configure-rubygems-credentials@v1.0.0
+      - run: gem build likyly.gemspec && gem push likyly-*.gem
+
+  nuget:
+    needs: [plan, approval]
+    if: always() && needs.approval.result == 'success' && contains(fromJSON(needs.plan.outputs.pkgs), 'dotnet')
+    runs-on: ubuntu-latest
+    permissions: { contents: read, id-token: write }
+    defaults: { run: { working-directory: dotnet } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: 8.0.x }
+      - id: login
+        uses: NuGet/login@v1
+        with: { user: "${{ vars.NUGET_USER }}" }   # the nuget.org account name (a variable, not a secret)
+      - run: dotnet pack src/Likyly -c Release -o dist --nologo
+      - run: dotnet nuget push "dist/*.nupkg" --api-key "${{ steps.login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json
+
+  maven-central:
+    # Maven Central has no trusted publishing: a Central Portal user token and a GPG key, stored as secrets
+    # of the `publish` environment only.
+    needs: [plan, approval]
+    if: always() && needs.approval.result == 'success' && contains(fromJSON(needs.plan.outputs.pkgs), 'java')
+    runs-on: ubuntu-latest
+    environment: publish-credentials
+    defaults: { run: { working-directory: java } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          server-id: central
+          server-username: MAVEN_CENTRAL_USERNAME
+          server-password: MAVEN_CENTRAL_PASSWORD
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+      - run: mvn -B -P release deploy
+        env:
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+
+  # PHP and Go: the folder is pushed, with its history, to its own public repository, and tagged vX.Y.Z there.
+  # Packagist (webhook) and the Go module proxy pick the tag up. Nobody commits to those mirrors by hand.
+  mirror:
+    needs: [plan, approval]
+    if: always() && needs.approval.result == 'success' && (contains(fromJSON(needs.plan.outputs.pkgs), 'php') || contains(fromJSON(needs.plan.outputs.pkgs), 'go'))
+    runs-on: ubuntu-latest
+    environment: publish-credentials
+    strategy:
+      matrix:
+        include:
+          - { pkg: php, repo: Likyly/likyly-php, key: PHP_MIRROR_DEPLOY_KEY }
+          - { pkg: go,  repo: Likyly/likyly-go,  key: GO_MIRROR_DEPLOY_KEY }
+    steps:
+      - uses: actions/checkout@v4
+        if: contains(fromJSON(needs.plan.outputs.pkgs), matrix.pkg)
+        with: { fetch-depth: 0 }
+      - uses: webfactory/ssh-agent@v0.9.0
+        if: contains(fromJSON(needs.plan.outputs.pkgs), matrix.pkg)
+        with: { ssh-private-key: "${{ secrets[matrix.key] }}" }
+      - name: Push ${{ matrix.pkg }}/ to ${{ matrix.repo }} and tag it
+        if: contains(fromJSON(needs.plan.outputs.pkgs), matrix.pkg)
+        env: { PKG: "${{ matrix.pkg }}", REPO: "${{ matrix.repo }}" }
+        run: |
+          version="$(jq -r --arg p "$PKG" '.[$p]' .release-please-manifest.json)"
+          git subtree split --prefix="$PKG" -b mirror
+          git push "git@github.com:$REPO.git" mirror:main
+          git tag "v$version" mirror
+          git push "git@github.com:$REPO.git" "v$version"

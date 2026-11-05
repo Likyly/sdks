@@ -4,7 +4,7 @@ import * as sdk from "../src/index.js";
 import { loadScenarios, makeClient, pick, type Scenario } from "./helpers.js";
 
 /**
- * Runs the language-neutral scenarios in sdk/conformance/scenarios.json - the same file every SDK
+ * Runs the language-neutral scenarios in conformance/scenarios.json - the same file every SDK
  * runs, and that validate_against_openapi.py checks against the OpenAPI document. Each scenario
  * pins the exact HTTP request an SDK call must produce and how the response maps back.
  */

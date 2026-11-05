@@ -1,7 +1,7 @@
 # @likyly/react
 
-React bindings for [`@likyly/sdk`](../js): `useRecommendations` (headless) and
-`<LikylyRecommendations>` (ready-to-use) for rendering a LIKYLY [placement](../../docs/placements.md)
+React bindings for [`@likyly/sdk`](../typescript): `useRecommendations` (headless) and
+`<LikylyRecommendations>` (ready-to-use) for rendering a LIKYLY [placement](https://likyly.com/docs)
 and tracking the impression/click events it needs to learn from.
 
 ## Why a separate package (not React support inside `@likyly/sdk`)
@@ -10,8 +10,8 @@ and tracking the impression/click events it needs to learn from.
   server-side for `items`/`users` too). Adding React to it would force that dependency - and the
   `"use client"` boundary Next.js's App Router needs - onto every consumer, including
   server-side-only integrations that never render anything.
-- This repo's own convention is one package per surface (`sdk/js`, `sdk/python`, `sdk/php`,
-  `sdk/mcp`, ...) - `@likyly/react` is that same pattern applied to a second JS surface, not a
+- This repo's own convention is one package per surface (`typescript/`, `python/`, `php/`,
+  `mcp/`, ...) - `@likyly/react` is that same pattern applied to a second JS surface, not a
   new idea.
 - It matches how this kind of binding is normally split in the ecosystem (a core client plus a
   thin framework package: `stripe` / `@stripe/react-stripe-js`, `algoliasearch` /
@@ -27,13 +27,8 @@ and tracking the impression/click events it needs to learn from.
 npm install @likyly/react @likyly/sdk react
 ```
 
-> During local development in the `likyly-recsys` monorepo (before `@likyly/sdk` is published
-> to npm), this package's `dependencies` point at it via a relative `file:../js` reference.
-> Once published, that becomes a normal semver range - nothing a consumer needs to think about.
-> One consequence in the meantime: npm installs a `file:` dependency as a symlink pointing
-> outside the consuming app's own folder, which **Turbopack fails to resolve** ("Module not
-> found"). Run `next dev`/`next build` with `--webpack` until both packages are on npm - see
-> `examples/demo-storefront` for a working setup with this already applied.
+> In this repository, CI tests `@likyly/react` against the SDK next to it (`../typescript`, built
+> and linked with `npm install --no-save ../typescript`), not against the version on npm.
 
 ## Quick start
 

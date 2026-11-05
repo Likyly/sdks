@@ -26,7 +26,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Runs the language-neutral scenarios in sdk/conformance/scenarios.json - the same file every SDK runs, and
+ * Runs the language-neutral scenarios in conformance/scenarios.json - the same file every SDK runs, and
  * that validate_against_openapi.py checks against the OpenAPI document. Generic: it calls the SDK by
  * reflection (resource, method name, JSON arguments converted to the parameter types), so a new
  * scenario needs no Java code.

@@ -1,0 +1,9 @@
+# Kept out of the archive Composer downloads (this folder is mirrored to github.com/Likyly/likyly-php).
+/tests export-ignore
+/phpunit.xml export-ignore
+/phpcs.xml export-ignore
+/phpcs.xml.dist export-ignore
+/phpstan.neon export-ignore
+/.gitignore export-ignore
+/.gitattributes export-ignore
+/version.txt export-ignore

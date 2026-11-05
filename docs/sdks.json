@@ -4,7 +4,7 @@
     {
       "id": "typescript",
       "slug": "typescript",
-      "dir": "js",
+      "dir": "typescript",
       "name": "TypeScript / JavaScript",
       "short": "TypeScript",
       "fence": "js",

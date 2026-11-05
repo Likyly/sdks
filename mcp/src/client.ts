@@ -6,8 +6,8 @@
 //  - Data sources (listSourceTypes..getCatalogStats below) - needs the secret key or a
 //    developer key with the right scope (see /clients/me/developer-keys); a public-key
 //    caller gets a clear 401/403 from the API itself.
-// Deliberately standalone rather than depending on ../../js (not published to npm yet) - same
-// request shape as sdk/js/src/client.ts, trimmed to just this tool surface.
+// Deliberately standalone rather than depending on ../typescript (not published to npm yet) - same
+// request shape as typescript/src/client.ts, trimmed to just this tool surface.
 
 export interface LikylyClientOptions {
   baseUrl: string;

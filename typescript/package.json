@@ -3,6 +3,15 @@
   "version": "1.1.0",
   "description": "Official LIKYLY SDK for TypeScript / Node.js: items, users, events, recommendations and placements.",
   "license": "MIT",
+  "homepage": "https://likyly.com/docs/sdk/typescript",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Likyly/sdks.git",
+    "directory": "typescript"
+  },
+  "bugs": {
+    "url": "https://github.com/Likyly/sdks/issues"
+  },
   "type": "module",
   "sideEffects": false,
   "main": "./dist/cjs/index.js",
@@ -38,5 +47,9 @@
   "devDependencies": {
     "@types/node": "^22.0.0",
     "typescript": "^5.5.4"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }

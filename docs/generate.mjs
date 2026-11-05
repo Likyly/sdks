@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Generates, from ONE source, everything that documents the SDKs:
-//   - sdk/<lang>/README.md                       (from docs/README.template.md + docs/sdks.json)
-//   - sdk/docs/METHODS.md                        (the method matrix)
+//   - <lang>/README.md                           (from docs/README.template.md + docs/sdks.json)
+//   - docs/METHODS.md                            (the method matrix)
 //   - <website>/src/content/sdk-docs.generated.json  (the data behind /docs/sdk/<lang>)
 // Every code sample is cut out of <lang>/examples/quickstart.* between `region:` / `endregion` markers, and
 // conformance/run-examples.sh executes those files against a real API - so the documentation cannot drift from
@@ -9,7 +9,7 @@
 //
 //   node docs/generate.mjs            write everything
 //   node docs/generate.mjs --check    fail if anything on disk is stale (for CI)
-//   node docs/generate.mjs --website ../../likyly-website
+//   node docs/generate.mjs --website ../likyly-website   (default: a likyly-website checkout next to this repo)
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -18,7 +18,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const sdkRoot = resolve(here, "..");
 const args = process.argv.slice(2);
 const check = args.includes("--check");
-const websiteArg = args.includes("--website") ? args[args.indexOf("--website") + 1] : join(sdkRoot, "../../likyly-website");
+const websiteArg = args.includes("--website") ? args[args.indexOf("--website") + 1] : join(sdkRoot, "../likyly-website");
 const websiteRoot = existsSync(websiteArg) ? resolve(websiteArg) : null;
 
 const meta = JSON.parse(readFileSync(join(here, "sdks.json"), "utf8"));
@@ -180,7 +180,7 @@ for (const [path, content] of outputs) {
   } else {
     mkdirSync(dirname(path), { recursive: true });
     writeFileSync(path, content);
-    console.log(`wrote ${path.replace(sdkRoot + "/", "sdk/")}`);
+    console.log(`wrote ${path.replace(sdkRoot + "/", "")}`);
   }
 }
 if (check) process.exit(stale ? 1 : 0);

@@ -1,0 +1,25 @@
+name: Rust
+
+on:
+  pull_request:
+    paths: ["rust/**", "conformance/scenarios.json", ".github/workflows/rust.yml"]
+  push:
+    branches: [main]
+    paths: ["rust/**", "conformance/scenarios.json", ".github/workflows/rust.yml"]
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: rust } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with: { components: "clippy, rustfmt" }
+      - run: cargo fmt --check
+      - run: cargo clippy --all-targets -- -D warnings
+      - run: cargo test
+      - run: cargo package --allow-dirty

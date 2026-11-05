@@ -1,0 +1,27 @@
+name: TypeScript
+
+on:
+  pull_request:
+    paths: ["typescript/**", "conformance/scenarios.json", ".github/workflows/typescript.yml"]
+  push:
+    branches: [main]
+    paths: ["typescript/**", "conformance/scenarios.json", ".github/workflows/typescript.yml"]
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: typescript } }
+    strategy:
+      matrix: { node: [18, 22] }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "${{ matrix.node }}" }
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - run: npm pack --dry-run

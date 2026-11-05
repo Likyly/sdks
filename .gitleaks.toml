@@ -1,0 +1,7 @@
+# The SDK tests use a fake key, "sk_test_conformance", that looks like a Stripe key to gitleaks.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Fake keys used by the SDK test suites"
+regexes = ['''sk_test_conformance''']

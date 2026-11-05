@@ -1,4 +1,4 @@
-"""End-to-end against a REAL LIKYLY API (sdk/conformance/local-api.sh starts one). Skipped unless LIKYLY_TEST_* are set."""
+"""End-to-end against a REAL LIKYLY API (conformance/local-api.sh starts one). Skipped unless LIKYLY_TEST_* are set."""
 import time
 
 import pytest

@@ -8,7 +8,7 @@ use Likyly\Exception\LikylyException;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
- * Runs the language-neutral scenarios in sdk/conformance/scenarios.json - the same file every SDK runs,
+ * Runs the language-neutral scenarios in conformance/scenarios.json - the same file every SDK runs,
  * and that validate_against_openapi.py checks against the OpenAPI document.
  */
 final class ConformanceTest extends TestCase

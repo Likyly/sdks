@@ -1,4 +1,4 @@
-"""Runs the language-neutral scenarios in sdk/conformance/scenarios.json - the same file every SDK
+"""Runs the language-neutral scenarios in conformance/scenarios.json - the same file every SDK
 runs, and that validate_against_openapi.py checks against the OpenAPI document."""
 import json
 import re

@@ -24,7 +24,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
-/** End-to-end against a REAL LIKYLY API (sdk/conformance/local-api.sh starts one). Skipped unless LIKYLY_TEST_* are set. */
+/** End-to-end against a REAL LIKYLY API (conformance/local-api.sh starts one). Skipped unless LIKYLY_TEST_* are set. */
 class LiveTest {
     static final String GID = "gid://shopify/Product/123456";
 

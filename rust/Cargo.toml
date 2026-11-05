@@ -5,6 +5,7 @@ edition = "2021"
 description = "Official Rust client for the LIKYLY recommendations API"
 license = "MIT"
 homepage = "https://likyly.com"
+repository = "https://github.com/Likyly/sdks"
 documentation = "https://docs.rs/likyly"
 readme = "README.md"
 keywords = ["recommendations", "recommender", "ecommerce", "likyly", "api-client"]

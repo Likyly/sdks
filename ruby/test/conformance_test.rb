@@ -2,7 +2,7 @@
 
 require_relative "test_helper"
 
-# Runs the language-neutral scenarios in sdk/conformance/scenarios.json - the same file every SDK runs, and that
+# Runs the language-neutral scenarios in conformance/scenarios.json - the same file every SDK runs, and that
 # validate_against_openapi.py checks against the OpenAPI document.
 class ConformanceTest < Minitest::Test
   include Helpers

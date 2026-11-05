@@ -35,7 +35,7 @@ docker_run() { # name, image, dir, shell-command   (runs in Docker, against host
   report "$name" $? "$out"
 }
 
-host typescript js sh -c 'npm run build --silent && node examples/quickstart.mjs'
+host typescript typescript sh -c 'npm run build --silent && node examples/quickstart.mjs'
 host python python env PYTHONPATH=src .venv/bin/python examples/quickstart.py
 host php php php examples/quickstart.php
 host rust rust cargo run --quiet --example quickstart

@@ -1,0 +1,52 @@
+name: Contract
+
+# The shared scenarios must match the API's OpenAPI document, and the generated documentation must be up to date.
+# Weekly, the committed copy of the OpenAPI document is compared with the one the production API publishes:
+# a difference means the API changed and the SDKs (and conformance/openapi.json) need a look.
+on:
+  pull_request:
+    paths: ["conformance/**", "docs/**", "*/examples/**", "*/README.md", ".github/workflows/contract.yml"]
+  push:
+    branches: [main]
+    paths: ["conformance/**", "docs/**", "*/examples/**", "*/README.md", ".github/workflows/contract.yml"]
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  scenarios-and-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install jsonschema
+      - run: python conformance/validate_against_openapi.py
+      - run: cmp go/testdata/scenarios.json conformance/scenarios.json
+      - run: node docs/generate.mjs --check --website /nonexistent
+
+  openapi-drift:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install jsonschema
+      - name: The scenarios still match the live API
+        run: python conformance/validate_against_openapi.py https://api.likyly.com/recsys-api/openapi.json
+      - name: The committed OpenAPI copy is the live one
+        run: |
+          curl -fsS https://api.likyly.com/recsys-api/openapi.json | python -c 'import json,sys; print(json.dumps(json.load(sys.stdin), indent=2, sort_keys=True))' > /tmp/live.json
+          python -c 'import json,sys; print(json.dumps(json.load(open(sys.argv[1])), indent=2, sort_keys=True))' conformance/openapi.json > /tmp/committed.json
+          if ! diff -u /tmp/committed.json /tmp/live.json > /tmp/drift.diff; then
+            head -200 /tmp/drift.diff
+            echo "::error::conformance/openapi.json differs from the production API. Update it (curl the URL above) and check the SDKs."
+            exit 1
+          fi
