@@ -24,5 +24,9 @@ jobs:
         with: { node-version: "${{ matrix.node }}" }
       - run: npm ci
       - run: npm run build
-      - run: npm test
+      # the test runner needs Node 21+ (glob patterns); on Node 18, check the built package loads (ESM and CommonJS)
+      - if: matrix.node == 22
+        run: npm test
+      - if: matrix.node == 18
+        run: node -e "require('./dist/cjs/index.js'); import('./dist/esm/index.js').then(() => console.log('loads on', process.version))"
       - run: npm pack --dry-run
