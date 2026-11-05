@@ -9,6 +9,7 @@ on:
     branches: [main]
     paths: ["react/**", "typescript/**", ".github/workflows/react.yml"]
   workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read

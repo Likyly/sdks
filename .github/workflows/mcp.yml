@@ -7,6 +7,7 @@ on:
     branches: [main]
     paths: ["mcp/**", ".github/workflows/mcp.yml"]
   workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read
