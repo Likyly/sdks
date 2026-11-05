@@ -32,6 +32,9 @@ path = "src/likyly/_version.py"
 [tool.hatch.build.targets.wheel]
 packages = ["src/likyly"]
 
+[tool.hatch.build.targets.sdist]
+include = ["/src/likyly", "/tests", "/examples", "/README.md", "/LICENSE", "/pyproject.toml"]
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
