@@ -11,7 +11,7 @@
     <RootNamespace>Likyly</RootNamespace>
     <AssemblyName>Likyly</AssemblyName>
     <PackageId>Likyly</PackageId>
-    <Version>1.0.0</Version><!-- x-release-please-version -->
+    <Version>1.0.2</Version><!-- x-release-please-version -->
     <Authors>LIKYLY</Authors>
     <Description>Official LIKYLY SDK for .NET: items, users, events and recommendations.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
