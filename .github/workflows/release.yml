@@ -63,18 +63,19 @@ jobs:
           echo "pkgs=$pkgs" >> "$GITHUB_OUTPUT"
           echo "Packages to publish: $pkgs" >> "$GITHUB_STEP_SUMMARY"
 
-  # The same CI as on pull requests, for the released packages only.
-  test-typescript: { needs: plan, if: "contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'typescript') || contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'react')", uses: ./.github/workflows/typescript.yml }
-  test-react:      { needs: plan, if: "contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'react')",  uses: ./.github/workflows/react.yml }
-  test-mcp:        { needs: plan, if: "contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'mcp')",    uses: ./.github/workflows/mcp.yml }
-  test-python:     { needs: plan, if: "contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'python')", uses: ./.github/workflows/python.yml }
-  test-php:        { needs: plan, if: "contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'php')",    uses: ./.github/workflows/php.yml }
-  test-dotnet:     { needs: plan, if: "contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'dotnet')", uses: ./.github/workflows/dotnet.yml }
-  test-java:       { needs: plan, if: "contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'java')",   uses: ./.github/workflows/java.yml }
-  test-go:         { needs: plan, if: "contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'go')",     uses: ./.github/workflows/go.yml }
-  test-ruby:       { needs: plan, if: "contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'ruby')",   uses: ./.github/workflows/ruby.yml }
-  test-rust:       { needs: plan, if: "contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'rust')",   uses: ./.github/workflows/rust.yml }
-  test-contract:   { needs: plan, if: "needs.plan.outputs.pkgs != '[]'", uses: ./.github/workflows/contract.yml }
+  # The same CI as on pull requests, for the released packages only. always(): on a manual run release-please
+  # is skipped, and without it every test job would be skipped too (publication without tests).
+  test-typescript: { needs: plan, if: "always() && needs.plan.result == 'success' && (contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'typescript') || contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'react'))", uses: ./.github/workflows/typescript.yml }
+  test-react:      { needs: plan, if: "always() && needs.plan.result == 'success' && (contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'react'))", uses: ./.github/workflows/react.yml }
+  test-mcp:        { needs: plan, if: "always() && needs.plan.result == 'success' && (contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'mcp'))", uses: ./.github/workflows/mcp.yml }
+  test-python:     { needs: plan, if: "always() && needs.plan.result == 'success' && (contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'python'))", uses: ./.github/workflows/python.yml }
+  test-php:        { needs: plan, if: "always() && needs.plan.result == 'success' && (contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'php'))", uses: ./.github/workflows/php.yml }
+  test-dotnet:     { needs: plan, if: "always() && needs.plan.result == 'success' && (contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'dotnet'))", uses: ./.github/workflows/dotnet.yml }
+  test-java:       { needs: plan, if: "always() && needs.plan.result == 'success' && (contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'java'))", uses: ./.github/workflows/java.yml }
+  test-go:         { needs: plan, if: "always() && needs.plan.result == 'success' && (contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'go'))", uses: ./.github/workflows/go.yml }
+  test-ruby:       { needs: plan, if: "always() && needs.plan.result == 'success' && (contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'ruby'))", uses: ./.github/workflows/ruby.yml }
+  test-rust:       { needs: plan, if: "always() && needs.plan.result == 'success' && (contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'rust'))", uses: ./.github/workflows/rust.yml }
+  test-contract:   { needs: plan, if: "always() && needs.plan.result == 'success' && (needs.plan.outputs.pkgs != '[]')", uses: ./.github/workflows/contract.yml }
 
   # Manual validation: one approval for the whole run.
   approval:
