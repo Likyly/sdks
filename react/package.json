@@ -1,6 +1,6 @@
 {
   "name": "@likyly/react",
-  "version": "0.2.0",
+  "version": "1.0.2",
   "description": "React bindings for @likyly/sdk: useRecommendations (headless) and <LikylyRecommendations> (ready-to-use) for LIKYLY placements.",
   "license": "MIT",
   "homepage": "https://likyly.com/docs/sdk/typescript",
