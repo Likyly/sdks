@@ -238,6 +238,12 @@ jobs:
         run: |
           version="$(jq -r --arg p "$PKG" '.[$p]' .release-please-manifest.json)"
           git subtree split --prefix="$PKG" -b mirror
+          # A mirror with its own history (likyly-php started from the SDK's previous repository) gets one new
+          # commit on top of it holding the folder as released: nothing it published before is rewritten.
+          if git fetch "git@github.com:$REPO.git" main:mirror-remote 2>/dev/null && ! git merge-base --is-ancestor mirror-remote mirror; then
+            commit="$(git -c user.name=likyly-release -c user.email=release@likyly.com commit-tree "mirror^{tree}" -p mirror-remote -m "$PKG $version (Likyly/sdks@${GITHUB_SHA::7})")"
+            git branch -f mirror "$commit"
+          fi
           git push "git@github.com:$REPO.git" mirror:main
           git tag "v$version" mirror
           git push "git@github.com:$REPO.git" "v$version"
