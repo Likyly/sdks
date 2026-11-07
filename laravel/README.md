@@ -9,7 +9,7 @@ composer require likyly/laravel
 php artisan likyly:install
 ```
 
-Laravel 11, 12 and 13, PHP 8.2 or later. Built on the [LIKYLY PHP SDK](https://packagist.org/packages/likyly/sdk).
+Laravel 12 and 13, PHP 8.2 or later. Built on the [LIKYLY PHP SDK](https://packagist.org/packages/likyly/sdk).
 
 ## What `likyly:install` does
 
