@@ -10,6 +10,7 @@
     "mcp":        { "release-type": "node", "component": "mcp", "package-name": "@likyly/mcp-server", "extra-files": ["src/tools.ts"] },
     "python":     { "release-type": "simple", "component": "python", "package-name": "likyly", "extra-files": ["src/likyly/_version.py"] },
     "php":        { "release-type": "simple", "component": "php", "package-name": "likyly/sdk", "extra-files": ["src/Version.php"] },
+    "laravel":    { "release-type": "simple", "component": "laravel", "package-name": "likyly/laravel" },
     "dotnet":     { "release-type": "simple", "component": "dotnet", "package-name": "Likyly", "extra-files": ["src/Likyly/Likyly.csproj", "src/Likyly/LikylyClient.cs"] },
     "java":       { "release-type": "simple", "component": "java", "package-name": "com.likyly:likyly-sdk", "extra-files": ["pom.xml", "src/main/java/com/likyly/Likyly.java"] },
     "go":         { "release-type": "simple", "component": "go", "package-name": "github.com/likyly/likyly-go", "extra-files": ["version.go"] },

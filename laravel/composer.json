@@ -1,0 +1,62 @@
+{
+    "name": "likyly/laravel",
+    "description": "LIKYLY product recommendations for Laravel: your Eloquent catalog synced, a Blade component, impressions and clicks tracked, set up with one artisan command.",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://www.likyly.com/docs/sdk/laravel",
+    "keywords": [
+        "laravel",
+        "recommendations",
+        "recommender",
+        "personalization",
+        "e-commerce",
+        "you may also like",
+        "likyly"
+    ],
+    "support": {
+        "source": "https://github.com/Likyly/likyly-laravel",
+        "issues": "https://github.com/Likyly/sdks/issues",
+        "docs": "https://www.likyly.com/docs/sdk/laravel"
+    },
+    "require": {
+        "php": "^8.2",
+        "illuminate/console": "^11.0 || ^12.0 || ^13.0",
+        "illuminate/database": "^11.0 || ^12.0 || ^13.0",
+        "illuminate/http": "^11.0 || ^12.0 || ^13.0",
+        "illuminate/support": "^11.0 || ^12.0 || ^13.0",
+        "illuminate/view": "^11.0 || ^12.0 || ^13.0",
+        "likyly/sdk": "^1.0.2",
+        "symfony/process": "^7.0 || ^8.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0 || ^10.0 || ^11.0",
+        "phpunit/phpunit": "^10.5 || ^11.0 || ^12.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Likyly\\Laravel\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Likyly\\Laravel\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Likyly\\Laravel\\LikylyServiceProvider"
+            ],
+            "aliases": {
+                "Likyly": "Likyly\\Laravel\\Facades\\Likyly"
+            }
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable"
+}

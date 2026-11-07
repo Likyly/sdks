@@ -1,0 +1,35 @@
+name: Laravel
+
+on:
+  pull_request:
+    paths: ["laravel/**", "php/**", ".github/workflows/laravel.yml"]
+  push:
+    branches: [main]
+    paths: ["laravel/**", "php/**", ".github/workflows/laravel.yml"]
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: laravel } }
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { php: "8.2", laravel: "11", testbench: "9" }
+          - { php: "8.3", laravel: "12", testbench: "10" }
+          - { php: "8.4", laravel: "13", testbench: "11" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: "${{ matrix.php }}", tools: composer }
+      - run: composer validate --strict
+      # Tested against the PHP SDK of this same commit (../php), not the one on Packagist.
+      - run: composer config repositories.likyly-php '{"type":"path","url":"../php","options":{"symlink":false,"versions":{"likyly/sdk":"1.99.0"}}}'
+      - run: composer require --no-update --no-interaction "illuminate/support:^${{ matrix.laravel }}.0" "orchestra/testbench:^${{ matrix.testbench }}.0"
+      - run: composer update --no-interaction --prefer-dist
+      - run: composer test

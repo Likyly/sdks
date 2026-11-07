@@ -21,7 +21,7 @@ on:
         description: Package to publish at its current version
         required: true
         type: choice
-        options: [typescript, react, mcp, python, php, dotnet, java, go, ruby, rust]
+        options: [typescript, react, mcp, python, php, laravel, dotnet, java, go, ruby, rust]
 
 permissions:
   contents: read
@@ -70,6 +70,7 @@ jobs:
   test-mcp:        { needs: plan, if: "always() && needs.plan.result == 'success' && (contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'mcp'))", uses: ./.github/workflows/mcp.yml }
   test-python:     { needs: plan, if: "always() && needs.plan.result == 'success' && (contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'python'))", uses: ./.github/workflows/python.yml }
   test-php:        { needs: plan, if: "always() && needs.plan.result == 'success' && (contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'php'))", uses: ./.github/workflows/php.yml }
+  test-laravel:    { needs: plan, if: "always() && needs.plan.result == 'success' && (contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'laravel'))", uses: ./.github/workflows/laravel.yml }
   test-dotnet:     { needs: plan, if: "always() && needs.plan.result == 'success' && (contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'dotnet'))", uses: ./.github/workflows/dotnet.yml }
   test-java:       { needs: plan, if: "always() && needs.plan.result == 'success' && (contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'java'))", uses: ./.github/workflows/java.yml }
   test-go:         { needs: plan, if: "always() && needs.plan.result == 'success' && (contains(fromJSON(needs.plan.outputs.pkgs || '[]'), 'go'))", uses: ./.github/workflows/go.yml }
@@ -79,7 +80,7 @@ jobs:
 
   # Manual validation: one approval for the whole run.
   approval:
-    needs: [plan, test-typescript, test-react, test-mcp, test-python, test-php, test-dotnet, test-java, test-go, test-ruby, test-rust, test-contract]
+    needs: [plan, test-typescript, test-react, test-mcp, test-python, test-php, test-laravel, test-dotnet, test-java, test-go, test-ruby, test-rust, test-contract]
     if: always() && needs.plan.outputs.pkgs != '[]' && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
     runs-on: ubuntu-latest
     environment: publish
@@ -215,13 +216,14 @@ jobs:
   # Packagist (webhook) and the Go module proxy pick the tag up. Nobody commits to those mirrors by hand.
   mirror:
     needs: [plan, approval]
-    if: always() && needs.approval.result == 'success' && (contains(fromJSON(needs.plan.outputs.pkgs), 'php') || contains(fromJSON(needs.plan.outputs.pkgs), 'go'))
+    if: always() && needs.approval.result == 'success' && (contains(fromJSON(needs.plan.outputs.pkgs), 'php') || contains(fromJSON(needs.plan.outputs.pkgs), 'laravel') || contains(fromJSON(needs.plan.outputs.pkgs), 'go'))
     runs-on: ubuntu-latest
     environment: publish-credentials
     strategy:
       matrix:
         include:
           - { pkg: php, repo: Likyly/likyly-php, key: PHP_MIRROR_DEPLOY_KEY }
+          - { pkg: laravel, repo: Likyly/likyly-laravel, key: LARAVEL_MIRROR_DEPLOY_KEY }
           - { pkg: go,  repo: Likyly/likyly-go,  key: GO_MIRROR_DEPLOY_KEY }
     steps:
       - uses: actions/checkout@v4
