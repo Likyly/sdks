@@ -41,7 +41,7 @@ public sealed class LikylyClientOptions
 /// </summary>
 public sealed class LikylyClient
 {
-    public const string Version = "1.0.0"; // x-release-please-version
+    public const string Version = "1.0.2"; // x-release-please-version
     public const string DefaultBaseUrl = "https://api.likyly.com";
 
     /// <summary>Uses the given API key and the defaults.</summary>
