@@ -4,6 +4,7 @@
   "include-component-in-tag": true,
   "tag-separator": "-",
   "bump-minor-pre-major": true,
+  "bootstrap-sha": "ebbcb56cfbcd9eabe97c36356ee22b4ce48520e1",
   "packages": {
     "typescript": { "release-type": "node", "component": "typescript", "package-name": "@likyly/sdk", "extra-files": ["src/version.ts"] },
     "react":      { "release-type": "node", "component": "react", "package-name": "@likyly/react" },

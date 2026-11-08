@@ -34,11 +34,16 @@ Every trusted publisher below points at: owner `Likyly`, repository `sdks`, work
 | `likyly/laravel` | Packagist | Same as `likyly/sdk`, with `Likyly/likyly-laravel` and `LARAVEL_MIRROR_DEPLOY_KEY`. Publish `likyly/sdk` first: the Laravel package requires it. |
 | `github.com/likyly/likyly-go` | Go | Create `Likyly/likyly-go` (public, empty). The release pushes the code and the `vX.Y.Z` tag; `go get github.com/likyly/likyly-go@vX.Y.Z` works right after (pkg.go.dev indexes it on first fetch). |
 
-## First publication of the current versions
+## Current versions
 
-The versions in [.release-please-manifest.json](../.release-please-manifest.json) have never been published.
-For each package: Actions → **Release** → *Run workflow* → pick the package. It tests, waits for approval,
-publishes that version. After that, releases come from release-please pull requests only.
+[.release-please-manifest.json](../.release-please-manifest.json) holds the version of each package that is on
+its registry. No package has a release tag here yet (the first versions were published by hand or by a manual
+run), so `bootstrap-sha` in [release-please-config.json](../release-please-config.json) tells release-please
+where to start reading commits; the first tagged release of a package makes it irrelevant for that package.
+
+To publish the current version of a package (a package that is not on its registry yet): Actions → **Release** →
+*Run workflow* → pick the package. It tests, waits for approval, publishes that version. Otherwise, releases come
+from release-please pull requests only.
 
 ## What stays in the private backend
 
