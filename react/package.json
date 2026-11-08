@@ -1,8 +1,19 @@
 {
   "name": "@likyly/react",
   "version": "0.2.2",
-  "description": "React bindings for @likyly/sdk: useRecommendations (headless) and <LikylyRecommendations> (ready-to-use) for LIKYLY placements.",
+  "description": "LIKYLY product recommendations for React and Next.js: a ready-made component and a hook, with impressions and clicks tracked for you.",
+  "keywords": [
+    "likyly",
+    "react",
+    "nextjs",
+    "recommendations",
+    "product recommendations",
+    "personalization",
+    "ecommerce",
+    "hooks"
+  ],
   "license": "MIT",
+  "author": "LIKYLY (https://www.likyly.com)",
   "homepage": "https://likyly.com/docs/sdk/typescript",
   "repository": {
     "type": "git",

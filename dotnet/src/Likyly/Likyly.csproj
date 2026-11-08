@@ -13,13 +13,13 @@
     <PackageId>Likyly</PackageId>
     <Version>1.0.0</Version><!-- x-release-please-version -->
     <Authors>LIKYLY</Authors>
-    <Description>Official LIKYLY SDK for .NET: items, users, events and recommendations.</Description>
+    <Description>Product recommendations for your site ("You may also like", "Recommended for you"), learned from what your visitors do. Official LIKYLY client for .NET.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://www.likyly.com</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/Likyly/sdks</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>recommendations;recommender;personalization;likyly</PackageTags>
+    <PackageTags>likyly;recommendations;product-recommendations;recommender;personalization;ecommerce</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

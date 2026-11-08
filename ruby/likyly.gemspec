@@ -6,8 +6,8 @@ Gem::Specification.new do |spec|
   spec.name = "likyly"
   spec.version = Likyly::VERSION
   spec.authors = ["LIKYLY"]
-  spec.summary = "Official Ruby client for the LIKYLY recommendations API"
-  spec.description = "Send your catalog and what visitors do, get recommendations back. No runtime dependencies, no Rails required."
+  spec.summary = "Product recommendations for your site, learned from what your visitors do. Official LIKYLY client."
+  spec.description = "LIKYLY shows each visitor the products they are most likely to want (\"You may also like\", \"Recommended for you\"). Send your catalog and what visitors do, ask what to show. No runtime dependencies, no Rails required."
   spec.homepage = "https://likyly.com"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0"
