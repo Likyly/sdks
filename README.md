@@ -13,6 +13,8 @@ Official clients for the [LIKYLY](https://likyly.com) recommendations API (`item
 | Go | `github.com/likyly/likyly-go` | [go](go) | [likyly.com/docs/sdk/go](https://likyly.com/docs/sdk/go) |
 | Ruby | [`likyly`](https://rubygems.org/gems/likyly) (RubyGems) | [ruby](ruby) | [likyly.com/docs/sdk/ruby](https://likyly.com/docs/sdk/ruby) |
 | Rust | [`likyly`](https://crates.io/crates/likyly) (crates.io) | [rust](rust) | [likyly.com/docs/sdk/rust](https://likyly.com/docs/sdk/rust) |
+| iOS, iPadOS, macOS, tvOS, watchOS (Swift) | `Likyly` (Swift Package Manager, [`github.com/likyly/likyly-swift`](https://github.com/Likyly/likyly-swift)) | [swift](swift) | [README](swift/README.md) |
+| Android (Kotlin, coroutines) | `com.likyly:likyly-android` (Maven Central) | [android](android) | [README](android/README.md) |
 | MCP server | [`@likyly/mcp-server`](https://www.npmjs.com/package/@likyly/mcp-server) (npm) | [mcp](mcp) | [likyly.com/docs/mcp](https://likyly.com/docs/mcp) |
 
 Method names per language: [docs/METHODS.md](docs/METHODS.md). No SDK for your language? The REST API is documented at [api.likyly.com/docs](https://api.likyly.com/docs).
@@ -25,14 +27,15 @@ conformance/     scenarios.json (shared by every SDK's tests), openapi.json (cop
 docs/            generate.mjs: the READMEs, METHODS.md and the website data, from sdks.json + the examples
 ```
 
-Two directories are also published as their own repository, because their registry reads the repository root:
-`php/` → [Likyly/likyly-php](https://github.com/Likyly/likyly-php) (Packagist) and `go/` → [Likyly/likyly-go](https://github.com/Likyly/likyly-go) (Go modules).
+Some directories are also published as their own repository, because their registry reads the repository root:
+`php/` → [Likyly/likyly-php](https://github.com/Likyly/likyly-php) and `laravel/` → [Likyly/likyly-laravel](https://github.com/Likyly/likyly-laravel) (Packagist),
+`go/` → [Likyly/likyly-go](https://github.com/Likyly/likyly-go) (Go modules), `swift/` → [Likyly/likyly-swift](https://github.com/Likyly/likyly-swift) (Swift Package Manager).
 Those mirrors are written by the release workflow only. Open issues and pull requests here.
 
 ## How it is kept correct
 
 - **Contract**: `conformance/openapi.json` is a copy of `https://api.likyly.com/recsys-api/openapi.json`. A weekly job fails when they differ.
-- **Shared scenarios** (`conformance/scenarios.json`): request/response scenarios, validated against the OpenAPI by `conformance/validate_against_openapi.py` and replayed by every SDK's test suite. Go reads its copy in `go/testdata/` (CI checks it is identical).
+- **Shared scenarios** (`conformance/scenarios.json`): request/response scenarios, validated against the OpenAPI by `conformance/validate_against_openapi.py` and replayed by every SDK's test suite. Go and Swift read their copy in `go/testdata/` and `swift/conformance/`, which ship with their mirror (CI checks they are identical).
 - **Behaviour tests** per SDK: validation, error mapping, retry rules (an event without `event_id` is never retried), encoding. They need no network and no API key.
 - **Documentation is generated**: `node docs/generate.mjs` builds every language README and `docs/METHODS.md` from `docs/sdks.json` and the code samples in each `examples/quickstart*`. `--check` fails on drift (CI). With a `likyly-website` checkout next to this repository (or `--website <path>`), it also writes the website's SDK pages data.
 - **Live tests** (LIKYLY team only): `conformance/local-api.sh start` runs the API from a checkout of the private backend (`LIKYLY_BACKEND`, default `../likyly-recsys`), then `source conformance/.local-api.env` and run an SDK's tests, or `conformance/run-examples.sh` for every quickstart.
@@ -48,8 +51,8 @@ Every package has its own version: fixing the Python SDK releases `likyly` for P
 | Registry | How the workflow authenticates |
 |---|---|
 | npm, PyPI, crates.io, RubyGems, NuGet | trusted publishing (OIDC): no stored token |
-| Maven Central | Central Portal token + GPG key (secrets of the `publish-credentials` environment) |
-| Packagist, Go | push to the mirror repository + tag `vX.Y.Z` (deploy keys) |
+| Maven Central (Java, Android) | Central Portal token + GPG key (secrets of the `publish-credentials` environment) |
+| Packagist, Go, Swift Package Manager | push to the mirror repository + tag `vX.Y.Z` (deploy keys) |
 
 The setup of each registry, done once, is in [docs/RELEASING.md](docs/RELEASING.md).
 

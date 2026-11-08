@@ -1,0 +1,24 @@
+name: Swift
+
+on:
+  pull_request:
+    paths: ["swift/**", "conformance/scenarios.json", ".github/workflows/swift.yml"]
+  push:
+    branches: [main]
+    paths: ["swift/**", "conformance/scenarios.json", ".github/workflows/swift.yml"]
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: macos-15
+    defaults: { run: { working-directory: swift } }
+    steps:
+      - uses: actions/checkout@v4
+      # swift/conformance/scenarios.json is the copy that ships with the mirrored package: it must match the source.
+      - run: cmp conformance/scenarios.json ../conformance/scenarios.json
+      - run: swift test
+      - run: xcodebuild -scheme Likyly -destination 'generic/platform=iOS' build

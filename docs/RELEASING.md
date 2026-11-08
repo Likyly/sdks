@@ -11,9 +11,10 @@ Day-to-day: see "Versions and releases" in the [README](../README.md).
    stored secrets:
    - `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`: a Central Portal *user token* (not the account password).
    - `MAVEN_GPG_PRIVATE_KEY` (armored), `MAVEN_GPG_PASSPHRASE`: the signing key; its public key on keys.openpgp.org.
-   - `PHP_MIRROR_DEPLOY_KEY`, `LARAVEL_MIRROR_DEPLOY_KEY`, `GO_MIRROR_DEPLOY_KEY`: private halves of SSH deploy
-     keys that have **write** access to `Likyly/likyly-php`, `Likyly/likyly-laravel` and `Likyly/likyly-go`
-     respectively (and nothing else).
+   - `PHP_MIRROR_DEPLOY_KEY`, `LARAVEL_MIRROR_DEPLOY_KEY`, `GO_MIRROR_DEPLOY_KEY`, `SWIFT_MIRROR_DEPLOY_KEY`:
+     private halves of SSH deploy keys that have **write** access to `Likyly/likyly-php`, `Likyly/likyly-laravel`,
+     `Likyly/likyly-go` and `Likyly/likyly-swift` respectively (and nothing else).
+   The Maven Central token and GPG key serve both `java` and `android`.
 3. **Variable `NUGET_USER`** (Settings → Variables): the nuget.org account that owns the `Likyly` package.
 4. Settings → Actions → General: *Allow GitHub Actions to create and approve pull requests* (release-please).
 
@@ -32,6 +33,8 @@ Every trusted publisher below points at: owner `Likyly`, repository `sdks`, work
 | `com.likyly:likyly-sdk` | Maven Central | central.sonatype.com: register the `com.likyly` namespace (proved by a DNS TXT record on likyly.com), generate a user token, create and publish the GPG key. |
 | `likyly/sdk` | Packagist | Create `Likyly/likyly-php` (public, empty), let the first release fill it, then *Submit* its URL on packagist.org and enable the GitHub hook so every tag is picked up. |
 | `likyly/laravel` | Packagist | Same as `likyly/sdk`, with `Likyly/likyly-laravel` and `LARAVEL_MIRROR_DEPLOY_KEY`. Publish `likyly/sdk` first: the Laravel package requires it. |
+| `com.likyly:likyly-android` | Maven Central | Same namespace, token and GPG key as `com.likyly:likyly-sdk`. The release uploads the signed bundle Gradle writes (`android/build/bundle`) through the Central Portal API. |
+| `Likyly` (Swift) | Swift Package Manager | `Likyly/likyly-swift` exists (public). Add the public half of `SWIFT_MIRROR_DEPLOY_KEY` as a deploy key with write access. Users add `https://github.com/likyly/likyly-swift`; a `vX.Y.Z` tag is a release. |
 | `github.com/likyly/likyly-go` | Go | Create `Likyly/likyly-go` (public, empty). The release pushes the code and the `vX.Y.Z` tag; `go get github.com/likyly/likyly-go@vX.Y.Z` works right after (pkg.go.dev indexes it on first fetch). |
 
 ## Current versions

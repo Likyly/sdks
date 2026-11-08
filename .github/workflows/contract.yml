@@ -29,6 +29,7 @@ jobs:
       - run: pip install jsonschema
       - run: python conformance/validate_against_openapi.py
       - run: cmp go/testdata/scenarios.json conformance/scenarios.json
+      - run: cmp swift/conformance/scenarios.json conformance/scenarios.json
       - run: node docs/generate.mjs --check --website /nonexistent
 
   openapi-drift:

@@ -16,6 +16,8 @@
     "java":       { "release-type": "simple", "component": "java", "package-name": "com.likyly:likyly-sdk", "extra-files": ["pom.xml", "src/main/java/com/likyly/Likyly.java"] },
     "go":         { "release-type": "simple", "component": "go", "package-name": "github.com/likyly/likyly-go", "extra-files": ["version.go"] },
     "ruby":       { "release-type": "simple", "component": "ruby", "package-name": "likyly", "extra-files": ["lib/likyly/version.rb"] },
-    "rust":       { "release-type": "rust", "component": "rust", "package-name": "likyly" }
+    "rust":       { "release-type": "rust", "component": "rust", "package-name": "likyly" },
+    "swift":      { "release-type": "simple", "component": "swift", "package-name": "github.com/likyly/likyly-swift", "extra-files": ["Sources/Likyly/Likyly.swift"] },
+    "android":    { "release-type": "simple", "component": "android", "package-name": "com.likyly:likyly-android", "extra-files": ["build.gradle.kts", "src/main/kotlin/com/likyly/Likyly.kt"] }
   }
 }
