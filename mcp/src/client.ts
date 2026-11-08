@@ -9,6 +9,9 @@
 // Deliberately standalone rather than depending on ../typescript (not published to npm yet) - same
 // request shape as typescript/src/client.ts, trimmed to just this tool surface.
 
+// Sent to the LIKYLY API with every call, so the team can see which workspaces use the MCP server.
+const USER_AGENT = "likyly-mcp/0.4.2"; // x-release-please-version
+
 export interface LikylyClientOptions {
   baseUrl: string;
   apiKey: string;
@@ -247,7 +250,7 @@ export class LikylyClient {
       }
     }
 
-    const headers: Record<string, string> = { "X-API-Key": this.apiKey, ...opts.headers };
+    const headers: Record<string, string> = { "X-API-Key": this.apiKey, "User-Agent": USER_AGENT, ...opts.headers };
     if (opts.body !== undefined) headers["Content-Type"] = "application/json";
 
     const response = await fetch(url.toString(), {

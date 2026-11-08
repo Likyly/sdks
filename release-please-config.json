@@ -8,7 +8,7 @@
   "packages": {
     "typescript": { "release-type": "node", "component": "typescript", "package-name": "@likyly/sdk", "extra-files": ["src/version.ts"] },
     "react":      { "release-type": "node", "component": "react", "package-name": "@likyly/react" },
-    "mcp":        { "release-type": "node", "component": "mcp", "package-name": "@likyly/mcp-server", "extra-files": ["src/tools.ts"] },
+    "mcp":        { "release-type": "node", "component": "mcp", "package-name": "@likyly/mcp-server", "extra-files": ["src/tools.ts", "src/client.ts"] },
     "python":     { "release-type": "simple", "component": "python", "package-name": "likyly", "extra-files": ["src/likyly/_version.py"] },
     "php":        { "release-type": "simple", "component": "php", "package-name": "likyly/sdk", "extra-files": ["src/Version.php"] },
     "laravel":    { "release-type": "simple", "component": "laravel", "package-name": "likyly/laravel" },

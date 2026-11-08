@@ -128,6 +128,8 @@ export class HttpClient {
       "X-API-Key": this.config.apiKey,
       Accept: "application/json",
       "User-Agent": this.config.userAgent,
+      // Browsers drop a script's User-Agent: this one reaches the API from anywhere.
+      "X-Likyly-Client": this.config.userAgent,
     };
     if (req.body !== undefined) headers["Content-Type"] = "application/json";
 
