@@ -94,6 +94,8 @@ jobs:
     needs: [plan, approval]
     if: always() && needs.approval.result == 'success' && contains(fromJSON(needs.plan.outputs.pkgs), 'typescript')
     runs-on: ubuntu-latest
+    # Same environment as npm's Trusted Publisher setting for the package (Likyly/sdks, release.yml, publish).
+    environment: publish
     permissions: { contents: read, id-token: write }
     defaults: { run: { working-directory: typescript } }
     steps:
@@ -109,6 +111,8 @@ jobs:
     needs: [plan, approval, npm-typescript]
     if: always() && needs.approval.result == 'success' && contains(fromJSON(needs.plan.outputs.pkgs), 'react') && needs.npm-typescript.result != 'failure'
     runs-on: ubuntu-latest
+    # Same environment as npm's Trusted Publisher setting for the package (Likyly/sdks, release.yml, publish).
+    environment: publish
     permissions: { contents: read, id-token: write }
     defaults: { run: { working-directory: react } }
     steps:
@@ -123,6 +127,8 @@ jobs:
     needs: [plan, approval]
     if: always() && needs.approval.result == 'success' && contains(fromJSON(needs.plan.outputs.pkgs), 'mcp')
     runs-on: ubuntu-latest
+    # Same environment as npm's Trusted Publisher setting for the package (Likyly/sdks, release.yml, publish).
+    environment: publish
     permissions: { contents: read, id-token: write }
     defaults: { run: { working-directory: mcp } }
     steps:
