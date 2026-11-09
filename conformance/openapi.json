@@ -864,6 +864,7 @@
             "type": "integer"
           },
           "payload": {
+            "additionalProperties": true,
             "title": "Payload",
             "type": "object"
           },
@@ -1766,7 +1767,7 @@
       "Body_import_my_interactions": {
         "properties": {
           "file": {
-            "format": "binary",
+            "contentMediaType": "application/octet-stream",
             "title": "File",
             "type": "string"
           }
@@ -1780,7 +1781,7 @@
       "Body_import_my_products": {
         "properties": {
           "file": {
-            "format": "binary",
+            "contentMediaType": "application/octet-stream",
             "title": "File",
             "type": "string"
           }
@@ -1794,7 +1795,7 @@
       "Body_import_my_users": {
         "properties": {
           "file": {
-            "format": "binary",
+            "contentMediaType": "application/octet-stream",
             "title": "File",
             "type": "string"
           }
@@ -1808,7 +1809,7 @@
       "Body_upload_data_source_file": {
         "properties": {
           "file": {
-            "format": "binary",
+            "contentMediaType": "application/octet-stream",
             "title": "File",
             "type": "string"
           }
@@ -1836,6 +1837,58 @@
           "purged"
         ],
         "title": "CachePurged",
+        "type": "object"
+      },
+      "CatalogEraseRequest": {
+        "properties": {
+          "confirm": {
+            "description": "The catalog's name (`data_product_type`), typed again - proof the erasure is deliberate, not a stray call.",
+            "examples": [
+              "shop"
+            ],
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Confirm",
+            "type": "string"
+          }
+        },
+        "required": [
+          "confirm"
+        ],
+        "title": "CatalogEraseRequest",
+        "type": "object"
+      },
+      "CatalogErased": {
+        "properties": {
+          "catalog": {
+            "title": "Catalog",
+            "type": "string"
+          },
+          "events": {
+            "title": "Events",
+            "type": "integer"
+          },
+          "items": {
+            "title": "Items",
+            "type": "integer"
+          },
+          "recommendations": {
+            "title": "Recommendations",
+            "type": "integer"
+          },
+          "users": {
+            "title": "Users",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "catalog",
+          "items",
+          "users",
+          "events",
+          "recommendations"
+        ],
+        "title": "CatalogErased",
         "type": "object"
       },
       "CatalogIndex": {
@@ -2269,6 +2322,7 @@
           "detail": {
             "anyOf": [
               {
+                "additionalProperties": true,
                 "type": "object"
               },
               {
@@ -2315,6 +2369,7 @@
       "DataSource": {
         "properties": {
           "config": {
+            "additionalProperties": true,
             "title": "Config",
             "type": "object"
           },
@@ -2326,6 +2381,7 @@
           "field_mapping": {
             "anyOf": [
               {
+                "additionalProperties": true,
                 "type": "object"
               },
               {
@@ -2432,6 +2488,7 @@
       "DataSourceCreate": {
         "properties": {
           "config": {
+            "additionalProperties": true,
             "description": "Non-secret settings - shape depends on `type` (see docs/data-sources.md).",
             "title": "Config",
             "type": "object"
@@ -2439,6 +2496,7 @@
           "credentials": {
             "anyOf": [
               {
+                "additionalProperties": true,
                 "type": "object"
               },
               {
@@ -2451,6 +2509,7 @@
           "field_mapping": {
             "anyOf": [
               {
+                "additionalProperties": true,
                 "type": "object"
               },
               {
@@ -2521,6 +2580,7 @@
       "DataSourceCreated": {
         "properties": {
           "config": {
+            "additionalProperties": true,
             "title": "Config",
             "type": "object"
           },
@@ -2532,6 +2592,7 @@
           "field_mapping": {
             "anyOf": [
               {
+                "additionalProperties": true,
                 "type": "object"
               },
               {
@@ -2652,6 +2713,7 @@
           "config": {
             "anyOf": [
               {
+                "additionalProperties": true,
                 "type": "object"
               },
               {
@@ -2663,6 +2725,7 @@
           "credentials": {
             "anyOf": [
               {
+                "additionalProperties": true,
                 "type": "object"
               },
               {
@@ -2728,7 +2791,7 @@
                 "type": "null"
               }
             ],
-            "description": "Non-secret preview, e.g. `lk_Ab3x\u20269QpL`. Null for keys issued before previews existed.",
+            "description": "Non-secret preview, e.g. `lk_Ab3x…9QpL`. Null for keys issued before previews existed.",
             "title": "Key Hint"
           },
           "last_used_at": {
@@ -2835,7 +2898,7 @@
                 "type": "null"
               }
             ],
-            "description": "Non-secret preview, e.g. `lk_Ab3x\u20269QpL`. Null for keys issued before previews existed.",
+            "description": "Non-secret preview, e.g. `lk_Ab3x…9QpL`. Null for keys issued before previews existed.",
             "title": "Key Hint"
           },
           "last_used_at": {
@@ -3007,6 +3070,7 @@
             "title": "Placement"
           },
           "properties": {
+            "additionalProperties": true,
             "description": "Free-form JSON stored with the event and never interpreted: price, currency, order_id, revenue, any tenant-specific field.",
             "examples": [
               {
@@ -3255,6 +3319,7 @@
             "title": "Placement"
           },
           "properties": {
+            "additionalProperties": true,
             "description": "Free-form JSON stored with the event and never interpreted: price, currency, order_id, revenue, any tenant-specific field.",
             "examples": [
               {
@@ -3664,6 +3729,7 @@
           },
           "normalized_sample": {
             "items": {
+              "additionalProperties": true,
               "type": "object"
             },
             "title": "Normalized Sample",
@@ -3680,6 +3746,7 @@
       "FieldMappingIn": {
         "properties": {
           "mapping": {
+            "additionalProperties": true,
             "description": "external_id/title required; description, category, price, image, url, stock, updated_at optional; attributes is itself {name: path}. Each value is a field name or a dotted/bracket path (e.g. 'variants[0].price').",
             "examples": [
               {
@@ -3901,6 +3968,7 @@
             "type": "string"
           },
           "properties": {
+            "additionalProperties": true,
             "title": "Properties",
             "type": "object"
           },
@@ -4020,6 +4088,7 @@
             "title": "Price"
           },
           "properties": {
+            "additionalProperties": true,
             "description": "Free-form attributes. Keys the engine understands when present: `category` (or `genre`), `author`, `year`, `url`, `price`. Anything else is kept untouched.",
             "examples": [
               {
@@ -4174,6 +4243,7 @@
             "title": "Price"
           },
           "properties": {
+            "additionalProperties": true,
             "description": "Free-form attributes. Keys the engine understands when present: `category` (or `genre`), `author`, `year`, `url`, `price`. Anything else is kept untouched.",
             "examples": [
               {
@@ -4553,6 +4623,7 @@
             "type": "string"
           },
           "tracking_configuration": {
+            "additionalProperties": true,
             "title": "Tracking Configuration",
             "type": "object"
           },
@@ -4702,6 +4773,7 @@
             "title": "Current Item Id"
           },
           "custom_context": {
+            "additionalProperties": true,
             "title": "Custom Context",
             "type": "object"
           },
@@ -4892,6 +4964,7 @@
             "type": "string"
           },
           "tracking_configuration": {
+            "additionalProperties": true,
             "description": "Reserved for a future placement-level tracking override.",
             "title": "Tracking Configuration",
             "type": "object"
@@ -4996,7 +5069,7 @@
         "type": "object"
       },
       "PlacementHealthOut": {
-        "description": "The brief's checklist (\u2713 recommendations requested / \u26a0 add_to_cart not received / \u2717\npurchases not received, ...), as structured data - an MCP tool renders the symbols, this\nendpoint just reports facts, counted over the last `window_hours`.",
+        "description": "The brief's checklist (✓ recommendations requested / ⚠ add_to_cart not received / ✗\npurchases not received, ...), as structured data - an MCP tool renders the symbols, this\nendpoint just reports facts, counted over the last `window_hours`.",
         "properties": {
           "checks": {
             "items": {
@@ -5463,6 +5536,7 @@
           "tracking_configuration": {
             "anyOf": [
               {
+                "additionalProperties": true,
                 "type": "object"
               },
               {
@@ -5598,12 +5672,14 @@
           },
           "sample": {
             "items": {
+              "additionalProperties": true,
               "type": "object"
             },
             "title": "Sample",
             "type": "array"
           },
           "suggested_mapping": {
+            "additionalProperties": true,
             "title": "Suggested Mapping",
             "type": "object"
           }
@@ -5629,6 +5705,7 @@
           },
           "items": {
             "items": {
+              "additionalProperties": true,
               "type": "object"
             },
             "maxItems": 1000,
@@ -6044,7 +6121,7 @@
                 "explanation": {
                   "collaborative_score": 0.96,
                   "content_similarity": 0.91,
-                  "reason": "Hybride : 50% collaboratif + 50% contenu (similaire \u00e0 \u00ab Nike Air Zoom Pegasus 41 \u00bb)"
+                  "reason": "Hybride : 50% collaboratif + 50% contenu (similaire à « Nike Air Zoom Pegasus 41 »)"
                 },
                 "item_id": "SKU-ADIDAS-007",
                 "properties": {
@@ -6143,6 +6220,7 @@
             "type": "string"
           },
           "properties": {
+            "additionalProperties": true,
             "title": "Properties",
             "type": "object"
           },
@@ -6238,6 +6316,7 @@
             "title": "Price"
           },
           "properties": {
+            "additionalProperties": true,
             "title": "Properties",
             "type": "object"
           },
@@ -6861,6 +6940,7 @@
         ],
         "properties": {
           "properties": {
+            "additionalProperties": true,
             "title": "Properties",
             "type": "object"
           },
@@ -6951,6 +7031,7 @@
       "UserImportEntry": {
         "properties": {
           "properties": {
+            "additionalProperties": true,
             "examples": [
               {
                 "age": 34,
@@ -7088,6 +7169,7 @@
         "description": "Body of PUT /users/{user_id} - a schema-free profile. Users are optional enrichment:\nevents with a user_id work without one ever being created.",
         "properties": {
           "properties": {
+            "additionalProperties": true,
             "examples": [
               {
                 "age": 34,
@@ -7169,6 +7251,13 @@
       },
       "ValidationError": {
         "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
           "loc": {
             "items": {
               "anyOf": [
@@ -7313,7 +7402,7 @@
     }
   },
   "info": {
-    "description": "Recommendations for any web application: send your **items** (catalog), your **users** and their **events**, get back a ranked list of items.\n\n### Quick start\n1. `PUT /items/{item_id}` (or `POST /items/import`) - push your catalog, using your own ids.\n2. `POST /events/{event_type}` (or `/events/batch`) - track what visitors do.\n3. Create a **Placement** (`POST /placements` - see the `placements` tag) and call `POST /placements/{slug}/recommend` from then on - the recommended way to ask for recommendations for a given spot on your site. `POST /getRec` (this tag) remains available as the advanced, per-call, no-persistent-config alternative. Either way you get a `recommendation_id`; send it back on the `impression` / `click` / `add_to_cart` / `purchase` events to attribute them.\n\n### Concepts\n- **Ids are your own strings** (`user_123`, `SKU-NIKE-001`, a UUID, `gid://shopify/Product/123456`). Integers are still accepted for backward compatibility and treated as their decimal string.\n- **session_id** identifies an anonymous visitor: no login needed to track or recommend. An event may carry both `user_id` and `session_id`.\n- **placement** is a free-form label of where recommendations appear (`homepage`, `cart`, ...). Not a resource, no list to maintain.\n- **data_product_type** is the catalog namespace (query parameter), used to keep several catalogs of one account apart. It is **optional**: omit it and the account's only catalog is used (`default` for a new account); an account with several catalogs must name one (`422` otherwise).\n- Multi-tenant: every request authenticates via `X-API-Key` to one account whose data is fully isolated.\n- Two-tier keys: the **secret key** (full access, server-side only) and a restricted **public key** (recommendations and event tracking only) safe to embed in client-side JS.\n\n### Under the hood\nTF-IDF + pgvector semantic embeddings for content similarity, implicit ALS for collaborative filtering with model versioning/promotion gating, popularity as the cold-start fallback. `POST /getRec` chooses between them for you; the strategy-specific `GET /getRec/*` endpoints remain for expert use. Legacy Pinecone-based vector endpoints are frozen.\n\n### Errors\nEvery error body is `{\"detail\": ..., \"request_id\": ...}`; the same id is in the `X-Request-ID` response header. Send your own `X-Request-ID` to correlate with your logs.\n\n### Rate limits (enforced at the gateway, per client IP)\n`/getRec*`: 100 req/s (burst 100) \u00b7 `/events*`: 100 req/s (burst 200) \u00b7 catalog & users (`/items*`, `/users*`, `/products*`): 20 req/s (burst 40) \u00b7 admin & account: 5 req/s (burst 10) \u00b7 CSV import: 2 req/s (burst 5) \u00b7 everything else: 20 req/s (burst 10). Exceeding a limit returns `429`. Batch endpoints (`/events/batch`, `/items/import`, `/users/import`) exist to keep server-side traffic well under these.",
+    "description": "Recommendations for any web application: send your **items** (catalog), your **users** and their **events**, get back a ranked list of items.\n\n### Quick start\n1. `PUT /items/{item_id}` (or `POST /items/import`) - push your catalog, using your own ids.\n2. `POST /events/{event_type}` (or `/events/batch`) - track what visitors do.\n3. Create a **Placement** (`POST /placements` - see the `placements` tag) and call `POST /placements/{slug}/recommend` from then on - the recommended way to ask for recommendations for a given spot on your site. `POST /getRec` (this tag) remains available as the advanced, per-call, no-persistent-config alternative. Either way you get a `recommendation_id`; send it back on the `impression` / `click` / `add_to_cart` / `purchase` events to attribute them.\n\n### Concepts\n- **Ids are your own strings** (`user_123`, `SKU-NIKE-001`, a UUID, `gid://shopify/Product/123456`). Integers are still accepted for backward compatibility and treated as their decimal string.\n- **session_id** identifies an anonymous visitor: no login needed to track or recommend. An event may carry both `user_id` and `session_id`.\n- **placement** is a free-form label of where recommendations appear (`homepage`, `cart`, ...). Not a resource, no list to maintain.\n- **data_product_type** is the catalog namespace (query parameter), used to keep several catalogs of one account apart. It is **optional**: omit it and the account's only catalog is used (`default` for a new account); an account with several catalogs must name one (`422` otherwise).\n- Multi-tenant: every request authenticates via `X-API-Key` to one account whose data is fully isolated.\n- Two-tier keys: the **secret key** (full access, server-side only) and a restricted **public key** (recommendations and event tracking only) safe to embed in client-side JS.\n\n### Under the hood\nTF-IDF + pgvector semantic embeddings for content similarity, implicit ALS for collaborative filtering with model versioning/promotion gating, popularity as the cold-start fallback. `POST /getRec` chooses between them for you; the strategy-specific `GET /getRec/*` endpoints remain for expert use. Legacy Pinecone-based vector endpoints are frozen.\n\n### Errors\nEvery error body is `{\"detail\": ..., \"request_id\": ...}`; the same id is in the `X-Request-ID` response header. Send your own `X-Request-ID` to correlate with your logs.\n\n### Rate limits (enforced at the gateway, per client IP)\n`/getRec*`: 100 req/s (burst 100) · `/events*`: 100 req/s (burst 200) · catalog & users (`/items*`, `/users*`, `/products*`): 20 req/s (burst 40) · admin & account: 5 req/s (burst 10) · CSV import: 2 req/s (burst 5) · everything else: 20 req/s (burst 10). Exceeding a limit returns `429`. Batch endpoints (`/events/batch`, `/items/import`, `/users/import`) exist to keep server-side traffic well under these.",
     "title": "LIKYLY Recommendations API",
     "version": "0.2.0"
   },
@@ -9347,6 +9436,103 @@
         "x-required-key": "scope:analytics:read"
       }
     },
+    "/catalog/erase": {
+      "post": {
+        "description": "Erases everything this catalog holds: items, user profiles, **every event** and every\nserved recommendation - for a shop that leaves for good (Shopify's `shop/redact`, a GDPR\nerasure of a whole store). Placements and data sources stay configured. `confirm` must\nrepeat the catalog name. Irreversible. Secret key only.",
+        "operationId": "catalog_erase",
+        "parameters": [
+          {
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "in": "query",
+            "name": "data_product_type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "minLength": 1,
+                  "pattern": "^[a-zA-Z0-9_-]+$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "examples": [
+                "shop"
+              ],
+              "title": "Data Product Type"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CatalogEraseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogErased"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing, invalid or revoked `X-API-Key`."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The public key can't do this (secret key required), or a plan limit was reached."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request is malformed - `detail` lists the offending fields."
+          },
+          "429": {
+            "description": "Rate limit exceeded at the API gateway - retry shortly."
+          }
+        },
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "summary": "Erase a catalog's data",
+        "tags": [
+          "users"
+        ],
+        "x-required-key": "secret"
+      }
+    },
     "/clients/me": {
       "get": {
         "description": "The read-only counterpart of POST /clients/me: returns the workspace (name, key status,\nindexes) but never creates it and never carries a raw key. Safe to call from anywhere in\nthe dashboard - POST /clients/me is not, since the call that provisions the account is the\nonly one that can show the keys. `404` when the account has no workspace yet.",
@@ -9981,7 +10167,7 @@
     },
     "/clients/me/data-sources": {
       "get": {
-        "description": "The catalog connection(s) attached to this workspace - what the dashboard's \"Donn\u00e9es\"\ntab shows, alongside /clients/me/usage's data_source_count/data_source_limit. A read-only\nmirror of GET /data-sources (which needs the secret/developer key, for a coding agent) -\nthis one is Supabase-session-gated instead, for the logged-in dashboard user; both list\nthe same rows, scoped to the same client_id, credentials never included either way.",
+        "description": "The catalog connection(s) attached to this workspace - what the dashboard's \"Données\"\ntab shows, alongside /clients/me/usage's data_source_count/data_source_limit. A read-only\nmirror of GET /data-sources (which needs the secret/developer key, for a coding agent) -\nthis one is Supabase-session-gated instead, for the logged-in dashboard user; both list\nthe same rows, scoped to the same client_id, credentials never included either way.",
         "operationId": "list_my_data_sources",
         "parameters": [
           {
@@ -13250,7 +13436,7 @@
     },
     "/clients/me/placements/{slug}/health": {
       "get": {
-        "description": "The same checklist validate_integration (the MCP tool) reports - whether recommend calls,\nimpressions, clicks and the rest of the funnel actually arrived for this placement, over the\nlast `window_hours`. Structured data here; the MCP tool is what renders it as \u2713/\u26a0/\u2717 for an\nagent to read out.",
+        "description": "The same checklist validate_integration (the MCP tool) reports - whether recommend calls,\nimpressions, clicks and the rest of the funnel actually arrived for this placement, over the\nlast `window_hours`. Structured data here; the MCP tool is what renders it as ✓/⚠/✗ for an\nagent to read out.",
         "operationId": "get_my_placement_health",
         "parameters": [
           {
@@ -16753,8 +16939,8 @@
             "schema": {
               "default": 0.5,
               "description": "Weight of the collaborative signal against content similarity (0 = pure content, 1 = pure collaborative). An expert knob: `POST /getRec` picks a sensible blend for you.",
-              "maximum": 1.0,
-              "minimum": 0.0,
+              "maximum": 1,
+              "minimum": 0,
               "title": "Alpha",
               "type": "number"
             }
@@ -17108,6 +17294,7 @@
                   "type": "null"
                 }
               ],
+              "deprecated": true,
               "description": "Deprecated alias of `viewed_item_ids`.",
               "title": "Viewed Work Ids"
             }
@@ -19474,6 +19661,7 @@
                   "type": "null"
                 }
               ],
+              "deprecated": true,
               "description": "Deprecated: use GET /users/{user_id}.",
               "title": "User Id"
             }
@@ -19493,6 +19681,7 @@
                   "type": "null"
                 }
               ],
+              "deprecated": true,
               "description": "Deprecated alias of `limit`.",
               "title": "Count"
             }
