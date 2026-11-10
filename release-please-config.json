@@ -1,23 +1,161 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
-  "separate-pull-requests": true,
+  "separate-pull-requests": false,
   "include-component-in-tag": true,
   "tag-separator": "-",
   "bump-minor-pre-major": true,
   "bootstrap-sha": "ebbcb56cfbcd9eabe97c36356ee22b4ce48520e1",
+  "changelog-sections": [
+    {
+      "type": "feat",
+      "section": "Features"
+    },
+    {
+      "type": "fix",
+      "section": "Bug Fixes"
+    },
+    {
+      "type": "perf",
+      "section": "Performance Improvements"
+    },
+    {
+      "type": "revert",
+      "section": "Reverts"
+    },
+    {
+      "type": "docs",
+      "section": "Documentation"
+    },
+    {
+      "type": "chore",
+      "section": "Miscellaneous Chores",
+      "hidden": true
+    },
+    {
+      "type": "style",
+      "section": "Styles",
+      "hidden": true
+    },
+    {
+      "type": "refactor",
+      "section": "Code Refactoring",
+      "hidden": true
+    },
+    {
+      "type": "test",
+      "section": "Tests",
+      "hidden": true
+    },
+    {
+      "type": "build",
+      "section": "Build System",
+      "hidden": true
+    },
+    {
+      "type": "ci",
+      "section": "Continuous Integration",
+      "hidden": true
+    }
+  ],
   "packages": {
-    "typescript": { "release-type": "node", "component": "typescript", "package-name": "@likyly/sdk", "extra-files": ["src/version.ts"] },
-    "react":      { "release-type": "node", "component": "react", "package-name": "@likyly/react" },
-    "mcp":        { "release-type": "node", "component": "mcp", "package-name": "@likyly/mcp-server", "extra-files": ["src/tools.ts", "src/client.ts"] },
-    "python":     { "release-type": "simple", "component": "python", "package-name": "likyly", "extra-files": ["src/likyly/_version.py"] },
-    "php":        { "release-type": "simple", "component": "php", "package-name": "likyly/sdk", "extra-files": ["src/Version.php"] },
-    "laravel":    { "release-type": "simple", "component": "laravel", "package-name": "likyly/laravel" },
-    "dotnet":     { "release-type": "simple", "component": "dotnet", "package-name": "Likyly", "extra-files": ["src/Likyly/Likyly.csproj", "src/Likyly/LikylyClient.cs"] },
-    "java":       { "release-type": "simple", "component": "java", "package-name": "com.likyly:likyly-sdk", "extra-files": ["pom.xml", "src/main/java/com/likyly/Likyly.java"] },
-    "go":         { "release-type": "simple", "component": "go", "package-name": "github.com/likyly/likyly-go", "extra-files": ["version.go"] },
-    "ruby":       { "release-type": "simple", "component": "ruby", "package-name": "likyly", "extra-files": ["lib/likyly/version.rb"] },
-    "rust":       { "release-type": "rust", "component": "rust", "package-name": "likyly" },
-    "swift":      { "release-type": "simple", "component": "swift", "package-name": "github.com/likyly/likyly-swift", "extra-files": ["Sources/Likyly/Likyly.swift"] },
-    "android":    { "release-type": "simple", "component": "android", "package-name": "com.likyly:likyly-android", "extra-files": ["build.gradle.kts", "src/main/kotlin/com/likyly/Likyly.kt"] }
+    "typescript": {
+      "release-type": "node",
+      "component": "typescript",
+      "package-name": "@likyly/sdk",
+      "extra-files": [
+        "src/version.ts"
+      ]
+    },
+    "react": {
+      "release-type": "node",
+      "component": "react",
+      "package-name": "@likyly/react"
+    },
+    "mcp": {
+      "release-type": "node",
+      "component": "mcp",
+      "package-name": "@likyly/mcp-server",
+      "extra-files": [
+        "src/tools.ts",
+        "src/client.ts"
+      ]
+    },
+    "python": {
+      "release-type": "simple",
+      "component": "python",
+      "package-name": "likyly",
+      "extra-files": [
+        "src/likyly/_version.py"
+      ]
+    },
+    "php": {
+      "release-type": "simple",
+      "component": "php",
+      "package-name": "likyly/sdk",
+      "extra-files": [
+        "src/Version.php"
+      ]
+    },
+    "laravel": {
+      "release-type": "simple",
+      "component": "laravel",
+      "package-name": "likyly/laravel"
+    },
+    "dotnet": {
+      "release-type": "simple",
+      "component": "dotnet",
+      "package-name": "Likyly",
+      "extra-files": [
+        "src/Likyly/Likyly.csproj",
+        "src/Likyly/LikylyClient.cs"
+      ]
+    },
+    "java": {
+      "release-type": "simple",
+      "component": "java",
+      "package-name": "com.likyly:likyly-sdk",
+      "extra-files": [
+        "pom.xml",
+        "src/main/java/com/likyly/Likyly.java"
+      ]
+    },
+    "go": {
+      "release-type": "simple",
+      "component": "go",
+      "package-name": "github.com/likyly/likyly-go",
+      "extra-files": [
+        "version.go"
+      ]
+    },
+    "ruby": {
+      "release-type": "simple",
+      "component": "ruby",
+      "package-name": "likyly",
+      "extra-files": [
+        "lib/likyly/version.rb"
+      ]
+    },
+    "rust": {
+      "release-type": "rust",
+      "component": "rust",
+      "package-name": "likyly"
+    },
+    "swift": {
+      "release-type": "simple",
+      "component": "swift",
+      "package-name": "github.com/likyly/likyly-swift",
+      "extra-files": [
+        "Sources/Likyly/Likyly.swift"
+      ]
+    },
+    "android": {
+      "release-type": "simple",
+      "component": "android",
+      "package-name": "com.likyly:likyly-android",
+      "extra-files": [
+        "build.gradle.kts",
+        "src/main/kotlin/com/likyly/Likyly.kt"
+      ]
+    }
   }
 }
