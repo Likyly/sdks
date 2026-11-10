@@ -5,7 +5,7 @@
 
   <groupId>com.likyly</groupId>
   <artifactId>likyly-sdk</artifactId>
-  <version>1.0.0</version><!-- x-release-please-version -->
+  <version>1.0.1</version><!-- x-release-please-version -->
   <packaging>jar</packaging>
   <name>LIKYLY SDK</name>
   <description>Product recommendations for your site ("You may also like", "Recommended for you"), learned from what your visitors do. Official LIKYLY client for Java.</description>

@@ -1,6 +1,6 @@
 {
   "name": "@likyly/sdk",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Product recommendations for your site (\"You may also like\", \"Recommended for you\"), learned from what your visitors do. Official LIKYLY client for JavaScript and TypeScript: browser, Node.js, edge.",
   "keywords": [
     "likyly",

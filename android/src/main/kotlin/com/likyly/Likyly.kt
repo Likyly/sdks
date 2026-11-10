@@ -3,7 +3,7 @@ package com.likyly
 import kotlinx.coroutines.delay
 
 /** The SDK version, sent in the User-Agent. */
-public const val LIKYLY_VERSION: String = "1.0.0" // x-release-please-version
+public const val LIKYLY_VERSION: String = "1.0.1" // x-release-please-version
 
 /** The LIKYLY API. */
 public const val DEFAULT_BASE_URL: String = "https://api.likyly.com"

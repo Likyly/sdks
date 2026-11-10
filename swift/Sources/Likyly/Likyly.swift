@@ -1,7 +1,7 @@
 import Foundation
 
 /// The SDK version, sent in the User-Agent header.
-public let likylyVersion = "1.0.0" // x-release-please-version
+public let likylyVersion = "1.0.1" // x-release-please-version
 
 /// Client options.
 public struct LikylyOptions: Sendable {
