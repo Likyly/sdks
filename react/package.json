@@ -1,6 +1,6 @@
 {
   "name": "@likyly/react",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "LIKYLY product recommendations for React and Next.js: a ready-made component and a hook, with impressions and clicks tracked for you.",
   "keywords": [
     "likyly",
