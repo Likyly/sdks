@@ -3,6 +3,8 @@
 Show LIKYLY recommendations in a React app, with the impressions and clicks LIKYLY learns from
 tracked for you.
 
+![Two LIKYLY recommendation blocks on a product page: "You may also like" (similar products) and "Customers also liked" (products bought by the same visitors)](https://raw.githubusercontent.com/Likyly/sdks/main/docs/images/recommendations.jpg)
+
 The fastest way to set it up is the wizard, which installs this package, writes your public key
 and connects your AI coding assistant:
 

@@ -4,6 +4,8 @@ Product recommendations in a Laravel app ("You may also like", "Trending now", "
 together"), learned from what your visitors do. Your Eloquent catalog stays in sync by itself, a Blade
 component shows the blocks, and impressions and clicks are tracked for you.
 
+![Two LIKYLY recommendation blocks on a product page: "You may also like" (similar products) and "Customers also liked" (products bought by the same visitors)](https://raw.githubusercontent.com/Likyly/sdks/main/docs/images/recommendations.jpg)
+
 ```sh
 composer require likyly/laravel
 php artisan likyly:install

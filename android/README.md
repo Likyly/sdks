@@ -3,6 +3,8 @@
 The official Android / Kotlin client for LIKYLY: show recommendations in your app and record what visitors
 do, so LIKYLY learns from it.
 
+![Two LIKYLY recommendation blocks on a product page: "You may also like" (similar products) and "Customers also liked" (products bought by the same visitors)](https://raw.githubusercontent.com/Likyly/sdks/main/docs/images/recommendations.jpg)
+
 - Pure Kotlin, Java 8 bytecode: works in any Android app (minSdk 21+) and on any JVM. No Android Gradle Plugin
   needed to build it.
 - One dependency, `kotlinx-coroutines-core`, which your app almost certainly has already. No JSON library, no

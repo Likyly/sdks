@@ -4,6 +4,8 @@
 "You may also like" on a product page, "Recommended for you" on the home page, "Complete your order" in
 the cart. It learns from what visitors actually do, and gets better as they do it.
 
+![Two LIKYLY recommendation blocks on a product page: "You may also like" (similar products) and "Customers also liked" (products bought by the same visitors)](https://raw.githubusercontent.com/Likyly/sdks/main/docs/images/recommendations.jpg)
+
 This is the official Go client for the LIKYLY API. Your code uses it to:
 
 1. **Send your catalog**: the products, articles or films you want recommended.

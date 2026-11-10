@@ -3,6 +3,8 @@
 The LIKYLY SDK for apps on Apple platforms: iOS / iPadOS 15+, macOS 12+, tvOS 15+, watchOS 8+.
 Swift 5.9+ (Xcode 15+), `async`/`await`, no dependency.
 
+![Two LIKYLY recommendation blocks on a product page: "You may also like" (similar products) and "Customers also liked" (products bought by the same visitors)](https://raw.githubusercontent.com/Likyly/sdks/main/docs/images/recommendations.jpg)
+
 It runs on the visitor's device, so it covers what the **public key** allows:
 
 | | |
