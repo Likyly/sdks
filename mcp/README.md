@@ -1,6 +1,7 @@
 # @likyly/mcp-server
 
-Lets your AI coding assistant (Claude Code, Cursor, VS Code, Codex, Claude Desktop…) set up
+Lets your AI coding assistant (Claude Code, Cursor, VS Code, Codex, Antigravity, Mistral Vibe, Kiro,
+Junie, Claude Desktop…) set up
 [LIKYLY](https://likyly.com) recommendations on your site for you.
 
 [LIKYLY](https://likyly.com) shows each visitor the products they are most likely to want ("You may
@@ -58,11 +59,16 @@ browser-facing use case) - a public key:
 
 **The easy way: `npx @likyly/wizard`** (or `npx @likyly/wizard mcp add`). It signs you in on
 likyly.com, gets a developer key, stores it in `.likyly/credentials.env` (a folder that ignores
-itself in git, readable by you only) and writes `.mcp.json` / `.cursor/mcp.json` /
-`.vscode/mcp.json` **without any key in them**: they reference `LIKYLY_DEVELOPER_KEY`, and when
-that variable is not exported the server reads the key from the credentials file
-(`LIKYLY_ENV_FILE` to point elsewhere; by default `.likyly/credentials.env` in the folder it
-starts in).
+itself in git, readable by you only) and writes each assistant's project config (`.mcp.json`,
+`.cursor/mcp.json`, `.vscode/mcp.json`, `.codex/config.toml`, `.agents/mcp_config.json`,
+`.vibe/config.toml`, `.kiro/settings/mcp.json`, `.junie/mcp/mcp.json`) **without any key in
+them**, plus the LIKYLY skill. The server takes the key from `LIKYLY_API_KEY` or
+`LIKYLY_DEVELOPER_KEY` when exported, otherwise from the credentials file: `LIKYLY_ENV_FILE`, or
+the nearest `.likyly/credentials.env` from the folder it starts in, upwards.
+
+The server also sends its own instructions to every client when it connects (the setup process:
+catalog, placement, integration, verification), so an assistant without the LIKYLY skill
+follows the same steps.
 
 **By hand, Claude Code / Codex, with data-source admin tools** - first create a developer key (once,
 from a server-side shell - never from a browser):

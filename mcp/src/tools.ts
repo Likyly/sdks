@@ -4,6 +4,7 @@ import { createLikylyAdminTools } from "./admin-tools.js";
 import { createLikylyPlacementTools } from "./placement-tools.js";
 import { createLikylyRecipeTools } from "./recipe-tools.js";
 import { createLikylyValidatorTools } from "./validator-tools.js";
+import { INSTRUCTIONS } from "./instructions.js";
 import type { LikylyClient } from "./client.js";
 
 // Shared tool surface: used by the local stdio server (index.ts) and the hosted HTTP
@@ -17,7 +18,7 @@ import type { LikylyClient } from "./client.js";
 // capabilities up front) keeps this server simple and lets the API stay the single source of
 // truth for what a given key can do.
 export function createLikylyServer(client: LikylyClient, defaultProductType?: string): McpServer {
-  const server = new McpServer({ name: "likyly-recsys", version: "0.4.3" }); // x-release-please-version
+  const server = new McpServer({ name: "likyly-recsys", version: "0.4.3" }, { instructions: INSTRUCTIONS }); // x-release-please-version
 
   const productType = defaultProductType
     ? z.string().optional().describe(`Catalog namespace. Defaults to "${defaultProductType}" if omitted.`)

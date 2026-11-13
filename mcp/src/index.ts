@@ -3,26 +3,43 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { LikylyClient } from "./client.js";
 import { createLikylyServer } from "./tools.js";
 
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+
+const CREDENTIALS = join(".likyly", "credentials.env");
+
+/** LIKYLY_ENV_FILE, else the nearest .likyly/credentials.env from the working directory up. */
+function credentialsFile(): string | undefined {
+  if (process.env.LIKYLY_ENV_FILE && !process.env.LIKYLY_ENV_FILE.startsWith("${")) return resolve(process.env.LIKYLY_ENV_FILE);
+  for (let dir = process.cwd(); ; dir = dirname(dir)) {
+    const file = join(dir, CREDENTIALS);
+    if (existsSync(file)) return file;
+    if (dirname(dir) === dir) return undefined;
+  }
+}
 
 /**
- * The key, from the environment or else from the project's credentials file written by
- * `npx @likyly/wizard` (`.likyly/credentials.env`, gitignored): editors expand
- * `${LIKYLY_DEVELOPER_KEY}` to an empty string when it is not exported, so an empty or
+ * The key, from the environment (LIKYLY_API_KEY, or LIKYLY_DEVELOPER_KEY as exported for the
+ * wizard's configs) or else from the project's credentials file written by
+ * `npx @likyly/wizard` (`.likyly/credentials.env`, gitignored). Editors expand
+ * `${LIKYLY_DEVELOPER_KEY}` to an empty string when it is not exported, and some assistants
+ * (Codex, Mistral Vibe, Kiro, Junie, Antigravity) get no key reference at all, so an empty or
  * unexpanded value falls through to the file.
  */
 function resolveApiKey(): string | undefined {
-  const fromEnv = process.env.LIKYLY_API_KEY?.trim();
-  if (fromEnv && !fromEnv.startsWith("${")) return fromEnv;
-  const file = resolve(process.env.LIKYLY_ENV_FILE || ".likyly/credentials.env");
+  for (const name of ["LIKYLY_API_KEY", "LIKYLY_DEVELOPER_KEY"]) {
+    const value = process.env[name]?.trim();
+    if (value && !value.startsWith("${")) return value;
+  }
+  const file = credentialsFile();
+  if (!file) return undefined;
   try {
     for (const line of readFileSync(file, "utf8").split(/\r?\n/)) {
       const m = line.match(/^\s*(LIKYLY_DEVELOPER_KEY|LIKYLY_API_KEY)\s*=\s*["']?([^"'\s#]+)/);
       if (m) return m[2];
     }
   } catch {
-    // No credentials file: the error below explains how to provide a key.
+    // Unreadable credentials file: the error below explains how to provide a key.
   }
   return undefined;
 }
