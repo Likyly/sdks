@@ -1,6 +1,6 @@
 {
   "name": "@likyly/mcp-server",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Lets your AI coding assistant (Claude Code, Cursor, VS Code, Codex, Antigravity, Mistral Vibe, Kiro, Junie) set up LIKYLY product recommendations: connect your catalog, create placements, integrate and verify.",
   "keywords": [
     "likyly",

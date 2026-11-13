@@ -10,7 +10,7 @@
 // request shape as typescript/src/client.ts, trimmed to just this tool surface.
 
 // Sent to the LIKYLY API with every call, so the team can see which workspaces use the MCP server.
-const USER_AGENT = "likyly-mcp/0.5.0"; // x-release-please-version
+const USER_AGENT = "likyly-mcp/0.6.0"; // x-release-please-version
 
 export interface LikylyClientOptions {
   baseUrl: string;
