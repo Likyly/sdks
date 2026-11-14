@@ -44,7 +44,7 @@ export function createLikylyAdminTools(server: McpServer, client: LikylyClient):
 
   server.tool(
     "update_data_source",
-    "Change an existing data source instead of creating another one (the Free plan allows a single source): its name, `config` (merged shallowly: send only the keys that change, e.g. a new base_url), `credentials` (fully replaced) or `product_type`. Use it when a source points at an old URL or catalog. Run test_data_source afterwards.",
+    "Change an existing data source instead of creating another one (the Free plan allows a single source): its name, `config` (merged shallowly: send only the keys that change, e.g. a new base_url), `credentials` (fully replaced) or `product_type` (the catalog it writes into from the next sync on - e.g. the existing catalog a plan-limit error names, to stay within the plan; the next full sync sends every item there). Use it when a source points at an old URL or catalog. Run test_data_source afterwards.",
     {
       data_source_id: dataSourceId,
       name: z.string().min(1).max(200).optional(),

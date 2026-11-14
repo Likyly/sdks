@@ -91,12 +91,12 @@ export function createLikylyPlacementTools(server: McpServer, client: LikylyClie
 
   server.tool(
     "update_placement",
-    "Partial update of an existing placement - only the fields given are changed. Sending `signals`/`filters`/`business_rules` at all replaces that whole sub-object (not a deep merge). Use this to disable/re-enable too (`enabled: true|false`) - or delete_or_disable_placement's default mode, which is the same thing plus a clearer name for it.",
+    "Partial update of an existing placement - only the fields given are changed. Sending `signals`/`filters`/`business_rules` at all replaces that whole sub-object (not a deep merge). Use this to disable/re-enable too (`enabled: true|false`) - or delete_or_disable_placement's default mode, which is the same thing plus a clearer name for it. Reuse an existing placement this way rather than creating another one: `product_type` moves it to another catalog of the account (an unknown catalog is a 422 naming those it has).",
     {
       slug,
       name: z.string().optional(),
       context_type: contextType.optional(),
-      product_type: z.string().optional(),
+      product_type: z.string().optional().describe("Another catalog of this account to recommend from."),
       limit: z.number().int().min(1).max(100).optional(),
       audience: z.enum(["all", "anonymous", "identified"]).optional(),
       strategy: strategy.optional(),
