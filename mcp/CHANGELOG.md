@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/Likyly/sdks/compare/mcp-v0.6.0...mcp-v0.7.0) (2026-11-14)
+
+
+### Features
+
+* **mcp:** reuse an existing catalog or placement before suggesting Pro ([099c528](https://github.com/Likyly/sdks/commit/099c528a98b325b438952ff62631649e0a1fc9da))
+
 ## [0.6.0](https://github.com/Likyly/sdks/compare/mcp-v0.5.0...mcp-v0.6.0) (2026-11-13)
 
 
