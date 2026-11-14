@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/Likyly/sdks/compare/mcp-v0.5.0...mcp-v0.6.0) (2026-11-13)
+
+
+### Features
+
+* **mcp:** Shopify credentials go through npx @likyly/wizard shopify, never the conversation ([01bfd2c](https://github.com/Likyly/sdks/commit/01bfd2cd75401182fb970dbc1d355921d9c9edc3))
+
 ## [0.5.0](https://github.com/Likyly/sdks/compare/mcp-v0.4.3...mcp-v0.5.0) (2026-11-13)
 
 
