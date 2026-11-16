@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/Likyly/sdks/compare/mcp-v0.9.0...mcp-v0.10.0) (2026-11-16)
+
+
+### Features
+
+* **mcp:** Magento - the wizard creates the read-only Integration and enables the module; the assistant flushes the cache with .likyly/bin-magento and never runs likyly:integration itself ([89e984a](https://github.com/Likyly/sdks/commit/89e984ac72203ce7e031cd0882ee2b6408bb7630))
+
 ## [0.9.0](https://github.com/Likyly/sdks/compare/mcp-v0.8.0...mcp-v0.9.0) (2026-11-16)
 
 
