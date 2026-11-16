@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/Likyly/sdks/compare/mcp-v0.7.0...mcp-v0.8.0) (2026-11-16)
+
+
+### Features
+
+* **mcp:** offer the site's preview (yes/no) and launch it through npx @likyly/wizard preview, never shopify theme dev directly ([9f1195b](https://github.com/Likyly/sdks/commit/9f1195b0e15bf0140dcce390db04f4fc69125a8c))
+
 ## [0.7.0](https://github.com/Likyly/sdks/compare/mcp-v0.6.0...mcp-v0.7.0) (2026-11-14)
 
 
