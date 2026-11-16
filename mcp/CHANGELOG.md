@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/Likyly/sdks/compare/mcp-v0.8.0...mcp-v0.9.0) (2026-11-16)
+
+
+### Features
+
+* **mcp:** Magento sources - the magento type, and its credentials never collected in the conversation (npx @likyly/wizard magento) ([cff3cc2](https://github.com/Likyly/sdks/commit/cff3cc20e10a53c554e3e35a6836034e96e2ed7b))
+
 ## [0.8.0](https://github.com/Likyly/sdks/compare/mcp-v0.7.0...mcp-v0.8.0) (2026-11-16)
 
 
