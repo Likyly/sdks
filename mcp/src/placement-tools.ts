@@ -42,6 +42,7 @@ export function createLikylyPlacementTools(server: McpServer, client: LikylyClie
   });
   const businessRules = z.object({
     exclude_current_item: z.boolean().optional().describe("Default true - never recommend the item the visitor is already looking at back to itself."),
+    unknown_current_item: z.enum(["empty", "popular"]).optional().describe("Default 'empty' - on a product page whose product is not in the catalog (not synced, beyond the plan's product limit), return nothing (strategy_used 'none') instead of unrelated popular items; 'popular' shows those."),
     exclude_cart_items: z.boolean().optional().describe("Never recommend an item already in the cart - use for a cart cross-sell placement."),
   });
   const context = z.record(z.unknown()).describe(

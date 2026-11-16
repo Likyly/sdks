@@ -1063,11 +1063,17 @@
         "type": "object"
       },
       "AnalyticsDetailOut": {
-        "description": "Pro-only - the depth Free's summary doesn't include.",
+        "description": "Pro-only - the depth Free's summary doesn't include. `placement` (when given) narrows\ntotals, previous and timeseries; by_placement and top_items always cover every placement.",
         "properties": {
+          "admin_view": {
+            "default": false,
+            "description": "True when the workspace's plan does not include this and it is shown because the signed-in user is a LIKYLY admin.",
+            "title": "Admin View",
+            "type": "boolean"
+          },
           "by_placement": {
             "items": {
-              "$ref": "#/components/schemas/AnalyticsPlacementRow"
+              "$ref": "#/components/schemas/AnalyticsDetailPlacementRow"
             },
             "title": "By Placement",
             "type": "array"
@@ -1075,6 +1081,20 @@
           "end": {
             "title": "End",
             "type": "string"
+          },
+          "placement": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Placement"
+          },
+          "previous": {
+            "$ref": "#/components/schemas/AnalyticsPreviousTotals"
           },
           "revenue": {
             "$ref": "#/components/schemas/AnalyticsRevenue"
@@ -1085,20 +1105,119 @@
           },
           "timeseries": {
             "items": {
-              "$ref": "#/components/schemas/AnalyticsTimeseriesPoint"
+              "$ref": "#/components/schemas/AnalyticsDetailTimeseriesPoint"
             },
             "title": "Timeseries",
             "type": "array"
+          },
+          "top_items": {
+            "items": {
+              "$ref": "#/components/schemas/AnalyticsTopItem"
+            },
+            "title": "Top Items",
+            "type": "array"
+          },
+          "totals": {
+            "$ref": "#/components/schemas/AnalyticsTotals"
           }
         },
         "required": [
           "start",
           "end",
+          "totals",
+          "previous",
           "timeseries",
           "by_placement",
-          "revenue"
+          "revenue",
+          "top_items"
         ],
         "title": "AnalyticsDetailOut",
+        "type": "object"
+      },
+      "AnalyticsDetailPlacementRow": {
+        "properties": {
+          "clicks": {
+            "title": "Clicks",
+            "type": "integer"
+          },
+          "ctr": {
+            "title": "Ctr",
+            "type": "number"
+          },
+          "impressions": {
+            "title": "Impressions",
+            "type": "integer"
+          },
+          "placement": {
+            "title": "Placement",
+            "type": "string"
+          },
+          "purchases": {
+            "default": 0,
+            "title": "Purchases",
+            "type": "integer"
+          },
+          "recommendations_served": {
+            "title": "Recommendations Served",
+            "type": "integer"
+          },
+          "revenue": {
+            "default": 0.0,
+            "title": "Revenue",
+            "type": "number"
+          }
+        },
+        "required": [
+          "placement",
+          "recommendations_served",
+          "impressions",
+          "clicks",
+          "ctr"
+        ],
+        "title": "AnalyticsDetailPlacementRow",
+        "type": "object"
+      },
+      "AnalyticsDetailTimeseriesPoint": {
+        "properties": {
+          "clicks": {
+            "title": "Clicks",
+            "type": "integer"
+          },
+          "ctr": {
+            "title": "Ctr",
+            "type": "number"
+          },
+          "date": {
+            "title": "Date",
+            "type": "string"
+          },
+          "impressions": {
+            "title": "Impressions",
+            "type": "integer"
+          },
+          "purchases": {
+            "default": 0,
+            "title": "Purchases",
+            "type": "integer"
+          },
+          "recommendations_served": {
+            "title": "Recommendations Served",
+            "type": "integer"
+          },
+          "revenue": {
+            "default": 0.0,
+            "title": "Revenue",
+            "type": "number"
+          }
+        },
+        "required": [
+          "date",
+          "recommendations_served",
+          "impressions",
+          "clicks",
+          "ctr"
+        ],
+        "title": "AnalyticsDetailTimeseriesPoint",
         "type": "object"
       },
       "AnalyticsItemsOut": {
@@ -1373,39 +1492,6 @@
         "title": "AnalyticsPlacementPerformanceRow",
         "type": "object"
       },
-      "AnalyticsPlacementRow": {
-        "properties": {
-          "clicks": {
-            "title": "Clicks",
-            "type": "integer"
-          },
-          "ctr": {
-            "title": "Ctr",
-            "type": "number"
-          },
-          "impressions": {
-            "title": "Impressions",
-            "type": "integer"
-          },
-          "placement": {
-            "title": "Placement",
-            "type": "string"
-          },
-          "recommendations_served": {
-            "title": "Recommendations Served",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "placement",
-          "recommendations_served",
-          "impressions",
-          "clicks",
-          "ctr"
-        ],
-        "title": "AnalyticsPlacementRow",
-        "type": "object"
-      },
       "AnalyticsPlacementsOut": {
         "description": "Per-placement breakdown - available on every plan.",
         "properties": {
@@ -1518,6 +1604,55 @@
           "upgrade_url"
         ],
         "title": "AnalyticsPlanOut",
+        "type": "object"
+      },
+      "AnalyticsPreviousTotals": {
+        "description": "The same totals over the period just before, of the same length.",
+        "properties": {
+          "clicks": {
+            "title": "Clicks",
+            "type": "integer"
+          },
+          "ctr": {
+            "title": "Ctr",
+            "type": "number"
+          },
+          "end": {
+            "title": "End",
+            "type": "string"
+          },
+          "impressions": {
+            "title": "Impressions",
+            "type": "integer"
+          },
+          "purchases": {
+            "title": "Purchases",
+            "type": "integer"
+          },
+          "recommendations_served": {
+            "title": "Recommendations Served",
+            "type": "integer"
+          },
+          "revenue": {
+            "title": "Revenue",
+            "type": "number"
+          },
+          "start": {
+            "title": "Start",
+            "type": "string"
+          }
+        },
+        "required": [
+          "recommendations_served",
+          "impressions",
+          "clicks",
+          "ctr",
+          "purchases",
+          "revenue",
+          "start",
+          "end"
+        ],
+        "title": "AnalyticsPreviousTotals",
         "type": "object"
       },
       "AnalyticsRevenue": {
@@ -1686,6 +1821,45 @@
           "revenue"
         ],
         "title": "AnalyticsTopItem",
+        "type": "object"
+      },
+      "AnalyticsTotals": {
+        "description": "Totals over a window, with the purchases and revenue attributed to recommendations.",
+        "properties": {
+          "clicks": {
+            "title": "Clicks",
+            "type": "integer"
+          },
+          "ctr": {
+            "title": "Ctr",
+            "type": "number"
+          },
+          "impressions": {
+            "title": "Impressions",
+            "type": "integer"
+          },
+          "purchases": {
+            "title": "Purchases",
+            "type": "integer"
+          },
+          "recommendations_served": {
+            "title": "Recommendations Served",
+            "type": "integer"
+          },
+          "revenue": {
+            "title": "Revenue",
+            "type": "number"
+          }
+        },
+        "required": [
+          "recommendations_served",
+          "impressions",
+          "clicks",
+          "ctr",
+          "purchases",
+          "revenue"
+        ],
+        "title": "AnalyticsTotals",
         "type": "object"
       },
       "BatchItemError": {
@@ -2317,6 +2491,38 @@
         "title": "ClientUsageSummary",
         "type": "object"
       },
+      "ConnectionTestRequest": {
+        "properties": {
+          "config": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Config keys to try on top of the stored config (merged shallowly). Nothing is saved.",
+            "title": "Config"
+          },
+          "credentials": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Candidate credentials to try instead of the stored ones. Nothing is saved: PATCH the source once the test passes.",
+            "title": "Credentials"
+          }
+        },
+        "title": "ConnectionTestRequest",
+        "type": "object"
+      },
       "ConnectionTestResultOut": {
         "properties": {
           "detail": {
@@ -2744,6 +2950,21 @@
               }
             ],
             "title": "Name"
+          },
+          "product_type": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "pattern": "^[a-zA-Z0-9_-]+$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Write into another catalog from the next sync on (an existing one, or a new one if the plan has room). The items already written stay in the old catalog.",
+            "title": "Product Type"
           },
           "schedule": {
             "anyOf": [
@@ -4405,6 +4626,11 @@
             "title": "Auto Retrain Skipped Today",
             "type": "boolean"
           },
+          "auto_retrain_threshold": {
+            "default": 50,
+            "title": "Auto Retrain Threshold",
+            "type": "integer"
+          },
           "auto_retrains_today": {
             "title": "Auto Retrains Today",
             "type": "integer"
@@ -4426,6 +4652,11 @@
           },
           "manual_trainings_today": {
             "title": "Manual Trainings Today",
+            "type": "integer"
+          },
+          "new_interactions_since_training": {
+            "default": 0,
+            "title": "New Interactions Since Training",
             "type": "integer"
           }
         },
@@ -4690,6 +4921,16 @@
             "description": "Never recommend the item named in context.current_item_id back to itself.",
             "title": "Exclude Current Item",
             "type": "boolean"
+          },
+          "unknown_current_item": {
+            "default": "empty",
+            "description": "On a product page (context_type product_page, or current_item_id required), when context.current_item_id is not in the catalog (not synced yet, refused by the plan's product limit, another catalog's id): 'empty' (default) returns no items (strategy_used 'none') rather than the most popular items, unrelated to the page; 'popular' shows those.",
+            "enum": [
+              "empty",
+              "popular"
+            ],
+            "title": "Unknown Current Item",
+            "type": "string"
           }
         },
         "title": "PlacementBusinessRules",
@@ -6186,7 +6427,8 @@
           "collaborative",
           "session",
           "popular",
-          "content_session"
+          "content_session",
+          "none"
         ],
         "title": "RecommendationStrategy",
         "type": "string"
@@ -6460,6 +6702,151 @@
           "user_id"
         ],
         "title": "SimilarUserPublic",
+        "type": "object"
+      },
+      "SitePublicKey": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "key_hint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Non-secret preview, e.g. `pk_Ab3x…9QpL`.",
+            "title": "Key Hint"
+          },
+          "last_used_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Used At"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "revoked_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revoked At"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "created_at"
+        ],
+        "title": "SitePublicKey",
+        "type": "object"
+      },
+      "SitePublicKeyCreate": {
+        "properties": {
+          "name": {
+            "description": "Which site or project uses it - shown in the console.",
+            "examples": [
+              "shop.example.com"
+            ],
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "SitePublicKeyCreate",
+        "type": "object"
+      },
+      "SitePublicKeyCreated": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "key_hint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Non-secret preview, e.g. `pk_Ab3x…9QpL`.",
+            "title": "Key Hint"
+          },
+          "last_used_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Used At"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "public_key": {
+            "description": "Shown once - store it now, it can't be retrieved again. Public: safe in browser code.",
+            "title": "Public Key",
+            "type": "string"
+          },
+          "revoked_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revoked At"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "created_at",
+          "public_key"
+        ],
+        "title": "SitePublicKeyCreated",
         "type": "object"
       },
       "SourceTypeOut": {
@@ -9442,7 +9829,7 @@
         "operationId": "catalog_erase",
         "parameters": [
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -9458,7 +9845,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -9889,7 +10276,7 @@
     },
     "/clients/me/analytics/detail": {
       "get": {
-        "description": "The depth behind the summary - a day-by-day trend, a per-placement breakdown, and\nrevenue attributed to a recommendation (purchases that carry a recommendation_id).\nPro only: 403 on Free, same plan_limit_message wording as every other gated feature.",
+        "description": "The depth behind the summary - totals with attributed purchases and revenue, the same\ntotals over the period just before (same length) to compare, a day-by-day trend, a\nper-placement breakdown with revenue, and the items recommendations worked best on.\nRevenue = purchases that carry a recommendation_id. Pro only: 403 on Free, same\nplan_limit_message wording as every other gated feature - except for a LIKYLY admin, who\ngets the real figures with `admin_view: true` (see _analytics_plan).",
         "operationId": "get_my_analytics_detail",
         "parameters": [
           {
@@ -9928,6 +10315,24 @@
               ],
               "description": "Inclusive end date (YYYY-MM-DD). Defaults to today.",
               "title": "End"
+            }
+          },
+          {
+            "description": "Only this placement (slug) for the totals, the comparison and the trend. The by-placement breakdown and the top items always cover every placement.",
+            "in": "query",
+            "name": "placement",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Only this placement (slug) for the totals, the comparison and the trend. The by-placement breakdown and the top items always cover every placement.",
+              "title": "Placement"
             }
           },
           {
@@ -10025,7 +10430,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "Recommendation performance - trend, by placement, revenue",
+        "summary": "Recommendation performance - trend, comparison, by placement, revenue, top items",
         "tags": [
           "selfServiceClient"
         ]
@@ -10033,7 +10438,7 @@
     },
     "/clients/me/analytics/summary": {
       "get": {
-        "description": "Recommendations served, impressions, clicks and CTR - the \"Performance\" page's summary\ncards, always available on any plan. The [start, end] range is server-clamped to this\nworkspace's plan (Free: 7-day span, Pro: 90) regardless of what was asked for - never trust\nthe client's requested range beyond the plan's own cap, same principle as every other limit\nhere.",
+        "description": "Recommendations served, impressions, clicks and CTR - the \"Performance\" page's summary\ncards, always available on any plan. The [start, end] range is server-clamped to this\nworkspace's plan (Free: 7-day span, Pro: 90) regardless of what was asked for - never trust\nthe client's requested range beyond the plan's own cap, same principle as every other limit\nhere. A LIKYLY admin gets Pro's window (see _analytics_plan).",
         "operationId": "get_my_analytics_summary",
         "parameters": [
           {
@@ -11650,6 +12055,16 @@
             },
             "description": "The referenced resource does not exist for this account."
           },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not possible in the current state - `detail` says what is missing (e.g. no model to retrain yet)."
+          },
           "422": {
             "content": {
               "application/json": {
@@ -11669,7 +12084,7 @@
             "bearerAuth": []
           }
         ],
-        "summary": "Train my model",
+        "summary": "Retrain my model",
         "tags": [
           "selfServiceClient"
         ]
@@ -13746,6 +14161,325 @@
         ]
       }
     },
+    "/clients/me/public-keys": {
+      "get": {
+        "description": "Active keys first, then revoked ones. Never the raw value - only its creation shows it.",
+        "operationId": "list_my_site_public_keys",
+        "parameters": [
+          {
+            "description": "Which of this account's workspaces this call is about. Omitted: the primary (oldest) one.",
+            "in": "header",
+            "name": "X-Workspace-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Which of this account's workspaces this call is about. Omitted: the primary (oldest) one.",
+              "title": "X-Workspace-Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SitePublicKey"
+                  },
+                  "title": "Response List My Site Public Keys",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing, invalid or revoked `X-API-Key`."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The referenced resource does not exist for this account."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "description": "Rate limit exceeded at the API gateway - retry shortly."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "List my site public keys",
+        "tags": [
+          "selfServiceClient"
+        ]
+      },
+      "post": {
+        "description": "One more restricted public key for this workspace - same scope as the workspace's own\npublic key, but the others keep working: a new site or project gets its key without\nbreaking the ones already live (regenerate-public-key replaces the workspace key, so every\nsite using it stops). Shown once - store it now.",
+        "operationId": "create_my_site_public_key",
+        "parameters": [
+          {
+            "description": "Which of this account's workspaces this call is about. Omitted: the primary (oldest) one.",
+            "in": "header",
+            "name": "X-Workspace-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Which of this account's workspaces this call is about. Omitted: the primary (oldest) one.",
+              "title": "X-Workspace-Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SitePublicKeyCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SitePublicKeyCreated"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing, invalid or revoked `X-API-Key`."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The referenced resource does not exist for this account."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not possible in the current state - `detail` says what is missing (e.g. no model to retrain yet)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request is malformed - `detail` lists the offending fields."
+          },
+          "429": {
+            "description": "Rate limit exceeded at the API gateway - retry shortly."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Create a public key for one site",
+        "tags": [
+          "selfServiceClient"
+        ]
+      }
+    },
+    "/clients/me/public-keys/{key_id}": {
+      "delete": {
+        "description": "Immediate and permanent: the site using it gets 401s right away (its blocks disappear).\nThe workspace's other public keys are untouched.",
+        "operationId": "revoke_my_site_public_key",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key_id",
+            "required": true,
+            "schema": {
+              "title": "Key Id",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Which of this account's workspaces this call is about. Omitted: the primary (oldest) one.",
+            "in": "header",
+            "name": "X-Workspace-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Which of this account's workspaces this call is about. Omitted: the primary (oldest) one.",
+              "title": "X-Workspace-Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing, invalid or revoked `X-API-Key`."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The referenced resource does not exist for this account."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "description": "Rate limit exceeded at the API gateway - retry shortly."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Revoke a site public key",
+        "tags": [
+          "selfServiceClient"
+        ]
+      }
+    },
     "/clients/me/regenerate-public-key": {
       "post": {
         "description": "Same as regenerate-secret-key, for the restricted public key.",
@@ -14649,7 +15383,7 @@
         "x-required-key": "scope:sources:read"
       },
       "patch": {
-        "description": "Partial update - only the fields given are changed. `config` is merged shallowly\nwith the existing config (so updating one key doesn't require resending the rest);\n`credentials`, if given, fully replaces the encrypted blob.",
+        "description": "Partial update - only the fields given are changed. `config` is merged shallowly\nwith the existing config (so updating one key doesn't require resending the rest);\n`credentials`, if given, fully replaces the encrypted blob. `product_type` moves the source\nto another catalog from its next sync on (403 when the plan has no room for a new one).",
         "operationId": "update_data_source",
         "parameters": [
           {
@@ -15458,7 +16192,7 @@
     },
     "/data-sources/{data_source_id}/test": {
       "post": {
-        "description": "Validates credentials/config reach the source without writing any catalog data -\nthe `test_data_source` MCP tool. Always returns 200 with ok=false on failure (never a\n500) so a coding agent can report *why* a connection failed.",
+        "description": "Validates credentials/config reach the source without writing any catalog data -\nthe `test_data_source` MCP tool. Always returns 200 with ok=false on failure (never a\n500) so a coding agent can report *why* a connection failed. With `credentials` and/or\n`config` in the body, tries those instead of the stored ones and saves nothing - a typo\nin new credentials never replaces ones that work.",
         "operationId": "test_data_source",
         "parameters": [
           {
@@ -15471,6 +16205,23 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ConnectionTestRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Payload"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "content": {
@@ -15630,7 +16381,7 @@
         "operationId": "events_batch",
         "parameters": [
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -15646,7 +16397,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -15717,7 +16468,7 @@
         "operationId": "events_identify",
         "parameters": [
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -15733,7 +16484,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -15804,7 +16555,7 @@
         "operationId": "events_purchase",
         "parameters": [
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -15820,7 +16571,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -15891,7 +16642,7 @@
         "operationId": "events_view",
         "parameters": [
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -15907,7 +16658,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -15992,7 +16743,7 @@
             }
           },
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -16008,7 +16759,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -16075,11 +16826,11 @@
     },
     "/generateModel": {
       "get": {
-        "description": "Starts a collaborative-model training run as a background job and returns its `job_id` immediately; poll `/generateModel/status/{job_id}`. Subject to the plan's daily manual-training quota (`429` when exhausted). The new model is only promoted to production if its precision@k is at least the current one's. Secret key only.",
+        "description": "Starts a collaborative-model training run as a background job and returns its `job_id` immediately; poll `/generateModel/status/{job_id}`. Only retrains an existing model: `409` while the catalog has none - the first one is trained automatically once enough interactions from identified visitors have arrived. Subject to the plan's daily manual-training quota (`429` when exhausted). The new model is only promoted to production if its precision@k is at least the current one's. Secret key only.",
         "operationId": "generate_model",
         "parameters": [
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -16095,7 +16846,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -16134,6 +16885,16 @@
             },
             "description": "The public key can't do this (secret key required), or a plan limit was reached."
           },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not possible in the current state - `detail` says what is missing (e.g. no model to retrain yet)."
+          },
           "422": {
             "content": {
               "application/json": {
@@ -16153,7 +16914,7 @@
             "APIKeyHeader": []
           }
         ],
-        "summary": "Train the model (background job)",
+        "summary": "Retrain the model (background job)",
         "tags": [
           "models"
         ],
@@ -16248,7 +17009,7 @@
         "operationId": "recommendations_get",
         "parameters": [
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -16264,7 +17025,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -16367,7 +17128,7 @@
             }
           },
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -16383,7 +17144,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -16544,7 +17305,7 @@
             }
           },
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -16560,7 +17321,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -16700,7 +17461,7 @@
         "operationId": "get_rec_content_vectordb_init",
         "parameters": [
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -16716,7 +17477,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -16810,7 +17571,7 @@
             }
           },
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -16826,7 +17587,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -16946,7 +17707,7 @@
             }
           },
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -16962,7 +17723,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -17114,7 +17875,7 @@
             }
           },
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -17130,7 +17891,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -17312,7 +18073,7 @@
             }
           },
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -17328,7 +18089,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -17489,7 +18250,7 @@
             }
           },
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -17505,7 +18266,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -17630,7 +18391,7 @@
     },
     "/items": {
       "get": {
-        "description": "One page of the catalog, ordered by creation. The total number of items in this\ncatalog is in the `X-Total-Count` response header. Secret key only: a public key lives in\nweb pages, and must not be able to export your whole catalog (recommendations already\nreturn the few items they recommend).",
+        "description": "One page of the catalog, ordered by creation. The total number of items in this\ncatalog is in the `X-Total-Count` response header. The secret key, or a developer key with\n`catalog:read` or `sources:read` - never the public key: it lives in web pages, and must not\nbe able to export your whole catalog (recommendations already return the few items they\nrecommend).",
         "operationId": "items_list",
         "parameters": [
           {
@@ -17661,7 +18422,7 @@
             }
           },
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -17677,7 +18438,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -17743,7 +18504,7 @@
         "tags": [
           "items"
         ],
-        "x-required-key": "secret"
+        "x-required-key": "scope:catalog:read"
       }
     },
     "/items/delete": {
@@ -17752,7 +18513,7 @@
         "operationId": "items_delete_many",
         "parameters": [
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -17768,7 +18529,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -17849,7 +18610,7 @@
         "operationId": "items_import",
         "parameters": [
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -17865,7 +18626,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -17962,7 +18723,7 @@
             }
           },
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -17978,7 +18739,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -18073,7 +18834,7 @@
             }
           },
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -18089,7 +18850,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -18184,7 +18945,7 @@
             }
           },
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -18200,7 +18961,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -18382,7 +19143,7 @@
         "operationId": "get_model_status",
         "parameters": [
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -18398,7 +19159,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -18469,7 +19230,7 @@
         "operationId": "get_model_versions",
         "parameters": [
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -18485,7 +19246,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -19718,7 +20479,7 @@
             }
           },
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -19734,7 +20495,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -19819,7 +20580,7 @@
         "operationId": "users_import",
         "parameters": [
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -19835,7 +20596,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -19932,7 +20693,7 @@
             }
           },
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -19948,7 +20709,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -20043,7 +20804,7 @@
             }
           },
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -20059,7 +20820,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
@@ -20154,7 +20915,7 @@
             }
           },
           {
-            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+            "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
             "in": "query",
             "name": "data_product_type",
             "required": false,
@@ -20170,7 +20931,7 @@
                   "type": "null"
                 }
               ],
-              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise).",
+              "description": "Catalog namespace - keeps several catalogs of one account apart. **Optional**: when omitted, the account's only catalog is used, or `default` if it has none yet. An account with several catalogs must say which (`422` otherwise) - unless only one of them still holds items: that one is used.",
               "examples": [
                 "shop"
               ],
