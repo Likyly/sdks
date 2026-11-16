@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0](https://github.com/Likyly/sdks/compare/mcp-v0.10.0...mcp-v0.11.0) (2026-11-16)
+
+
+### Features
+
+* **mcp:** placements take business_rules.unknown_current_item - a product page whose product is not in the catalog shows nothing by default ([bbd166d](https://github.com/Likyly/sdks/commit/bbd166db213e428688dc7b4c9eeac93fc6f690d3))
+
 ## [0.10.0](https://github.com/Likyly/sdks/compare/mcp-v0.9.0...mcp-v0.10.0) (2026-11-16)
 
 
