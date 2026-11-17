@@ -44,6 +44,7 @@ export function createLikylyPlacementTools(server: McpServer, client: LikylyClie
     exclude_current_item: z.boolean().optional().describe("Default true - never recommend the item the visitor is already looking at back to itself."),
     unknown_current_item: z.enum(["empty", "popular"]).optional().describe("Default 'empty' - on a product page whose product is not in the catalog (not synced, beyond the plan's product limit), return nothing (strategy_used 'none') instead of unrelated popular items; 'popular' shows those."),
     exclude_cart_items: z.boolean().optional().describe("Never recommend an item already in the cart - use for a cart cross-sell placement."),
+    exclude_purchased_items: z.boolean().optional().describe("Default true - never recommend to a signed-in visitor (user_id) an item they already bought; false for products bought again and again (consumables, refills)."),
   });
   const context = z.record(z.unknown()).describe(
     "Sample context to run the placement against - any of current_item_id, category_id, collection_id, user_id, anonymous_id, session_id, cart_item_ids, locale, custom_context.",
