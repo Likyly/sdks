@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://github.com/Likyly/sdks/compare/mcp-v0.11.0...mcp-v0.12.0) (2026-11-17)
+
+
+### Features
+
+* **mcp:** placements take strategy also_bought - customers who bought this also bought, for a product page ([bbc273b](https://github.com/Likyly/sdks/commit/bbc273b156ae7ca067ffb9d31e569871d9802409))
+
 ## [0.11.0](https://github.com/Likyly/sdks/compare/mcp-v0.10.0...mcp-v0.11.0) (2026-11-16)
 
 
