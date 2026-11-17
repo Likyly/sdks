@@ -20,7 +20,7 @@ export function createLikylyPlacementTools(server: McpServer, client: LikylyClie
   }
 
   const slug = z.string().min(1).max(128).describe("The placement's slug, e.g. 'pdp-related'.");
-  const strategy = z.enum(["auto", "content", "session", "collaborative", "hybrid", "popular"]);
+  const strategy = z.enum(["auto", "content", "session", "collaborative", "hybrid", "popular", "also_bought"]);
   const contextType = z.enum([
     "product_page", "listing_page", "category_page", "homepage", "cart", "account", "content_page", "custom",
   ]);
@@ -66,7 +66,7 @@ export function createLikylyPlacementTools(server: McpServer, client: LikylyClie
 
   server.tool(
     "create_placement",
-    "Registers a new named recommendation configuration - the abstraction to reach for instead of picking a raw strategy endpoint. Underneath it always calls one of LIKYLY's existing engines (content/session/collaborative/hybrid/popular) - 'auto' delegates to the same signal-based selection POST /getRec already uses (hybrid when both a user and an item are known, content from just an item, session from recent views, collaborative for a known user with a trained model, popular otherwise) - it is not a new ML model, just an orchestration choice. Set `signals.required` to the context keys this placement can't run without (e.g. current_item_id for a product-page placement) - everything else stays optional. `fallback_strategy` is tried if `strategy` returns nothing; 'popular' is always the final safety net regardless. Call preview_placement right after creating it.",
+    "Registers a new named recommendation configuration - the abstraction to reach for instead of picking a raw strategy endpoint. Underneath it always calls one of LIKYLY's existing engines (content/session/collaborative/hybrid/popular, and also_bought: \"customers who bought this also bought\" for a product page, with fallback_strategy 'content') - 'auto' delegates to the same signal-based selection POST /getRec already uses (hybrid when both a user and an item are known, content from just an item, session from recent views, collaborative for a known user with a trained model, popular otherwise) - it is not a new ML model, just an orchestration choice. Set `signals.required` to the context keys this placement can't run without (e.g. current_item_id for a product-page placement) - everything else stays optional. `fallback_strategy` is tried if `strategy` returns nothing; 'popular' is always the final safety net regardless. Call preview_placement right after creating it.",
     {
       slug,
       name: z.string().min(1).max(200),
