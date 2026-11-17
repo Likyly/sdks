@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/Likyly/sdks/compare/typescript-v1.1.3...typescript-v1.1.4) (2026-11-17)
+
+
+### Bug Fixes
+
+* **typescript:** a block with no current product follows the visit - back on the home page after a product, it asks LIKYLY again ([b2e9f92](https://github.com/Likyly/sdks/commit/b2e9f924c11d8c0acd4c913b17ffcd380bbc5d6c))
+
 ## [1.1.3](https://github.com/Likyly/sdks/compare/typescript-v1.1.2...typescript-v1.1.3) (2026-11-10)
 
 
