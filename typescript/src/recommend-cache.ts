@@ -6,6 +6,10 @@
  *   item and visitor. In a browser it lives in `sessionStorage` (one visitor's tab session:
  *   back/forward and revisits cost nothing); elsewhere (SSR, Node) in memory. A reused answer
  *   keeps its `recommendationId`, so impressions and clicks stay attributed.
+ * - the visit: a block with no current product (home, listing, cart) depends on what the visitor
+ *   did, so its answers are kept per step of the visit. Every view, click, add to cart, purchase
+ *   or identify sent by this SDK starts a new step (sessionStorage `likyly:visit`, shared by the
+ *   tab's pages): back on the home page after a product, the block asks LIKYLY again.
  * - a circuit breaker: after a network error, a timeout or a 5xx, calls fail at once for
  *   `pauseSeconds` (default 30) instead of waiting on LIKYLY, so the page shows its own
  *   fallback straight away. The next call after the pause tries again.
@@ -22,6 +26,7 @@ export interface RecommendCacheOptions {
 }
 
 const PREFIX = "likyly:rec:";
+const VISIT_KEY = "likyly:visit";
 const MAX_MEMORY_ENTRIES = 500;
 
 interface Entry {
@@ -46,6 +51,7 @@ export class RecommendCache {
   private readonly storage: Storage | null;
   private readonly memory = new Map<string, Entry>();
   private pausedUntil = 0;
+  private visit = 0;
 
   constructor(options: RecommendCacheOptions = {}, private readonly now: () => number = Date.now) {
     this.ttlMs = Math.max(0, options.ttlSeconds ?? 3600) * 1000;
@@ -90,6 +96,29 @@ export class RecommendCache {
       }
     } catch {
       // Blocked storage: nothing was written there either.
+    }
+  }
+
+  /** The step of the visit: changes with every signal the visitor sends (see noteActivity). */
+  visitStamp(): number {
+    if (this.storage) {
+      try {
+        return Number(this.storage.getItem(VISIT_KEY) || 0);
+      } catch {
+        // Blocked storage: the counter of this page.
+      }
+    }
+    return this.visit;
+  }
+
+  /** The visitor did something (view, click, add to cart, purchase, identify): a new step. */
+  noteActivity(): void {
+    const next = this.visitStamp() + 1;
+    this.visit = next;
+    try {
+      this.storage?.setItem(VISIT_KEY, String(next));
+    } catch {
+      // ignore: the in-page counter moved
     }
   }
 

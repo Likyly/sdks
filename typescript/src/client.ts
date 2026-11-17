@@ -97,9 +97,10 @@ export class Likyly {
 
     this.items = new ItemsResource(http);
     this.users = new UsersResource(http);
-    this.events = new EventsResource(http);
+    const cache = options.cache === false ? null : new RecommendCache(options.cache ?? {});
+    this.events = new EventsResource(http, cache ? () => cache.noteActivity() : undefined);
     this.recommendations = new RecommendationsResource(http);
-    this.placements = new PlacementsResource(http, options.cache === false ? null : new RecommendCache(options.cache ?? {}));
+    this.placements = new PlacementsResource(http, cache);
   }
 
   /**

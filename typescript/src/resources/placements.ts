@@ -27,7 +27,7 @@ export class PlacementsResource {
   async recommend(opts: PlacementRecommendOptions, options?: RequestOptions): Promise<PlacementRecommendResponse> {
     const placement = requireId(opts.placement, "placement");
     const body = compact({ context: contextBody(opts.context), limit: opts.limit });
-    const key = this.cache ? cacheKey(placement, body) : "";
+    const key = this.cache ? cacheKey(placement, body, this.cache.visitStamp()) : "";
     const cached = this.cache?.get(key);
     if (cached) return cached;
     if (this.cache?.isPaused()) {
@@ -87,13 +87,18 @@ function toPlacementRecommendation(w: WirePlacementRecommendation): PlacementRec
   };
 }
 
-/** Same placement, limit and context = same answer; who the anonymous visitor is does not count. */
-function cacheKey(placement: string, body: Record<string, unknown>): string {
+/**
+ * Same placement, limit and context = same answer; who the anonymous visitor is does not count.
+ * Without a current product (home, listing, cart), the answer follows what the visitor did: the
+ * step of the visit is part of the key.
+ */
+function cacheKey(placement: string, body: Record<string, unknown>, visit: number): string {
   const context = { ...((body.context as Record<string, unknown> | undefined) ?? {}) };
   delete context.session_id;
   delete context.anonymous_id;
+  const step = context.current_item_id === undefined ? `|visit=${visit}` : "";
   const sorted = Object.fromEntries(Object.entries(context).sort(([a], [b]) => a.localeCompare(b)));
-  return `${placement}|${body.limit ?? ""}|${JSON.stringify(sorted)}`;
+  return `${placement}|${body.limit ?? ""}|${JSON.stringify(sorted)}${step}`;
 }
 
 /** LIKYLY down or overloaded, as opposed to a mistake in the call (4xx). */

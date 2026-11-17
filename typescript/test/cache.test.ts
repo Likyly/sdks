@@ -58,3 +58,27 @@ test("entries expire and the pause ends", () => {
   now = 15_002;
   assert.equal(cache.isPaused(), false);
 });
+
+test("a block with no current product follows the visit: after a view, the home page asks again", async () => {
+  const { client, calls } = makeClient([{ body: ANSWER }]);
+  const asked = () => calls.filter((c) => c.url.pathname.includes("/placements/")).length;
+  const home = () => client.recommend({ placement: "home", context: { sessionId: "s1" }, limit: 4 });
+  const product = () => client.recommend({ placement: "pdp", context: { itemId: "A", sessionId: "s1" }, limit: 4 });
+  await home();
+  await home();
+  assert.equal(asked(), 1, "nothing new: the home page is served from the cache");
+  await product();
+  await client.events.view({ itemId: "A", sessionId: "s1" });
+  await home();
+  assert.equal(asked(), 3, "after a view, the home block asks LIKYLY again");
+  await home();
+  assert.equal(asked(), 3, "and is cached again until the next signal");
+  await product();
+  assert.equal(asked(), 3, "a product page keeps its answer: it depends on the product");
+  await client.events.impression({ itemId: "B", sessionId: "s1", recommendationId: "rec_1" });
+  await home();
+  assert.equal(asked(), 3, "an impression is not something the visitor did: no new step");
+  await client.events.identify({ userId: "u1", sessionId: "s1" });
+  await home();
+  assert.equal(asked(), 4, "signing in is a new step");
+});

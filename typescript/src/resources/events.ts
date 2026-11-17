@@ -9,7 +9,8 @@ import type { EventBatchResult, EventInput, EventResult, IdentifyInput, Identify
  * shortcuts that call it with the matching event type.
  */
 export class EventsResource {
-  constructor(private readonly http: HttpClient) {}
+  /** `onActivity`: the visitor sent a signal (not an impression) - the cache of the visit moves on. */
+  constructor(private readonly http: HttpClient, private readonly onActivity?: () => void) {}
 
   /**
    * Records one event of any type: `view`, `click`, ... or your own (`favorite`, `share`, ...).
@@ -26,6 +27,7 @@ export class EventsResource {
       idempotent: event.eventId !== undefined,
       options,
     });
+    if (type !== "impression") this.onActivity?.();
     return { message: res.data.message, eventId: res.data.event_id ?? undefined, duplicate: res.data.duplicate === true };
   }
 
@@ -39,6 +41,7 @@ export class EventsResource {
       idempotent: events.every((e) => e.eventId !== undefined),
       options,
     });
+    if (events.some((e) => e.type !== "impression")) this.onActivity?.();
     return { received: res.data.received, accepted: res.data.accepted, duplicates: res.data.duplicates };
   }
 
@@ -100,6 +103,7 @@ export class EventsResource {
       idempotent: true, // only ever reassigns not-yet-attributed rows - replaying is harmless
       options,
     });
+    this.onActivity?.();
     return { linkedInteractions: res.data.linked_interactions };
   }
 }
