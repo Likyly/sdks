@@ -155,7 +155,8 @@ $likyly->events()->trackMany([
 ```
 
 - An event needs an item and a user, a session, or both (both ties the anonymous session to the user once they log in).
-- Anonymous visitors: generate a session id (any string) and keep it in a cookie; no login needed.
+- Anonymous visitors: generate a random session id and keep it in a first-party cookie or storage; no login needed. Give it 13 months at most from its creation, never extended by later visits (the TypeScript SDK's `LikylySession` does this for you).
+- **Retention: 13 months.** LIKYLY deletes events, recommendation traces and inactive signed-in users once they are 13 months old, for every account.
 - `properties` is a free-form object (price, currency, order id, ...). Its keys are stored exactly as you send them and are never renamed by the SDK.
 - `event_id` (idempotency key): replaying an event with the same id records nothing and returns `duplicate: true`. Set it on purchases, for example `purchase_<orderId>_<itemId>`.
 - `placement` is a free-form label of where something happened or will be displayed (`homepage`, `product_page`, `cart`, ...).
