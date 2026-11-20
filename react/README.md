@@ -44,8 +44,9 @@ function ProductPage({ product, user }) {
 
 - `apiKey` is your **public key** (`pk_…`). A secret or developer key is refused in the browser.
 - `pdp-related` is a placement you create once in LIKYLY (console or AI assistant), not in code.
-- `sessionId` is the visitor's anonymous id, kept in the browser (first-party, no cookie). Pass it
-  so visitors who are not signed in count too.
+- `sessionId` is the visitor's anonymous id, kept in the browser (first-party, no cookie) for 13
+  months at most, then replaced. Pass it so visitors who are not signed in count too. LIKYLY
+  deletes the events recorded under it after 13 months as well.
 
 ## Your own markup
 
