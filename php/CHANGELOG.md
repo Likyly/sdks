@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/Likyly/sdks/compare/php-v1.0.3...php-v1.0.4) (2026-11-20)
+
+
+### Documentation
+
+* every SDK README says LIKYLY keeps visitor data 13 months, and an anonymous id should live 13 months at most ([a71669d](https://github.com/Likyly/sdks/commit/a71669d34758d5b0326ed254ce548821891a5382))
+
 ## [1.0.3](https://github.com/Likyly/sdks/compare/php-v1.0.2...php-v1.0.3) (2026-11-10)
 
 
