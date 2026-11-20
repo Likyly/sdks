@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/Likyly/sdks/compare/typescript-v1.1.4...typescript-v1.2.0) (2026-11-20)
+
+
+### Features
+
+* **typescript:** the anonymous visitor id lives 13 months from its creation, then a new one replaces it - LikylySession.expiresAt(), ANONYMOUS_ID_LIFETIME_DAYS ([144c081](https://github.com/Likyly/sdks/commit/144c0812cec7029d30cfc350ef7d2f9e8f8c1210))
+
+
+### Documentation
+
+* every SDK README says LIKYLY keeps visitor data 13 months, and an anonymous id should live 13 months at most ([a71669d](https://github.com/Likyly/sdks/commit/a71669d34758d5b0326ed254ce548821891a5382))
+
 ## [1.1.4](https://github.com/Likyly/sdks/compare/typescript-v1.1.3...typescript-v1.1.4) (2026-11-17)
 
 

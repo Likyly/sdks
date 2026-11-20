@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/Likyly/sdks/compare/react-v0.2.3...react-v0.2.4) (2026-11-20)
+
+
+### Documentation
+
+* **react:** the anonymous id is kept 13 months at most, and so are the events recorded under it ([5137f47](https://github.com/Likyly/sdks/commit/5137f47cb1debe8ddc01fd13569810f1d311d8d2))
+
 ## [0.2.3](https://github.com/Likyly/sdks/compare/react-v0.2.2...react-v0.2.3) (2026-11-10)
 
 
