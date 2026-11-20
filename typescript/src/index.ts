@@ -1,6 +1,6 @@
 export { Likyly } from "./client.js";
 export type { LikylyOptions } from "./client.js";
-export { LikylySession } from "./session.js";
+export { ANONYMOUS_ID_LIFETIME_DAYS, LikylySession } from "./session.js";
 export type { LikylySessionOptions } from "./session.js";
 export {
   LikylyError,

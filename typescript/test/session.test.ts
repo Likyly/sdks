@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import { afterEach, describe, it } from "node:test";
-import { LikylySession } from "../src/index.js";
+import { afterEach, describe, it, mock } from "node:test";
+import { ANONYMOUS_ID_LIFETIME_DAYS, LikylySession } from "../src/index.js";
 
 function installFakeLocalStorage(): Storage {
   const store = new Map<string, string>();
@@ -88,5 +88,56 @@ describe("LikylySession.identify", () => {
 
     assert.equal(result, undefined);
     assert.equal(calls.length, 0);
+  });
+});
+
+describe("LikylySession - an id lives 13 months, never extended", () => {
+  const DAY = 24 * 60 * 60 * 1000;
+  const start = Date.UTC(2026, 0, 1);
+  afterEach(() => {
+    mock.timers.reset();
+    removeFakeLocalStorage();
+  });
+
+  it("is 395 days", () => {
+    assert.equal(ANONYMOUS_ID_LIFETIME_DAYS, 395);
+  });
+
+  it("keeps the id for 13 months whatever the visits, then creates a new one", () => {
+    const storage = installFakeLocalStorage();
+    mock.timers.enable({ apis: ["Date"], now: start });
+    const id = new LikylySession().getAnonymousId();
+    assert.equal(storage.getItem("likyly_anonymous_id:created"), String(start));
+    assert.equal(new LikylySession().expiresAt()?.getTime(), start + 395 * DAY);
+
+    mock.timers.setTime(start + 394 * DAY); // a visit the day before: same id, same end
+    assert.equal(new LikylySession().getAnonymousId(), id);
+    assert.equal(storage.getItem("likyly_anonymous_id:created"), String(start));
+
+    mock.timers.setTime(start + 395 * DAY);
+    const renewed = new LikylySession().getAnonymousId();
+    assert.ok(renewed && renewed !== id);
+    assert.equal(storage.getItem("likyly_anonymous_id:created"), String(start + 395 * DAY));
+  });
+
+  it("an open page also moves to a new id once the old one expires", () => {
+    installFakeLocalStorage();
+    mock.timers.enable({ apis: ["Date"], now: start });
+    const session = new LikylySession();
+    const id = session.getAnonymousId();
+    mock.timers.setTime(start + 400 * DAY);
+    assert.notEqual(session.getAnonymousId(), id);
+  });
+
+  it("an id stored before ids had an age starts its 13 months now", () => {
+    const storage = installFakeLocalStorage();
+    storage.setItem("likyly_anonymous_id", "anon_legacy");
+    mock.timers.enable({ apis: ["Date"], now: start });
+    assert.equal(new LikylySession().getAnonymousId(), "anon_legacy");
+    assert.equal(storage.getItem("likyly_anonymous_id:created"), String(start));
+  });
+
+  it("expiresAt is undefined without storage", () => {
+    assert.equal(new LikylySession().expiresAt(), undefined);
   });
 });
