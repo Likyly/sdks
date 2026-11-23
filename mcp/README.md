@@ -172,8 +172,8 @@ HTTP call the site's own code makes, safe with the public key, exactly like `POS
 The same server runs at **`https://mcp.likyly.com`** for assistants used in a conversation
 (`https://mcp.likyly.com/mcp` answers too):
 
-- **Claude** (claude.ai, desktop, mobile): Settings → Connectors → Add custom connector → URL
-  `https://mcp.likyly.com`. Claude Code: `claude mcp add --transport http likyly https://mcp.likyly.com`.
+- **Claude** (claude.ai, desktop, mobile): Plugins → Add → Add custom connector → URL
+  `https://mcp.likyly.com`, OAuth client "Register automatically"; then, in a conversation, + → Connectors → LIKYLY. Claude Code: `claude mcp add --transport http likyly https://mcp.likyly.com`.
 - **ChatGPT**: Settings → Apps → Developer mode → Create → URL `https://mcp.likyly.com`,
   authentication OAuth.
 
