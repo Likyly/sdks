@@ -19,7 +19,7 @@ export function createLikylyAdminTools(server: McpServer, client: LikylyClient):
     return { content: [{ type: "text" as const, text: JSON.stringify(data, null, 2) }] };
   }
 
-  const dataSourceId = z.number().int().describe("The data source's id, from create_data_source or list_data_sources.");
+  const dataSourceId = z.number().int().describe("The data source's id.");
 
   server.tool(
     "list_source_types",
@@ -33,11 +33,11 @@ export function createLikylyAdminTools(server: McpServer, client: LikylyClient):
     "Registers a new catalog source for this account and saves its configuration; it fetches and imports nothing yet. `type` is a source type id (e.g. 'shopify', 'rest_api', 'csv_url'). `product_type` is the catalog namespace it writes into: an existing one, or a new name to start a new catalog. `config` holds non-secret settings (e.g. {base_url, items_path} for rest_api, {shop_domain} for shopify). `credentials` holds secrets, encrypted at rest and never returned: for shopify {access_token: 'shpat_...'} of a legacy custom app, or {client_id, client_secret} of a Dev Dashboard app installed on the store with read_products (the only kind new stores can create; LIKYLY renews its 24 h tokens); for magento {store_url} and an Integration's {consumer_key, consumer_secret, access_token, access_token_secret}. Shopify and Magento credentials are not meant to be collected in a conversation: `npx @likyly/wizard shopify` / `npx @likyly/wizard magento` sends them to LIKYLY directly. Without `sync_mode` the type's default applies. A push-mode type (woocommerce, webhook) returns a one-time `push_secret` for the upstream system's webhook; it cannot be retrieved again. A source beyond the plan's limit (the Free plan allows one) is refused with a 403 'plan limit reached'.",
     {
       name: z.string().min(1).max(200),
-      type: z.string().describe("One of list_source_types' ids, e.g. 'shopify', 'rest_api', 'csv_url'."),
+      type: z.string().describe("The source type's id (csv_upload, csv_url, json_url, rest_api, shopify, magento, woocommerce, webhook)."),
       product_type: z.string().min(1).max(64).regex(/^[a-zA-Z0-9_-]+$/).describe("The catalog namespace this source writes into."),
       config: z.record(z.unknown()).optional(),
       credentials: z.record(z.unknown()).optional().describe("Secrets - access tokens, API keys. Encrypted at rest."),
-      field_mapping: z.record(z.unknown()).optional().describe("Can be set later via configure_field_mapping instead."),
+      field_mapping: z.record(z.unknown()).optional().describe("Optional; the mapping can also be set later."),
       sync_mode: z.enum(["full", "incremental"]).optional(),
     },
     async (input) => textResult(await client.createDataSource(input)),
