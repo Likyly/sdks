@@ -167,20 +167,30 @@ see [`docs/getting-started.md`](https://github.com/Likyly/likyly-recsys/blob/mai
 The runtime call, `POST /placements/{slug}/recommend`, is **not an MCP tool** - it's a plain
 HTTP call the site's own code makes, safe with the public key, exactly like `POST /getRec`.
 
-## Hosted service (connect any LLM by URL)
+## In Claude and ChatGPT (hosted, OAuth)
 
-Besides the local stdio server above, the same tools can run as a hosted **Streamable HTTP**
-service, so an MCP-capable LLM client connects with a URL instead of running a local process:
+The same server runs at **`https://mcp.likyly.com/mcp`** for assistants used in a conversation:
 
-```bash
-npm run build
-PORT=3200 npm run start:http      # POST /mcp, GET /health
-```
+- **Claude** (claude.ai, desktop, mobile): Settings → Connectors → Add custom connector → URL
+  `https://mcp.likyly.com/mcp`. Claude Code: `claude mcp add --transport http likyly https://mcp.likyly.com/mcp`.
+- **ChatGPT**: Settings → Apps → Developer mode → Create → URL `https://mcp.likyly.com/mcp`,
+  authentication OAuth.
 
-Each request carries the caller's own key (public, secret, or developer) - the service stores
-no secrets and forwards it as-is to the LIKYLY API, so it can never do more than the key itself
-allows. Only send a secret or developer key over this path from a trusted server-side caller,
-same as anywhere else - never from browser-facing code:
+The assistant sends you to www.likyly.com to sign in (or create your free account), pick the
+workspace it may act on, and allow it. No key to copy. To disconnect it, remove the connector, or
+revoke it from your LIKYLY account.
+
+Signed in this way, the assistant gets the catalog, placement, integration-check and model tools,
+not the recommendation/event tools (runtime traffic, for your site's public key):
+`preview_placement` shows recommendations instead.
+
+How it works: LIKYLY's accounts (Supabase Auth) are the OAuth 2.1 server, with dynamic client
+registration and PKCE; this service is the resource server
+(`/.well-known/oauth-protected-resource`, `WWW-Authenticate` on 401). It checks each access token
+(signature by the project's public keys, issuer, expiry, OAuth client) and forwards it to the
+LIKYLY API, which checks it again and acts on the chosen workspace. It stores nothing.
+
+A server-side caller can still send a LIKYLY key instead, and gets every tool:
 
 ```
 POST https://mcp.likyly.com/mcp
@@ -188,20 +198,22 @@ Authorization: Bearer <public-secret-or-developer-key>
 X-Likyly-Product-Type: <catalog-namespace>     # optional default catalog, recommendation/event tools only
 ```
 
-Deploy on the droplet next to the API (Docker + Caddy):
+Only send a secret or developer key from a trusted server, never from browser code.
+
+### Run it
 
 ```bash
-docker build -t likyly-mcp mcp && docker run -d --restart=always -p 127.0.0.1:3200:3200 likyly-mcp
+npm test                  # build + end-to-end tests (fake Supabase and API)
+PORT=3200 npm run start:http
 ```
 
-```caddyfile
-mcp.likyly.com {
-    reverse_proxy 127.0.0.1:3200
-}
-```
+Env: `PORT` (default 3200), `LIKYLY_BASE_URL` (default `https://api.likyly.com`),
+`LIKYLY_MCP_PUBLIC_URL` (default `https://mcp.likyly.com`), `LIKYLY_SUPABASE_URL` (LIKYLY's
+Supabase project by default; `off` = keys only), `OPENAI_APPS_CHALLENGE` (ChatGPT app domain
+verification, served at `/.well-known/openai-apps-challenge`). Stateless: no sessions, `GET /mcp`
+returns 405.
 
-Env: `PORT` (default 3200), `LIKYLY_BASE_URL` (default `https://api.likyly.com`). Stateless mode:
-no sessions, `GET /mcp` returns 405.
+Deployed on the droplet next to the API (`deploy/`, Docker + Caddy).
 
 ## Develop locally
 

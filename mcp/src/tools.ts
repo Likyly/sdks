@@ -4,7 +4,8 @@ import { createLikylyAdminTools } from "./admin-tools.js";
 import { createLikylyPlacementTools } from "./placement-tools.js";
 import { createLikylyRecipeTools } from "./recipe-tools.js";
 import { createLikylyValidatorTools } from "./validator-tools.js";
-import { INSTRUCTIONS } from "./instructions.js";
+import { CHAT_INSTRUCTIONS, INSTRUCTIONS } from "./instructions.js";
+import { annotateTools } from "./tool-meta.js";
 import type { LikylyClient } from "./client.js";
 
 // Shared tool surface: used by the local stdio server (index.ts) and the hosted HTTP
@@ -17,8 +18,27 @@ import type { LikylyClient } from "./client.js";
 // here. Registering both unconditionally (rather than trying to detect the key's own
 // capabilities up front) keeps this server simple and lets the API stay the single source of
 // truth for what a given key can do.
-export function createLikylyServer(client: LikylyClient, defaultProductType?: string): McpServer {
-  const server = new McpServer({ name: "likyly-recsys", version: "0.12.0" }, { instructions: INSTRUCTIONS }); // x-release-please-version
+//
+// surface "chat": an assistant connected through OAuth (Claude, ChatGPT at mcp.likyly.com),
+// talking with a merchant rather than working in their code. Its token is the account's, not a
+// public key: the recommendation/event tools (runtime traffic, public key only) are left out,
+// preview_placement shows recommendations instead, and the instructions are the chat ones.
+export interface LikylyServerOptions {
+  defaultProductType?: string;
+  surface?: "full" | "chat";
+}
+
+export const SERVER_INFO = {
+  name: "likyly-recsys",
+  title: "LIKYLY",
+  version: "0.12.0", // x-release-please-version
+  websiteUrl: "https://www.likyly.com",
+  icons: [{ src: "https://mcp.likyly.com/icon.png", mimeType: "image/png", sizes: ["512x512"] }],
+};
+
+export function createLikylyServer(client: LikylyClient, options: LikylyServerOptions | string = {}): McpServer {
+  const { defaultProductType, surface = "full" } = typeof options === "string" ? { defaultProductType: options } : options;
+  const server = new McpServer(SERVER_INFO, { instructions: surface === "chat" ? CHAT_INSTRUCTIONS : INSTRUCTIONS });
 
   const productType = defaultProductType
     ? z.string().optional().describe(`Catalog namespace. Defaults to "${defaultProductType}" if omitted.`)
@@ -40,6 +60,15 @@ export function createLikylyServer(client: LikylyClient, defaultProductType?: st
 
   const id = z.string().min(1).max(255);
 
+  if (surface === "full") registerRuntimeTools();
+  createLikylyAdminTools(server, client);
+  createLikylyPlacementTools(server, client);
+  createLikylyRecipeTools(server, client);
+  createLikylyValidatorTools(server, client);
+  annotateTools(server);
+  return server;
+
+  function registerRuntimeTools() {
   server.tool(
     "get_recommendations",
     "The recommendation call to use: send whatever you know (a user_id, an anonymous session_id, the item_id being viewed, viewed_item_ids, a placement label) and LIKYLY picks the best strategy (hybrid, content, collaborative, session or popular) and returns it in `strategy`. Every response has a `recommendation_id` - pass it as recommendation_id to track_event for the impression/click/add_to_cart/purchase events that follow, to attribute them. Ids are YOUR own ids (any string).",
@@ -128,11 +157,5 @@ export function createLikylyServer(client: LikylyClient, defaultProductType?: st
       return textResult(await client.trackEvent(resolveProductType(product_type), event_type, event));
     },
   );
-
-  createLikylyAdminTools(server, client);
-  createLikylyPlacementTools(server, client);
-  createLikylyRecipeTools(server, client);
-  createLikylyValidatorTools(server, client);
-
-  return server;
+  }
 }

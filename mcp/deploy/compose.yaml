@@ -1,0 +1,31 @@
+# LIKYLY MCP (mcp.likyly.com) on the droplet: joins the shared Caddy's network (licenses_web), no
+# published port. Caddy: site mcp.likyly.com -> likyly-mcp:3200 (caddy.site). Holds no secret.
+services:
+  likyly-mcp:
+    container_name: likyly-mcp
+    # Built on the deploying machine and loaded by deploy.sh (no build on the droplet).
+    image: likyly-mcp:latest
+    pull_policy: never
+    restart: unless-stopped
+    environment:
+      LIKYLY_MCP_PUBLIC_URL: https://mcp.likyly.com
+      # Calls the API through the shared Caddy and APISIX like any client (rate limits included).
+      LIKYLY_BASE_URL: https://api.likyly.com
+      # LIKYLY accounts (Supabase Auth, the OAuth server): the project's address, not a secret.
+      LIKYLY_SUPABASE_URL: https://qttfgagusbxrpcliufkf.supabase.co
+      # ChatGPT app directory domain verification (public token), set when OpenAI gives it.
+      OPENAI_APPS_CHALLENGE: ${OPENAI_APPS_CHALLENGE:-}
+    networks: [licenses_web]
+    mem_limit: 192m
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3200/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+networks:
+  licenses_web:
+    external: true

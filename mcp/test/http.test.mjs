@@ -1,0 +1,150 @@
+// End-to-end test of the hosted service (dist/http.js): a fake Supabase (JWKS + authorization
+// server metadata) and a fake LIKYLY API on local ports, real ES256 tokens. Run: npm test.
+import { test, before, after } from "node:test";
+import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
+import { createServer } from "node:http";
+import { exportJWK, generateKeyPair, SignJWT } from "jose";
+
+const MCP_PORT = 3291;
+let supabase, api, mcp, issuer, privateKey, otherKey;
+const apiCalls = [];
+
+function listen(handler) {
+  return new Promise((resolve) => {
+    const server = createServer(handler);
+    server.listen(0, "127.0.0.1", () => resolve(server));
+  });
+}
+
+async function token(claims = {}, key = privateKey, opts = {}) {
+  return new SignJWT({ role: "authenticated", client_id: "client-123", aal: "aal1", ...claims })
+    .setProtectedHeader({ alg: "ES256", kid: "k1" })
+    .setIssuer(opts.issuer ?? issuer)
+    .setSubject("user-1")
+    .setIssuedAt()
+    .setExpirationTime(opts.exp ?? "1h")
+    .sign(key);
+}
+
+function rpc(method, params = {}, headers = {}) {
+  return fetch(`http://127.0.0.1:${MCP_PORT}/mcp`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json, text/event-stream", ...headers },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
+  });
+}
+
+before(async () => {
+  const pair = await generateKeyPair("ES256");
+  privateKey = pair.privateKey;
+  otherKey = (await generateKeyPair("ES256")).privateKey;
+  const jwk = { ...(await exportJWK(pair.publicKey)), kid: "k1", alg: "ES256", use: "sig" };
+  supabase = await listen((req, res) => {
+    res.setHeader("Content-Type", "application/json");
+    if (req.url === "/auth/v1/.well-known/jwks.json") return res.end(JSON.stringify({ keys: [jwk] }));
+    if (req.url === "/.well-known/oauth-authorization-server/auth/v1")
+      return res.end(JSON.stringify({ issuer, registration_endpoint: `${issuer}/oauth/clients/register` }));
+    res.statusCode = 404;
+    res.end("{}");
+  });
+  issuer = `http://127.0.0.1:${supabase.address().port}/auth/v1`;
+  api = await listen((req, res) => {
+    apiCalls.push({ url: req.url, key: req.headers["x-api-key"] });
+    res.setHeader("Content-Type", "application/json");
+    res.end("[]");
+  });
+  mcp = spawn(process.execPath, ["dist/http.js"], {
+    env: {
+      ...process.env,
+      PORT: String(MCP_PORT),
+      LIKYLY_BASE_URL: `http://127.0.0.1:${api.address().port}`,
+      LIKYLY_SUPABASE_URL: `http://127.0.0.1:${supabase.address().port}`,
+      LIKYLY_MCP_PUBLIC_URL: "https://mcp.example.test",
+      OPENAI_APPS_CHALLENGE: "challenge-token",
+    },
+    stdio: ["ignore", "ignore", "pipe"],
+  });
+  await new Promise((resolve, reject) => {
+    mcp.stderr.on("data", (chunk) => String(chunk).includes("listening") && resolve());
+    mcp.on("exit", (code) => reject(new Error(`server exited ${code}`)));
+  });
+});
+
+after(() => {
+  mcp?.kill();
+  supabase?.close();
+  api?.close();
+});
+
+test("protected resource metadata points at Supabase", async () => {
+  const res = await fetch(`http://127.0.0.1:${MCP_PORT}/.well-known/oauth-protected-resource/mcp`);
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  assert.equal(body.resource, "https://mcp.example.test/mcp");
+  assert.deepEqual(body.authorization_servers, [issuer]);
+  const root = await (await fetch(`http://127.0.0.1:${MCP_PORT}/.well-known/oauth-protected-resource`)).json();
+  assert.equal(root.resource, "https://mcp.example.test");
+});
+
+test("authorization server metadata is relayed", async () => {
+  const body = await (await fetch(`http://127.0.0.1:${MCP_PORT}/.well-known/oauth-authorization-server`)).json();
+  assert.equal(body.issuer, issuer);
+});
+
+test("no token: 401 with the resource metadata", async () => {
+  const res = await rpc("tools/list");
+  assert.equal(res.status, 401);
+  assert.match(res.headers.get("www-authenticate"), /resource_metadata="https:\/\/mcp\.example\.test\/\.well-known\/oauth-protected-resource\/mcp"/);
+});
+
+test("forged, expired, foreign or client-less tokens are refused", async () => {
+  for (const bad of [
+    await token({}, otherKey),
+    await token({}, privateKey, { exp: Math.floor(Date.now() / 1000) - 600 }),
+    await token({}, privateKey, { issuer: "https://elsewhere.test/auth/v1" }),
+    await token({ client_id: undefined }),
+  ]) {
+    const res = await rpc("tools/list", {}, { Authorization: `Bearer ${bad}` });
+    assert.equal(res.status, 401);
+    assert.match(res.headers.get("www-authenticate"), /error="invalid_token"/);
+  }
+});
+
+test("OAuth token: chat tools with titles and annotations, token forwarded to the API", async () => {
+  const jwt = await token();
+  const init = await rpc("initialize", { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "t", version: "1" } }, { Authorization: `Bearer ${jwt}` });
+  assert.equal(init.status, 200);
+  const { result } = await init.json();
+  assert.equal(result.serverInfo.title, "LIKYLY");
+  assert.match(result.instructions, /in a conversation/);
+
+  const list = await (await rpc("tools/list", {}, { Authorization: `Bearer ${jwt}` })).json();
+  const names = list.result.tools.map((t) => t.name);
+  assert.ok(names.includes("create_placement"));
+  assert.ok(!names.includes("track_event") && !names.includes("get_recommendations"));
+  for (const tool of list.result.tools) {
+    assert.ok(tool.title, `${tool.name} has a title`);
+    assert.equal(typeof tool.annotations?.readOnlyHint, "boolean", `${tool.name} has readOnlyHint`);
+    assert.equal(typeof tool.annotations?.destructiveHint, "boolean", `${tool.name} has destructiveHint`);
+  }
+  assert.equal(list.result.tools.find((t) => t.name === "delete_data_source").annotations.destructiveHint, true);
+
+  const call = await (await rpc("tools/call", { name: "list_placements", arguments: {} }, { Authorization: `Bearer ${jwt}` })).json();
+  assert.ok(!call.result.isError, JSON.stringify(call));
+  assert.equal(apiCalls.at(-1).key, jwt);
+});
+
+test("LIKYLY key: every tool, forwarded as is", async () => {
+  const list = await (await rpc("tools/list", {}, { Authorization: "Bearer lk_test_key" })).json();
+  const names = list.result.tools.map((t) => t.name);
+  assert.ok(names.includes("track_event") && names.includes("create_placement"));
+  await rpc("tools/call", { name: "list_placements", arguments: {} }, { Authorization: "Bearer lk_test_key" });
+  assert.equal(apiCalls.at(-1).key, "lk_test_key");
+});
+
+test("icon and OpenAI domain challenge", async () => {
+  const icon = await fetch(`http://127.0.0.1:${MCP_PORT}/icon.png`);
+  assert.equal(icon.headers.get("content-type"), "image/png");
+  assert.equal(await (await fetch(`http://127.0.0.1:${MCP_PORT}/.well-known/openai-apps-challenge`)).text(), "challenge-token");
+});

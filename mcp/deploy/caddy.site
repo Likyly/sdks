@@ -1,0 +1,11 @@
+# LIKYLY MCP (Claude, ChatGPT) - container likyly-mcp. Add once to the shared Caddyfile
+# (~/app/licenses/caddy/Caddyfile on the droplet), then validate and reload Caddy.
+mcp.likyly.com {
+  encode zstd gzip
+  request_body {
+    max_size 2MB
+  }
+  reverse_proxy likyly-mcp:3200 {
+    flush_interval -1
+  }
+}
