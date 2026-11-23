@@ -33,8 +33,8 @@ export const TOOL_META: Record<string, Meta> = {
   create_data_source: { title: "Connect a catalog", ...WRITE },
   test_data_source: { title: "Test a catalog connection", ...READ_EXTERNAL },
   preview_data_source: { title: "Preview catalog products", ...READ_EXTERNAL },
-  // Its dry run reads the merchant's source.
-  configure_field_mapping: { title: "Map catalog fields", ...WRITE, idempotentHint: true, openWorldHint: true },
+  // Its dry run reads the merchant's source; saving replaces the previous mapping.
+  configure_field_mapping: { title: "Map catalog fields", ...WRITE, idempotentHint: true, openWorldHint: true, destructiveHint: true },
   // A full import removes the products no longer in the source.
   sync_data_source: { title: "Import the catalog", ...WRITE_LIVE, destructiveHint: true },
   get_sync_status: { title: "Check catalog imports", ...READ },

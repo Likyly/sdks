@@ -141,7 +141,7 @@ test("OAuth token: chat tools with titles and annotations, token forwarded to th
     assert.equal(typeof tool.annotations?.readOnlyHint, "boolean", `${tool.name} has readOnlyHint`);
     assert.equal(typeof tool.annotations?.destructiveHint, "boolean", `${tool.name} has destructiveHint`);
   }
-  for (const name of ["delete_data_source", "update_data_source", "push_items", "sync_data_source", "update_placement"])
+  for (const name of ["delete_data_source", "update_data_source", "configure_field_mapping", "push_items", "sync_data_source", "update_placement"])
     assert.equal(list.result.tools.find((t) => t.name === name).annotations.destructiveHint, true, `${name} is destructive`);
   assert.equal(list.result.tools.find((t) => t.name === "configure_field_mapping").annotations.openWorldHint, true);
 
