@@ -125,7 +125,7 @@ test("OAuth token: chat tools with titles and annotations, token forwarded to th
 
   const list = await (await rpc("tools/list", {}, { Authorization: `Bearer ${jwt}` })).json();
   const names = list.result.tools.map((t) => t.name);
-  assert.ok(names.includes("create_placement"));
+  assert.ok(names.includes("create_placement") && names.includes("search_catalog_items"));
   assert.ok(!names.includes("track_event") && !names.includes("get_recommendations"));
   for (const tool of list.result.tools) {
     assert.ok(tool.title, `${tool.name} has a title`);
@@ -137,6 +137,10 @@ test("OAuth token: chat tools with titles and annotations, token forwarded to th
   const call = await (await rpc("tools/call", { name: "list_placements", arguments: {} }, { Authorization: `Bearer ${jwt}` }, "/")).json();
   assert.ok(!call.result.isError, JSON.stringify(call));
   assert.equal(apiCalls.at(-1).key, jwt);
+
+  const search = await (await rpc("tools/call", { name: "search_catalog_items", arguments: { product_type: "books", search: "solitude" } }, { Authorization: `Bearer ${jwt}` })).json();
+  assert.ok(!search.result.isError, JSON.stringify(search));
+  assert.match(apiCalls.at(-1).url, /^\/items\?.*data_product_type=books.*search=solitude/);
 });
 
 test("LIKYLY key: every tool, forwarded as is", async () => {

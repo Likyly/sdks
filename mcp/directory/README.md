@@ -1,7 +1,7 @@
 # LIKYLY dans les annuaires de Claude et de ChatGPT : dossier de soumission
 
 Un seul serveur pour les deux : `https://mcp.likyly.com` (MCP distant, OAuth : les comptes LIKYLY sur Supabase Auth,
-inscription automatique des clients, PKCE). Les assistants connectés par OAuth ont les 27 outils « chat » :
+inscription automatique des clients, PKCE). Les assistants connectés par OAuth ont les 28 outils « chat » :
 catalogues, emplacements, intégration, vérifications, modèle (pas les recommandations ni les événements, pas les
 clés secrètes, pas la facturation).
 
@@ -60,7 +60,7 @@ Instructions pour les relecteurs (à coller avec les identifiants) :
 
 **1. Connection** — Server URL: `https://mcp.likyly.com` (same URL for every user).
 
-**2. Tools** — synced from the server: 27 tools with titles and annotations. Check that no warning shows.
+**2. Tools** — synced from the server: 28 tools with titles and annotations. Check that no warning shows.
 
 **3. Listing**
 

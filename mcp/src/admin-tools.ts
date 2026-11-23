@@ -136,4 +136,23 @@ export function createLikylyAdminTools(server: McpServer, client: LikylyClient):
     { data_source_id: dataSourceId },
     async ({ data_source_id }) => textResult(await client.getCatalogStats(data_source_id)),
   );
+
+  server.tool(
+    "search_catalog_items",
+    "Finds products in one of the account's catalogs by a word of their title or description (case-insensitive), or lists the first ones without `search`. Returns each product's item_id (the merchant's own id, the one placements take as current_item_id), title, price and category. Read-only.",
+    {
+      product_type: z.string().min(1).max(64).regex(/^[a-zA-Z0-9_-]+$/).describe("The catalog's name (e.g. 'books')."),
+      search: z.string().max(200).optional().describe("A word or phrase from the product's title or description."),
+      limit: z.number().int().min(1).max(50).default(10),
+    },
+    async ({ product_type, search, limit }) => {
+      const items = (await client.searchCatalogItems(product_type, search, limit)) as Array<Record<string, unknown>>;
+      return textResult(
+        (Array.isArray(items) ? items : []).map((item) => {
+          const properties = (item.properties ?? {}) as Record<string, unknown>;
+          return { item_id: item.item_id, title: item.title, price: item.price ?? null, category: properties.category ?? item.genre_1 ?? null };
+        }),
+      );
+    },
+  );
 }

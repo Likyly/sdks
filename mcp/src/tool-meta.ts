@@ -36,6 +36,7 @@ export const TOOL_META: Record<string, Meta> = {
   get_sync_status: { title: "Check catalog imports", ...READ },
   list_data_sources: { title: "List connected catalogs", ...READ },
   get_catalog_stats: { title: "Catalog statistics", ...READ },
+  search_catalog_items: { title: "Find catalog products", ...READ },
   update_data_source: { title: "Update a catalog connection", ...WRITE, idempotentHint: true },
   delete_data_source: { title: "Delete a catalog connection", ...DESTRUCTIVE },
   push_items: { title: "Send products to LIKYLY", ...WRITE, idempotentHint: true },

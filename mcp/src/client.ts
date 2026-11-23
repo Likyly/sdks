@@ -161,6 +161,11 @@ export class LikylyClient {
     return this.request("GET", `/data-sources/${dataSourceId}/stats`);
   }
 
+  /** Items of a catalog whose title or description contains `search` (GET /items). */
+  async searchCatalogItems(productType: string, search: string | undefined, limit: number) {
+    return this.request("GET", "/items", { query: { data_product_type: productType, search, limit } });
+  }
+
   // ---------------------------------------------------------------------------------------
   // Placements - the recommended orchestration abstraction over the strategies above. Admin
   // calls (all but recommend) need the secret key or a developer key with placements:read/
