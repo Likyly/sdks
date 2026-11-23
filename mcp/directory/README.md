@@ -24,7 +24,7 @@ clés secrètes, pas la facturation).
 | Test dans ChatGPT (mode développeur, OAuth) | vous | à faire |
 | Site en anglais, documentation `https://www.likyly.com/en/docs/mcp` | Claude | ✅ |
 | Confidentialité : partie « AI assistants » (fr, en), page support (fr, en), panneau « Assistants connectés » pour retirer l'accès | Claude | en cours |
-| Compte de démo pour les relecteurs, avec un catalogue et deux emplacements | vous + Claude | à faire |
+| Compte de démo `demo@likyly.com` (sans double authentification) : catalogue `books` (20 livres, source « CSV by URL »), emplacements `pdp-you-may-also-like` et `home-for-you` | vous + Claude | ✅ 2026-11-23 |
 | Vidéo de démonstration (exigée par OpenAI) : `https://www.likyly.com/video/likyly-in-chatgpt.mp4` | vous + Claude | à faire |
 | Vérification d'identité OpenAI (Individual, « Arnaud Breton », comme pour ROMKADE) | vous | déjà faite pour ROMKADE ; vérifier qu'elle vaut pour l'organisation choisie |
 | Jeton de vérification du domaine OpenAI → `OPENAI_APPS_CHALLENGE` dans `deploy/compose.yaml`, redéployer | vous + Claude | à la soumission |
@@ -39,9 +39,11 @@ accès par e-mail pendant la revue « Verified » ; OpenAI dans le formulaire **
 figure nulle part dans ce dépôt (public).
 
 - Adresse : `demo@likyly.com` (alias à créer chez OVH vers la boîte du support).
-- Contenu prévu : un catalogue **books** (20 livres en anglais, CSV par URL publique :
-  `https://www.likyly.com/demo-data/books.csv`, images sur le même site) et deux emplacements : **You may also like** (fiche produit, contenu similaire) et **Recommended for
-  you** (accueil, auto). Les cas de test ci-dessous s'appuient dessus.
+- Contenu (en place depuis le 2026-11-23, workspace `li_fa6bb43c557f4dd3`, forfait Free) : un catalogue **books** (20 livres en anglais, CSV par URL publique :
+  `https://www.likyly.com/demo-data/books.csv`, images sur le même site) et deux emplacements : **You may also like** (`pdp-you-may-also-like`, fiche produit, contenu similaire,
+  4 livres) et **Recommended for you** (`home-for-you`, accueil, auto, 4 livres). Le forfait Free n'autorise
+  qu'une source de catalogue (déjà prise) : les cas de test n'en créent pas d'autre. Aucune clé API active (la clé
+  temporaire de mise en place a été révoquée). Les cas de test ci-dessous s'appuient dessus.
 - Ne pas changer le mot de passe ni supprimer ces données pendant les revues.
 
 Instructions pour les relecteurs (à coller avec les identifiants) :

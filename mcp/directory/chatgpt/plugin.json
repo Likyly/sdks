@@ -46,19 +46,19 @@
               "description": "Catalogs connected to the demo account and their size",
               "prompt": "Which catalogs do I have in LIKYLY, and how many products are in them?",
               "tools_triggered": "list_data_sources, get_catalog_stats",
-              "expected_behavior": "Lists the demo account's catalog source (books, a CSV by URL), its status and last import, and the number of products in the catalog."
+              "expected_behavior": "Lists the demo account's catalog source (Books, a CSV by URL, catalog books), its last import (20 products, no errors) and the number of products in the catalog (20)."
             },
             {
               "description": "Placements of the demo account",
               "prompt": "List my LIKYLY placements.",
               "tools_triggered": "list_placements",
-              "expected_behavior": "Lists the demo account's placements with their name, page, method and number of products, all enabled."
+              "expected_behavior": "Lists the 2 placements of the demo account: You may also like (product page, content, 4 books) and Recommended for you (home page, automatic, 4 books), both enabled."
             },
             {
               "description": "Preview a placement for a given product",
               "prompt": "What does my \"You may also like\" block recommend on the page of One Hundred Years of Solitude?",
               "tools_triggered": "list_placements, preview_placement",
-              "expected_behavior": "Shows the books the placement recommends for that book (similar literary fiction), with the method LIKYLY used."
+              "expected_behavior": "Shows the 4 books the placement recommends for that book (content similarity, e.g. Beloved, The Remains of the Day, The Name of the Rose), never the book itself."
             },
             {
               "description": "Integration code for a placement",
