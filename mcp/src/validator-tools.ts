@@ -19,28 +19,28 @@ export function createLikylyValidatorTools(server: McpServer, client: LikylyClie
 
   server.tool(
     "get_tracking_requirements",
-    "Which events this placement needs instrumented, and why - call this before writing tracking code (recommendation_impression/recommendation_click are placement-specific; product_view/add_to_cart/purchase are catalog-wide funnel events every placement benefits from). Follow up with get_placement_health once the site is live to confirm they actually arrived.",
+    "Lists the events a placement needs instrumented, and why: recommendation_impression and recommendation_click are specific to the placement; product_view, add_to_cart and purchase are catalog-wide funnel events every placement benefits from. Read-only.",
     { slug },
     async ({ slug }) => jsonResult(await client.getTrackingRequirements(slug)),
   );
 
   server.tool(
     "get_placement_health",
-    "Structured counts of what actually arrived for this placement in the last window_hours (recommend calls, impressions, clicks, product views, add-to-carts, purchases), each marked ok/warning/missing. The raw data behind validate_integration - use that tool instead for a human-readable checklist; use this one if you need the numbers themselves.",
+    "Structured counts of what actually arrived for a placement in the last window_hours (default 24, up to 720): recommend calls, impressions, clicks, product views, add-to-carts, purchases, each marked ok/warning/missing, from LIKYLY's own data. The raw numbers, without explanations. Read-only.",
     { slug, window_hours: windowHours },
     async ({ slug, window_hours }) => jsonResult(await client.getPlacementHealth(slug, window_hours)),
   );
 
   server.tool(
     "get_recent_integration_events",
-    "The individual recent recommend calls and tracked events behind get_placement_health's counts - for debugging exactly which item/session/strategy was involved, when the aggregate counts alone don't explain what's wrong (e.g. recommendations were requested but always for the wrong item_id).",
+    "The individual recent recommend calls and tracked events of a placement within window_hours (`limit`, default 20, up to 100), with the item, session and strategy involved in each. For debugging what aggregate counts alone don't explain, e.g. recommendations always requested for the wrong item_id. Read-only.",
     { slug, window_hours: windowHours, limit: z.number().int().min(1).max(100).default(20) },
     async ({ slug, window_hours, limit }) => jsonResult(await client.getRecentIntegrationEvents(slug, window_hours, limit)),
   );
 
   server.tool(
     "get_model_overview",
-    "Read-only report on one catalog's recommendation model - what /likyly-model shows. `versions`: every trained version of the collaborative (ALS) model, newest first, with trained_at, triggered_by (manual or auto), precision_at_k (k = precision_k, measured on a held-out 20% of interactions), and the users/items/interactions it learned from; `is_active` marks the one serving production, the others are history or candidates rejected for scoring lower. `performance`: per engine that actually served this catalog in the last `days` (hybrid, content, collaborative, session, popular - the strategy after any fallback), recommendations served and the impressions, clicks, add-to-carts and purchases attributed to them, with ctr. Only collaborative and hybrid use the trained model; content uses item similarity, session the visitor's recent views, popular the catalog's popularity - none of those three is versioned. Get the catalog name from list_placements (each placement's product_type).",
+    "Read-only report on one catalog's recommendation model. `versions`: every trained version of the collaborative (ALS) model, newest first, with trained_at, triggered_by (manual or auto), precision_at_k (k = precision_k, measured on a held-out 20% of interactions), and the users/items/interactions it learned from; `is_active` marks the one serving production, the others are history or candidates rejected for scoring lower. `performance`: per engine that actually served this catalog in the last `days` (hybrid, content, collaborative, session, popular - the strategy after any fallback), recommendations served and the impressions, clicks, add-to-carts and purchases attributed to them, with ctr. Only collaborative and hybrid use the trained model; content uses item similarity, session the visitor's recent views, popular the catalog's popularity - none of those three is versioned. `product_type` is the catalog's name, as set on its placements and data sources.",
     {
       product_type: z.string().min(1).max(64).describe("The catalog, e.g. a placement's product_type."),
       days: z.number().int().min(1).max(90).default(7).describe("How many days of production traffic to count. Default 7."),
@@ -50,7 +50,7 @@ export function createLikylyValidatorTools(server: McpServer, client: LikylyClie
 
   server.tool(
     "validate_integration",
-    "Step 11 of wiring up a placement: verifies the integration is actually working, from LIKYLY's own data - not a guess from reading the site's source. Call this after rendering the placement and adding tracking, whenever a developer asks to \"check\"/\"verify\" their LIKYLY integration. Renders a checklist (✓ ok, ⚠ received but worth a look, ✗ missing/critical) and, for anything not ok, a concrete next step - loop back to get_integration_recipe or get_tracking_requirements for the ones it names.",
+    "Checks whether a placement's integration actually works, from LIKYLY's own data (recommend calls, impressions, clicks, product views, add-to-carts and purchases received in the last window_hours), not from reading the site's source. Returns a readable checklist (✓ ok, ⚠ received but worth a look, ✗ missing) with, for each check not ok, what the site's code is missing. An event only shows up after a real visit or click on the site. Read-only.",
     { slug, window_hours: windowHours },
     async ({ slug, window_hours }) => textResult(await renderValidation(client, slug, window_hours)),
   );

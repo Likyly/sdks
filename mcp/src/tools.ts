@@ -71,7 +71,7 @@ export function createLikylyServer(client: LikylyClient, options: LikylyServerOp
   function registerRuntimeTools() {
   server.tool(
     "get_recommendations",
-    "The recommendation call to use: send whatever you know (a user_id, an anonymous session_id, the item_id being viewed, viewed_item_ids, a placement label) and LIKYLY picks the best strategy (hybrid, content, collaborative, session or popular) and returns it in `strategy`. Every response has a `recommendation_id` - pass it as recommendation_id to track_event for the impression/click/add_to_cart/purchase events that follow, to attribute them. Ids are YOUR own ids (any string).",
+    "Returns recommendations for one catalog from whatever context is known: a user_id, an anonymous session_id, the item_id being viewed, viewed_item_ids, a placement label. LIKYLY picks the strategy (hybrid, content, collaborative, session or popular) and reports it in `strategy`. Every response carries a `recommendation_id`: events that later send it back (impression, click, add_to_cart, purchase) are attributed to this response. Ids are the site's own ids (any string).",
     {
       product_type: productType,
       user_id: id.optional(),
@@ -131,7 +131,7 @@ export function createLikylyServer(client: LikylyClient, options: LikylyServerOp
 
   server.tool(
     "get_user_session_recommendations",
-    "Same recency-weighted logic as get_session_recommendations, but sourced from a logged-in user's persisted view history instead of a client-supplied list - survives across devices/sessions.",
+    "Recency-weighted recommendations from a logged-in user's stored view history, rather than from a list of ids supplied by the caller, so it carries across devices and sessions. The most recent views weigh the most.",
     { product_type: productType, user_id: id, count: z.number().int().min(1).max(50).default(3) },
     async ({ product_type, user_id, count }) =>
       textResult(await client.getUserSessionRecs(resolveProductType(product_type), user_id, count)),
@@ -139,7 +139,7 @@ export function createLikylyServer(client: LikylyClient, options: LikylyServerOp
 
   server.tool(
     "track_event",
-    "Record an interaction: impression, view, click, add_to_cart, remove_from_cart, purchase - or any event type of your own. Needs item_id and at least one of user_id (logged in) / session_id (anonymous). Pass the recommendation_id of the get_recommendations call that surfaced the item to attribute it. Send event_id (any unique string) on purchases so a retry is not counted twice.",
+    "Records an interaction: impression, view, click, add_to_cart, remove_from_cart, purchase, or any event type of your own. Needs item_id and at least one of user_id (logged in) or session_id (anonymous). `recommendation_id`, the id returned with the recommendations that surfaced the item, attributes the event to them. `event_id` (any unique string) on a purchase keeps a retry from being counted twice. Writes to the account's event data, which feeds statistics and model training.",
     {
       product_type: productType,
       event_type: z.string().regex(/^[a-zA-Z0-9_-]+$/).max(64).describe("e.g. view, click, purchase"),

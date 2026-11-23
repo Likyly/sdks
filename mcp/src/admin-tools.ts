@@ -12,7 +12,8 @@ import type { LikylyClient } from "./client.js";
 //
 // A typical flow: list_source_types -> create_data_source -> test_data_source ->
 // preview_data_source -> configure_field_mapping -> sync_data_source -> get_sync_status /
-// get_catalog_stats. Each tool below states which step(s) of that flow it is.
+// get_catalog_stats. That order lives in the server instructions (instructions.ts): a tool's
+// description says what the tool itself does, never which tool to call next (directory rules).
 export function createLikylyAdminTools(server: McpServer, client: LikylyClient): void {
   function textResult(data: unknown) {
     return { content: [{ type: "text" as const, text: JSON.stringify(data, null, 2) }] };
@@ -22,14 +23,14 @@ export function createLikylyAdminTools(server: McpServer, client: LikylyClient):
 
   server.tool(
     "list_source_types",
-    "Step 1: every catalog source type LIKYLY can connect to (csv_upload, csv_url, json_url, rest_api, shopify, magento, woocommerce, webhook) - each entry says whether it needs credentials and whether it supports incremental sync. Call this before create_data_source to pick the right `type` and know what `config`/`credentials` it expects (see docs/data-sources.md for each type's exact shape).",
+    "Lists every catalog source type LIKYLY can connect to (csv_upload, csv_url, json_url, rest_api, shopify, magento, woocommerce, webhook). Each entry says whether it needs credentials, whether it supports incremental sync, and which `config`/`credentials` it expects. Read-only.",
     {},
     async () => textResult(await client.listSourceTypes()),
   );
 
   server.tool(
     "create_data_source",
-    "Step 2: register a new catalog integration for this account. Doesn't fetch or write anything yet - it just saves the configuration. `product_type` is the catalog namespace it will write into (an existing one, or a new name to start a new catalog). `config` holds non-secret settings (e.g. {base_url, items_path} for rest_api, {shop_domain} for shopify); `credentials` holds secrets (for shopify: {access_token: 'shpat_...'} of a legacy custom app, or {client_id, client_secret} of a Dev Dashboard app installed on the store with read_products, the only kind new stores can create; LIKYLY renews its 24 h tokens; for magento: {store_url} and an Integration's {consumer_key, consumer_secret, access_token, access_token_secret}; for Shopify and Magento, don't collect these in the conversation: the developer runs `npx @likyly/wizard shopify` / `npx @likyly/wizard magento`, which sends them to LIKYLY directly) and is encrypted at rest, never returned afterwards. Omit `sync_mode` to get the type's default. For a push-mode type (woocommerce, webhook) the response includes a one-time `push_secret` for the upstream system's webhook - save it, it can't be retrieved again. Call test_data_source next.",
+    "Registers a new catalog source for this account and saves its configuration; it fetches and imports nothing yet. `type` is a source type id (e.g. 'shopify', 'rest_api', 'csv_url'). `product_type` is the catalog namespace it writes into: an existing one, or a new name to start a new catalog. `config` holds non-secret settings (e.g. {base_url, items_path} for rest_api, {shop_domain} for shopify). `credentials` holds secrets, encrypted at rest and never returned: for shopify {access_token: 'shpat_...'} of a legacy custom app, or {client_id, client_secret} of a Dev Dashboard app installed on the store with read_products (the only kind new stores can create; LIKYLY renews its 24 h tokens); for magento {store_url} and an Integration's {consumer_key, consumer_secret, access_token, access_token_secret}. Shopify and Magento credentials are not meant to be collected in a conversation: `npx @likyly/wizard shopify` / `npx @likyly/wizard magento` sends them to LIKYLY directly. Without `sync_mode` the type's default applies. A push-mode type (woocommerce, webhook) returns a one-time `push_secret` for the upstream system's webhook; it cannot be retrieved again. A source beyond the plan's limit (the Free plan allows one) is refused with a 403 'plan limit reached'.",
     {
       name: z.string().min(1).max(200),
       type: z.string().describe("One of list_source_types' ids, e.g. 'shopify', 'rest_api', 'csv_url'."),
@@ -44,7 +45,7 @@ export function createLikylyAdminTools(server: McpServer, client: LikylyClient):
 
   server.tool(
     "update_data_source",
-    "Change an existing data source instead of creating another one (the Free plan allows a single source): its name, `config` (merged shallowly: send only the keys that change, e.g. a new base_url), `credentials` (fully replaced) or `product_type` (the catalog it writes into from the next sync on - e.g. the existing catalog a plan-limit error names, to stay within the plan; the next full sync sends every item there). Use it when a source points at an old URL or catalog. Run test_data_source afterwards.",
+    "Changes an existing data source: its name, `config` (merged shallowly: only the keys sent change, e.g. a new base_url), `credentials` (fully replaced), `sync_mode`, or `product_type` (the catalog it writes into from the next sync on; the next full sync sends every item there). Pointing `product_type` at an existing catalog, such as the one a plan-limit error names, keeps the account within its plan. Suits a source that points at an old URL or catalog, and is the way to change what is connected on the Free plan, which allows a single source. The new settings are saved, not tested.",
     {
       data_source_id: dataSourceId,
       name: z.string().min(1).max(200).optional(),
@@ -58,14 +59,14 @@ export function createLikylyAdminTools(server: McpServer, client: LikylyClient):
 
   server.tool(
     "delete_data_source",
-    "Delete a data source's configuration and sync history - catalog items it already wrote stay in place. Frees the slot on plans limited to one source. Irreversible: confirm with the developer first, and prefer update_data_source when the source only needs a new URL or catalog.",
+    "Permanently deletes a data source's configuration and sync history; catalog items it already wrote stay in place. Frees the slot on plans limited to one source. Irreversible.",
     { data_source_id: dataSourceId },
     async ({ data_source_id }) => textResult(await client.deleteDataSource(data_source_id)),
   );
 
   server.tool(
     "push_items",
-    "Send catalog items to a push-mode source (type 'webhook'), up to 1000 per call. This is the way to load a catalog LIKYLY cannot fetch - a site on localhost, behind a VPN, or data only in the codebase: read the products from the project (API route, JSON, database seed), map them to item objects, push them. `push_secret` comes from create_data_source's response (shown once) or rotate_push_secret. `deleted_ids` removes items.",
+    "Sends catalog items to a push-mode source (type 'webhook'), up to 1000 per call, and removes the items whose ids are in `deleted_ids`. Loads a catalog LIKYLY cannot fetch itself: a site on localhost or behind a VPN, or products that exist only in a codebase (an API route, a JSON file, a database seed), mapped to item objects. Needs the source's `push_secret` (returned once when the source was created, or when it was last rotated). Writes to the catalog.",
     {
       data_source_id: dataSourceId,
       push_secret: z.string().min(1),
@@ -77,28 +78,28 @@ export function createLikylyAdminTools(server: McpServer, client: LikylyClient):
 
   server.tool(
     "rotate_push_secret",
-    "Issue a new push secret for a push-mode source (the old one stops working) - use it when the secret from create_data_source was lost, then call push_items with the new one.",
+    "Issues and returns a new push secret for a push-mode source. The old secret stops working, so a system still pushing with it is rejected until it gets the new one. For a lost or leaked secret.",
     { data_source_id: dataSourceId },
     async ({ data_source_id }) => textResult(await client.rotatePushSecret(data_source_id)),
   );
 
   server.tool(
     "test_data_source",
-    "Step 3: validates that this source's credentials/config actually reach it - never writes any catalog data. Always returns ok:true/false with a message (never throws for a bad connection), so you can report exactly why a connection failed.",
+    "Checks that a source's credentials and config actually reach it; never writes catalog data. Always returns ok:true/false with a message (a bad connection is a result, not an error) stating why a connection failed.",
     { data_source_id: dataSourceId },
     async ({ data_source_id }) => textResult(await client.testDataSource(data_source_id)),
   );
 
   server.tool(
     "preview_data_source",
-    "Step 4: fetches a small sample from the source (never writes to the catalog) and returns detected_fields plus a best-effort suggested_mapping - the starting point for configure_field_mapping. Call this before mapping fields, especially for a source type you haven't configured before.",
+    "Fetches a small sample from the source (`limit`, default 10, up to 50) without writing to the catalog, and returns the detected_fields plus a best-effort suggested_mapping to build a field mapping from.",
     { data_source_id: dataSourceId, limit: z.number().int().min(1).max(50).default(10) },
     async ({ data_source_id, limit }) => textResult(await client.previewDataSource(data_source_id, limit)),
   );
 
   server.tool(
     "configure_field_mapping",
-    "Step 5: sets how this source's raw records map to a Likyly item. `mapping.external_id` and `mapping.title` are required; `description`, `category`, `price`, `image`, `url`, `stock`, `updated_at` are optional; `attributes` is itself {name: path} for anything else to keep as free-form properties. Each value is a field name or a dotted/bracket path into a nested record (e.g. 'variants[0].price', 'images[0].src') - start from preview_data_source's suggested_mapping. Pass dry_run:true to see the mapping's effect on a fresh sample WITHOUT saving it (use this to iterate); dry_run:false (the default) persists it for sync_data_source to use.",
+    "Sets how this source's raw records map to a LIKYLY item. `mapping.external_id` and `mapping.title` are required; `description`, `category`, `price`, `image`, `url`, `stock`, `updated_at` are optional; `attributes` is itself {name: path} for anything else to keep as free-form properties. Each value is a field name or a dotted/bracket path into a nested record (e.g. 'variants[0].price', 'images[0].src'). dry_run:true applies the mapping to a fresh sample and returns the result WITHOUT saving it; dry_run:false (the default) saves it, and the source's later syncs use it.",
     {
       data_source_id: dataSourceId,
       mapping: z.record(z.unknown()).describe("e.g. {external_id: 'id', title: 'name', price: 'variants[0].price', image: 'images[0].src', category: 'product_type', stock: 'variants[0].inventory_quantity'}"),
@@ -110,28 +111,28 @@ export function createLikylyAdminTools(server: McpServer, client: LikylyClient):
 
   server.tool(
     "sync_data_source",
-    "Step 6: runs a sync now (queued as a background job, so this returns almost immediately with the run's status - poll get_sync_status for completion). `mode` defaults to incremental (falls back to full automatically if the source doesn't support incremental); use mode:'full' explicitly for the first sync or to re-baseline. Not applicable to push-mode sources (woocommerce, webhook) - those sync automatically whenever the upstream system pushes; check get_sync_status/get_catalog_stats for their activity instead.",
+    "Starts a sync of a source now, as a background job: it returns almost immediately with the run's status, not its outcome. `mode` defaults to incremental (falls back to full automatically when the source doesn't support incremental); mode:'full' suits a first sync or a re-baseline. Writes items into the catalog the live recommendations use. Does not apply to push-mode sources (woocommerce, webhook), which update whenever the upstream system pushes. A 429 means the plan's sync limit is reached.",
     { data_source_id: dataSourceId, mode: z.enum(["full", "incremental"]).default("incremental") },
     async ({ data_source_id, mode }) => textResult(await client.syncDataSource(data_source_id, mode)),
   );
 
   server.tool(
     "get_sync_status",
-    "Step 7: the most recent sync attempts for this source - status (running/success/partial/failed), items fetched/upserted/deleted/failed, and any error. Poll this right after sync_data_source until status is no longer 'running'. Also the right call to check on a push-mode source's activity.",
+    "Returns a source's most recent sync runs (`limit`, default 5, up to 100): status (running/success/partial/failed), items fetched/upserted/deleted/failed, and any error. A run stays 'running' until its background job ends. Also shows a push-mode source's activity. Read-only.",
     { data_source_id: dataSourceId, limit: z.number().int().min(1).max(100).default(5) },
     async ({ data_source_id, limit }) => textResult(await client.listSyncs(data_source_id, limit)),
   );
 
   server.tool(
     "list_data_sources",
-    "Every data source configured for this account, with its type, status, and last sync time - use this to check what already exists before creating a duplicate, or to find a data_source_id by name.",
+    "Lists every data source configured for this account, with its id, name, type, status and last sync time. Read-only.",
     {},
     async () => textResult(await client.listDataSources()),
   );
 
   server.tool(
     "get_catalog_stats",
-    "Item count and last-write time for a source's target catalog, plus its latest sync run - what you need to report back to the user after a sync (\"X items synced, Y rejected, next sync at ...\").",
+    "Item count and last-write time of a source's target catalog, plus its latest sync run: items synced and rejected, and when the next sync is due. Read-only.",
     { data_source_id: dataSourceId },
     async ({ data_source_id }) => textResult(await client.getCatalogStats(data_source_id)),
   );

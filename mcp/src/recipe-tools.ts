@@ -18,7 +18,7 @@ export function createLikylyRecipeTools(server: McpServer, client: LikylyClient)
 
   server.tool(
     "get_integration_recipe",
-    "Everything needed to wire one placement into a real codebase, as structured data - not a file to copy-paste. Call this after create_placement (and, ideally, after preview_placement/configure_field_mapping have confirmed it produces sane results). Tell it the framework you found in the project (you inspected it - this tool never guesses), and it returns: packages to install, env vars, the public API to call for this framework, the context/events this specific placement needs, a short illustrative snippet, and warnings (e.g. the placement is disabled, or no auth context was given so userId will be omitted).",
+    "Returns what wiring one placement into a codebase takes, as structured data rather than a file to paste: packages to install, env vars, the public API to call for the given framework, the context and events this placement needs, a short illustrative snippet, and warnings (e.g. the placement is disabled, or no auth context was given so userId is omitted). `framework`, `rendering_mode` and `has_auth_context` describe the project as the caller found it; this tool does not detect or guess the stack. Read-only: it changes no code.",
     {
       placement: z.string().min(1).max(128),
       framework,

@@ -52,7 +52,7 @@ export function createLikylyPlacementTools(server: McpServer, client: LikylyClie
 
   server.tool(
     "list_placements",
-    "Every placement configured for this account. Check this before creating a new one, or to find a slug by name.",
+    "Lists every placement configured for this account, with its slug, name and catalog (product_type). Read-only.",
     {},
     async () => textResult(await client.listPlacements()),
   );
@@ -66,7 +66,7 @@ export function createLikylyPlacementTools(server: McpServer, client: LikylyClie
 
   server.tool(
     "create_placement",
-    "Registers a new named recommendation configuration - the abstraction to reach for instead of picking a raw strategy endpoint. Underneath it always calls one of LIKYLY's existing engines (content/session/collaborative/hybrid/popular, and also_bought: \"customers who bought this also bought\" for a product page, with fallback_strategy 'content') - 'auto' delegates to the same signal-based selection POST /getRec already uses (hybrid when both a user and an item are known, content from just an item, session from recent views, collaborative for a known user with a trained model, popular otherwise) - it is not a new ML model, just an orchestration choice. Set `signals.required` to the context keys this placement can't run without (e.g. current_item_id for a product-page placement) - everything else stays optional. `fallback_strategy` is tried if `strategy` returns nothing; 'popular' is always the final safety net regardless. Call preview_placement right after creating it.",
+    "Creates a named recommendation configuration: what to recommend, where (context_type), for whom (audience), with which strategy, fallback, filters and business rules; pages request recommendations from it by slug. Strategies run LIKYLY's existing engines (content, session, collaborative, hybrid, popular, and also_bought: \"customers who bought this also bought\", for a product page, with fallback_strategy 'content'); it trains no new model. 'auto' (the default) picks per request from the signals present: hybrid when both a user and an item are known, content from an item alone, session from recent views, collaborative for a known user with a trained model, popular otherwise. `signals.required` lists the context keys the placement can't run without (e.g. current_item_id on a product page); every other key stays optional. `fallback_strategy` is tried when `strategy` returns nothing; 'popular' is always the final safety net. Enabled by default: it serves recommendations as soon as a page requests its slug. A placement beyond the plan's limit is refused with a 403 'plan limit reached'.",
     {
       slug,
       name: z.string().min(1).max(200),
@@ -86,14 +86,14 @@ export function createLikylyPlacementTools(server: McpServer, client: LikylyClie
 
   server.tool(
     "purge_recommendation_cache",
-    "Empty the cache of anonymous recommendations: one placement's (`slug`) or every placement's (no slug). LIKYLY keeps an anonymous visitor's answer for a product for an hour and empties it on its own when the catalog or the placement changes - call this only when something changed that LIKYLY cannot see (stock managed outside LIKYLY, new product pages deployed) or when the developer asks to see fresh results now.",
+    "Empties the cache of anonymous recommendations, for one placement (`slug`) or for every placement (no slug). LIKYLY keeps an anonymous visitor's answer for a product for an hour and empties the cache on its own when the catalog or the placement changes; a purge only matters after a change LIKYLY cannot see (stock managed outside LIKYLY, newly deployed product pages) or to get fresh results right away. The live site's next requests are recomputed; no configuration or data is deleted.",
     { slug: slug.optional() },
     async ({ slug }) => textResult(await client.purgeRecommendationCache(slug)),
   );
 
   server.tool(
     "update_placement",
-    "Partial update of an existing placement - only the fields given are changed. Sending `signals`/`filters`/`business_rules` at all replaces that whole sub-object (not a deep merge). Use this to disable/re-enable too (`enabled: true|false`) - or delete_or_disable_placement's default mode, which is the same thing plus a clearer name for it. Reuse an existing placement this way rather than creating another one: `product_type` moves it to another catalog of the account (an unknown catalog is a 422 naming those it has).",
+    "Partially updates an existing placement: only the fields sent change. Sending `signals`, `filters` or `business_rules` replaces that whole sub-object (no deep merge). `enabled: false` disables it (requests for its slug return 404) and `enabled: true` re-enables it. `product_type` moves it to another catalog of the account (an unknown catalog returns a 422 naming the catalogs it has). Changes apply to the live site.",
     {
       slug,
       name: z.string().optional(),
@@ -113,21 +113,21 @@ export function createLikylyPlacementTools(server: McpServer, client: LikylyClie
 
   server.tool(
     "delete_or_disable_placement",
-    "mode:'disable' (the default, reversible): POST /placements/{slug}/recommend starts 404ing immediately, nothing is deleted - prefer this. mode:'delete': permanent, only for a configuration that was wrong and shouldn't exist at all.",
+    "Disables or deletes a placement. mode:'disable' (the default) is reversible: requests for its slug (POST /placements/{slug}/recommend) return 404 at once, the configuration is kept and can be re-enabled. mode:'delete' removes the configuration permanently and cannot be undone; it suits only a configuration that should not exist at all.",
     { slug, mode: z.enum(["disable", "delete"]).default("disable") },
     async ({ slug, mode }) => textResult(mode === "delete" ? await client.deletePlacement(slug) : await client.deactivatePlacement(slug)),
   );
 
   server.tool(
     "get_placement_requirements",
-    "Static introspection (no engine call) - the required/optional context signals, strategy, fallback_strategy and context_type. Call this before wiring a site to a placement, to know exactly what context (current_item_id, user_id, session_id, ...) to send at recommend time.",
+    "Returns what a page must send to a placement, without running it: the required and optional context signals (current_item_id, user_id, session_id, ...), its strategy, fallback_strategy and context_type. Read-only.",
     { slug },
     async ({ slug }) => textResult(await client.getPlacementRequirements(slug)),
   );
 
   server.tool(
     "preview_placement",
-    "Runs a placement's full orchestration (strategy selection, fallback, filters) against a sample context - never writes anything, mints no recommendation_id, nothing attributable. Returns strategy_used, items, whether a fallback was used, which strategies were attempted, which context signals were actually present, and warnings/errors (a missing required signal shows up in `errors`, not a thrown error) - use this to validate a placement before wiring it into a site, or to debug one that isn't behaving as expected.",
+    "Runs a placement's full orchestration (strategy selection, fallback, filters) against a sample context and returns strategy_used, the items, whether a fallback was used, the strategies attempted, the context signals actually present, and warnings/errors (a missing required signal appears in `errors`, not as a thrown error). Writes nothing and mints no recommendation_id, so nothing is attributed. Meaningful results need real item ids from the catalog. Suits checking a placement before it goes on a site, or debugging one that misbehaves.",
     { slug, context: context.default({}), limit: z.number().int().min(1).max(100).optional() },
     async ({ slug, context, limit }) => textResult(await client.previewPlacement(slug, context, limit)),
   );
