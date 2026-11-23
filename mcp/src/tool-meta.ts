@@ -59,6 +59,11 @@ export const TOOL_META: Record<string, Meta> = {
   get_placement_health: { title: "Placement health", ...READ },
   get_recent_integration_events: { title: "Recent events from the site", ...READ },
   get_model_overview: { title: "Recommendation model and performance", ...READ },
+
+  // Analytics
+  get_recommendation_performance: { title: "Recommendation performance", ...READ },
+  get_top_recommended_items: { title: "Top recommended products", ...READ },
+  get_plan_and_usage: { title: "Plan and usage", ...READ },
 };
 
 /** Applies TOOL_META to every registered tool; a tool without an entry fails at startup. */

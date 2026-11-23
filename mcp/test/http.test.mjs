@@ -125,7 +125,7 @@ test("OAuth token: chat tools with titles and annotations, token forwarded to th
 
   const list = await (await rpc("tools/list", {}, { Authorization: `Bearer ${jwt}` })).json();
   const names = list.result.tools.map((t) => t.name);
-  assert.ok(names.includes("create_placement") && names.includes("search_catalog_items"));
+  assert.ok(names.includes("create_placement") && names.includes("search_catalog_items") && names.includes("get_recommendation_performance") && names.includes("get_top_recommended_items"));
   assert.ok(!names.includes("track_event") && !names.includes("get_recommendations"));
   for (const tool of list.result.tools) {
     assert.ok(tool.title, `${tool.name} has a title`);

@@ -161,6 +161,11 @@ export class LikylyClient {
     return this.request("GET", `/data-sources/${dataSourceId}/stats`);
   }
 
+  /** Recommendation analytics (GET /analytics/{summary|placements|detail|items|plan}). */
+  async analytics(part: "summary" | "placements" | "detail" | "items" | "plan", query: Query = {}) {
+    return this.request("GET", `/analytics/${part}`, { query });
+  }
+
   /** Items of a catalog whose title or description contains `search` (GET /items). */
   async searchCatalogItems(productType: string, search: string | undefined, limit: number) {
     return this.request("GET", "/items", { query: { data_product_type: productType, search, limit } });

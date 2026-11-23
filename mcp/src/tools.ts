@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { createLikylyAdminTools } from "./admin-tools.js";
+import { createLikylyAnalyticsTools } from "./analytics-tools.js";
 import { createLikylyPlacementTools } from "./placement-tools.js";
 import { createLikylyRecipeTools } from "./recipe-tools.js";
 import { createLikylyValidatorTools } from "./validator-tools.js";
@@ -62,6 +63,7 @@ export function createLikylyServer(client: LikylyClient, options: LikylyServerOp
 
   if (surface === "full") registerRuntimeTools();
   createLikylyAdminTools(server, client);
+  createLikylyAnalyticsTools(server, client);
   createLikylyPlacementTools(server, client);
   createLikylyRecipeTools(server, client);
   createLikylyValidatorTools(server, client);
