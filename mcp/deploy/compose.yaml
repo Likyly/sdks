@@ -13,8 +13,8 @@ services:
       LIKYLY_BASE_URL: https://api.likyly.com
       # LIKYLY accounts (Supabase Auth, the OAuth server): the project's address, not a secret.
       LIKYLY_SUPABASE_URL: https://qttfgagusbxrpcliufkf.supabase.co
-      # ChatGPT app directory domain verification (public token), set when OpenAI gives it.
-      OPENAI_APPS_CHALLENGE: ${OPENAI_APPS_CHALLENGE:-}
+      # ChatGPT app directory domain verification: the public token the OpenAI portal gave (plugin LIKYLY).
+      OPENAI_APPS_CHALLENGE: ${OPENAI_APPS_CHALLENGE:-53dqaENzl229TvJlJc9J9OTl4FFwUI_IGC3SmLVEXg0}
     networks: [licenses_web]
     mem_limit: 192m
     healthcheck:
