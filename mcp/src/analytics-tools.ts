@@ -18,7 +18,7 @@ export function createLikylyAnalyticsTools(server: McpServer, client: LikylyClie
 
   server.tool(
     "get_recommendation_performance",
-    "How the account's recommendations performed over a window: blocks served, products seen (impressions), products clicked, CTR, and per placement the same figures with the purchases and revenue attributed to it (a purchase counts when it carries the recommendation_id it came from). On Pro plans, also the day-by-day trend and the attributed revenue; on Free, that part is reported as not included. Revenue is the sum of price x quantity of those purchases, in the currency the site sends with its purchase events (LIKYLY does not convert or label it). The answer says which window and plan were actually used. Read-only.",
+    "How the account's recommendations performed over a window: blocks served, products seen (impressions), products clicked, CTR, and per placement the same figures with the purchases and revenue attributed to it (a purchase counts when it carries the recommendation_id it came from). On Pro plans, also the day-by-day trend and the attributed revenue; on Free, that part is reported as not included. Revenue is the sum of price x quantity of those purchases, in `currency`: the one the site's purchase events send, or null when they send none or several (LIKYLY converts nothing). The answer says which window and plan were actually used. Read-only.",
     window,
     async ({ start, end }) => {
       const query = { start, end };
@@ -35,7 +35,7 @@ export function createLikylyAnalyticsTools(server: McpServer, client: LikylyClie
 
   server.tool(
     "get_top_recommended_items",
-    "The products recommendations worked best on over a window: for each one, how many recommendation responses included it, then its impressions, clicks, CTR, purchases and revenue from those recommendations, ordered by clicks then purchases, with its title from the catalog. Revenue is in the currency the site sends with its purchase events (not converted or labeled). Pro plans only: on Free the API answers that this data is not included in the plan. Read-only.",
+    "The products recommendations worked best on over a window: for each one, how many recommendation responses included it, then its impressions, clicks, CTR, purchases and revenue from those recommendations, ordered by clicks then purchases, with its title from the catalog. Revenue is in `currency`: the one the site's purchase events send, or null when they send none or several (LIKYLY converts nothing). Pro plans only: on Free the API answers that this data is not included in the plan. Read-only.",
     { ...window, limit: z.number().int().min(1).max(50).default(10) },
     async ({ start, end, limit }) => jsonResult(await client.analytics("items", { start, end, limit })),
   );
