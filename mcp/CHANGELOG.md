@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.0](https://github.com/Likyly/sdks/compare/mcp-v0.12.0...mcp-v0.13.0) (2026-11-23)
+
+
+### Features
+
+* **mcp:** Claude and ChatGPT connect to mcp.likyly.com with OAuth - LIKYLY accounts (Supabase Auth) are the authorization server, the service checks and forwards the access token; every tool has a title and behaviour annotations ([18d873c](https://github.com/Likyly/sdks/commit/18d873c4fa5215f08a9758b9da74f60eb73a4f58))
+
 ## [0.12.0](https://github.com/Likyly/sdks/compare/mcp-v0.11.0...mcp-v0.12.0) (2026-11-17)
 
 
