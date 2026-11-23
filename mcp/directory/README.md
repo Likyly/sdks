@@ -21,7 +21,7 @@ clés secrètes, pas la facturation).
 | Descriptions des outils et des paramètres sans consigne au modèle (aucun autre outil nommé, l’ordre des étapes est dans les instructions du serveur) | Claude | ✅ 2026-11-23 |
 | Favicon et icône 512 × 512 (`icon-512.png`, `https://mcp.likyly.com/icon.png`) | Claude | ✅ |
 | Test de bout en bout dans Claude (connecteur personnalisé, OAuth, outils) | vous | ✅ 2026-11-23 |
-| Test dans ChatGPT (mode développeur, OAuth) | vous | à faire |
+| Test dans ChatGPT avec le compte de démo (OAuth, 5 cas positifs et le cas négatif « clé secrète ») | Claude | ✅ 2026-11-23 : tout passe après ajout de l'outil `search_catalog_items` (ChatGPT devinait l'id d'un livre à partir de son titre) |
 | Site en anglais, documentation `https://www.likyly.com/en/docs/mcp` | Claude | ✅ |
 | Confidentialité : partie « AI assistants » (fr, en), page support (fr, en), panneau « Assistants connectés » pour retirer l'accès | Claude | en cours |
 | Compte de démo `demo@likyly.com` (sans double authentification) : catalogue `books` (20 livres, source « CSV by URL »), emplacements `pdp-you-may-also-like` et `home-for-you` | vous + Claude | ✅ 2026-11-23 |
@@ -54,7 +54,7 @@ Instructions pour les relecteurs (à coller avec les identifiants) :
 >
 > The demo account has a sample catalog of 20 books and two recommendation placements. Write actions
 > (creating or changing a placement, importing the catalog) ask for your approval; please don't delete the existing
-> placements, other reviewers use them.
+> placements, other reviewers use them. If you create a placement to test it, please delete it afterwards.
 
 ## Fiche Claude (à coller dans le portail, en anglais)
 

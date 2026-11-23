@@ -57,7 +57,7 @@
             {
               "description": "Preview a placement for a given product",
               "prompt": "What does my \"You may also like\" block recommend on the page of One Hundred Years of Solitude?",
-              "tools_triggered": "list_placements, preview_placement",
+              "tools_triggered": "search_catalog_items, preview_placement",
               "expected_behavior": "Shows the 4 books the placement recommends for that book (content similarity, e.g. Beloved, The Remains of the Day, The Name of the Rose), never the book itself."
             },
             {
@@ -67,10 +67,10 @@
               "expected_behavior": "Gives the code to install the SDK and render the placement on a Next.js product page, with the events to send, using the account's public key only (never a secret key)."
             },
             {
-              "description": "Create a placement (write action, asks for approval)",
+              "description": "Create a placement (write action)",
               "prompt": "Create a placement \"Popular right now\" on my home page that shows the 6 most popular books.",
               "tools_triggered": "create_placement, preview_placement",
-              "expected_behavior": "After the user approves, creates the placement (home page, popular, 6 products) and shows what it recommends; it appears in the placement list."
+              "expected_behavior": "Creates the placement (home page, popular, 6 books) and shows the 6 books it recommends; it then appears in the placement list. ChatGPT asks for approval first unless the plugin's permissions allow low-risk actions. Please delete it afterwards (\"Delete the Popular right now placement\": a destructive action, ChatGPT asks for approval) so the next reviewer starts from the same account."
             }
           ],
           "negative": [
