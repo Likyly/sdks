@@ -52,6 +52,15 @@ before(async () => {
   api = await listen((req, res) => {
     apiCalls.push({ url: req.url, key: req.headers["x-api-key"] });
     res.setHeader("Content-Type", "application/json");
+    if (req.url.startsWith("/placements/rotated/health"))
+      return res.end(JSON.stringify({
+        overall: "missing",
+        checks: [
+          { name: "recommendations_requested", status: "ok", count: 12 },
+          { name: "public_key_rotated", status: "missing", count: 0, message: "a public key was revoked" },
+          { name: "brand_new_check", status: "missing", count: 0, message: "explained by the API" },
+        ],
+      }));
     res.end("[]");
   });
   mcp = spawn(process.execPath, ["dist/http.js"], {
@@ -149,6 +158,15 @@ test("LIKYLY key: every tool, forwarded as is", async () => {
   assert.ok(names.includes("track_event") && names.includes("create_placement"));
   await rpc("tools/call", { name: "list_placements", arguments: {} }, { Authorization: "Bearer lk_test_key" });
   assert.equal(apiCalls.at(-1).key, "lk_test_key");
+});
+
+test("validate_integration: a revoked key or an unknown check is never reported as working", async () => {
+  const call = await (await rpc("tools/call", { name: "validate_integration", arguments: { slug: "rotated" } }, { Authorization: "Bearer lk_test_key" })).json();
+  const text = call.result.content[0].text;
+  assert.match(text, /✗ no recommendation call since a public key was regenerated or revoked/);
+  assert.match(text, /✗ brand_new_check: explained by the API/);
+  assert.match(text, /Not working yet/);
+  assert.doesNotMatch(text, /looks correct/);
 });
 
 test("icon and OpenAI domain challenge", async () => {

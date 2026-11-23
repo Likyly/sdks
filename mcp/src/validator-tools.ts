@@ -92,6 +92,11 @@ const CHECK_LABELS: Record<string, { ok: string; bad: string; nextStep: string }
     bad: "add_to_cart not received",
     nextStep: "Call likyly.events.addToCart where the visitor adds an item to their cart - optional but improves ranking quality over time.",
   },
+  public_key_rotated: {
+    ok: "public key still working",
+    bad: "no recommendation call since a public key was regenerated or revoked",
+    nextStep: "The site probably still sends the old key and gets 401 on every call: put a working public key in the site's configuration (LIKYLY console > Keys), then load a page with the block.",
+  },
   purchases_received: {
     ok: "purchases received",
     bad: "purchases not received",
@@ -104,20 +109,24 @@ const SYMBOL: Record<string, string> = { ok: "✓", warning: "⚠", missing: "�
 async function renderValidation(client: LikylyClient, slug: string, windowHours: number): Promise<string> {
   const health = (await client.getPlacementHealth(slug, windowHours)) as {
     overall: string;
-    checks: { name: string; status: "ok" | "warning" | "missing"; count: number }[];
+    checks: { name: string; status: "ok" | "warning" | "missing"; count: number; message?: string }[];
   };
 
   const lines = [`Placement: ${slug}`, ""];
   const nextSteps: string[] = [];
   for (const check of health.checks) {
-    const labels = CHECK_LABELS[check.name] ?? { ok: check.name, bad: `${check.name} (not received)`, nextStep: "" };
+    // A check this version doesn't know yet: show LIKYLY's own message rather than a guess.
+    const labels = CHECK_LABELS[check.name] ?? { ok: check.name, bad: `${check.name}: ${check.message ?? check.status}`, nextStep: "" };
     const symbol = SYMBOL[check.status] ?? "?";
     lines.push(`${symbol} ${check.status === "ok" ? labels.ok : labels.bad}`);
     if (check.status !== "ok" && labels.nextStep) nextSteps.push(`- ${labels.bad}: ${labels.nextStep}`);
   }
 
-  if (nextSteps.length > 0) {
-    lines.push("", "Next steps:", ...nextSteps);
+  if (nextSteps.length > 0) lines.push("", "Next steps:", ...nextSteps);
+  if (health.checks.some((check) => check.status === "missing")) {
+    lines.push("", "Not working yet: fix the ✗ items above.");
+  } else if (health.checks.some((check) => check.status === "warning")) {
+    lines.push("", "Working, with points worth a look (⚠).");
   } else {
     lines.push("", "Everything this validator checks is flowing - the integration looks correct.");
   }
