@@ -25,7 +25,7 @@ clés secrètes, pas la facturation).
 | Site en anglais, documentation `https://www.likyly.com/en/docs/mcp` | Claude | ✅ |
 | Confidentialité : partie « AI assistants » (fr, en), page support (fr, en), panneau « Assistants connectés » pour retirer l'accès | Claude | en cours |
 | Compte de démo `demo@likyly.com` (sans double authentification) : catalogue `books` (20 livres, source « CSV by URL »), emplacements `pdp-you-may-also-like` et `home-for-you` | vous + Claude | ✅ 2026-11-23 |
-| Vidéo de démonstration (exigée par OpenAI) : `https://www.likyly.com/video/likyly-in-chatgpt.mp4` | vous + Claude | à faire |
+| Vidéo de démonstration (exigée par OpenAI) : `https://www.likyly.com/video/likyly-in-chatgpt.mp4` (50 s, vraie session ChatGPT avec le compte de démo ; source : likyly-videos/my-video, composition `ChatGptDemo`) | Claude | ✅ 2026-11-23 |
 | Vérification d'identité OpenAI (Individual, « Arnaud Breton », comme pour ROMKADE) | vous | déjà faite pour ROMKADE ; vérifier qu'elle vaut pour l'organisation choisie |
 | Jeton de vérification du domaine OpenAI → `OPENAI_APPS_CHALLENGE` dans `deploy/compose.yaml`, redéployer | vous + Claude | à la soumission |
 | Soumission Claude | vous | à faire |
