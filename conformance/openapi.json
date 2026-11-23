@@ -1362,6 +1362,68 @@
         "title": "AnalyticsKeyDetailOut",
         "type": "object"
       },
+      "AnalyticsKeyInfo": {
+        "description": "The key the call was made with - never its value.",
+        "properties": {
+          "created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "hint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Developer key: a preview, its first and last characters (\"lk_y2CU…GTs\") - never the key.",
+            "title": "Hint"
+          },
+          "kind": {
+            "enum": [
+              "secret",
+              "developer"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Developer key: the name it was given.",
+            "title": "Name"
+          },
+          "scopes": {
+            "description": "Developer key: its rights. Empty for the secret key, which has them all.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Scopes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "title": "AnalyticsKeyInfo",
+        "type": "object"
+      },
       "AnalyticsKeySummaryOut": {
         "description": "Totals over the window - available on every plan.",
         "properties": {
@@ -1563,6 +1625,16 @@
       "AnalyticsPlanOut": {
         "description": "The account's plan, what it allows and what is used - e.g. \"20 / 50 products, Free\".",
         "properties": {
+          "key": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnalyticsKeyInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "limits": {
             "$ref": "#/components/schemas/PlanLimits",
             "description": "Everything the plan allows (`null` = no cap)."
@@ -1583,6 +1655,14 @@
             "title": "Plan Name",
             "type": "string"
           },
+          "plans": {
+            "description": "Free and Pro side by side (plus this account's own plan when it is another one), from the limits the API enforces.",
+            "items": {
+              "$ref": "#/components/schemas/PlanLimits"
+            },
+            "title": "Plans",
+            "type": "array"
+          },
           "upgrade_url": {
             "description": "Where to ask for a higher plan.",
             "examples": [
@@ -1594,6 +1674,16 @@
           "usage": {
             "$ref": "#/components/schemas/ClientUsageSummary",
             "description": "Current usage next to each capped quantity."
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AnalyticsWorkspace"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
@@ -1860,6 +1950,39 @@
           "revenue"
         ],
         "title": "AnalyticsTotals",
+        "type": "object"
+      },
+      "AnalyticsWorkspace": {
+        "description": "The workspace a key belongs to.",
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "description": "Technical name, fixed at creation - the identifier to quote to support.",
+            "examples": [
+              "li_7f3k2q"
+            ],
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "description": "What the owner calls it in the console (the technical name until renamed).",
+            "examples": [
+              "My shop"
+            ],
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "created_at"
+        ],
+        "title": "AnalyticsWorkspace",
         "type": "object"
       },
       "BatchItemError": {
@@ -4802,6 +4925,7 @@
                   "collaborative",
                   "hybrid",
                   "popular",
+                  "also_bought",
                   "auto"
                 ],
                 "type": "string"
@@ -4848,7 +4972,8 @@
               "session",
               "collaborative",
               "hybrid",
-              "popular"
+              "popular",
+              "also_bought"
             ],
             "title": "Strategy",
             "type": "string"
@@ -4920,6 +5045,12 @@
             "default": true,
             "description": "Never recommend the item named in context.current_item_id back to itself.",
             "title": "Exclude Current Item",
+            "type": "boolean"
+          },
+          "exclude_purchased_items": {
+            "default": true,
+            "description": "Never recommend an item the signed-in visitor (context.user_id) has already bought. Set it to false for products bought again and again (consumables, refills).",
+            "title": "Exclude Purchased Items",
             "type": "boolean"
           },
           "unknown_current_item": {
@@ -5133,6 +5264,7 @@
                   "collaborative",
                   "hybrid",
                   "popular",
+                  "also_bought",
                   "auto"
                 ],
                 "type": "string"
@@ -5199,7 +5331,8 @@
               "session",
               "collaborative",
               "hybrid",
-              "popular"
+              "popular",
+              "also_bought"
             ],
             "title": "Strategy",
             "type": "string"
@@ -5534,6 +5667,7 @@
                   "collaborative",
                   "hybrid",
                   "popular",
+                  "also_bought",
                   "auto"
                 ],
                 "type": "string"
@@ -5558,7 +5692,8 @@
               "session",
               "collaborative",
               "hybrid",
-              "popular"
+              "popular",
+              "also_bought"
             ],
             "title": "Strategy",
             "type": "string"
@@ -5687,6 +5822,7 @@
                   "collaborative",
                   "hybrid",
                   "popular",
+                  "also_bought",
                   "auto"
                 ],
                 "type": "string"
@@ -5764,6 +5900,7 @@
                   "collaborative",
                   "hybrid",
                   "popular",
+                  "also_bought",
                   "auto"
                 ],
                 "type": "string"
@@ -5931,6 +6068,62 @@
           "suggested_mapping"
         ],
         "title": "PreviewResultOut",
+        "type": "object"
+      },
+      "PurchaseTrackingOut": {
+        "description": "Whether this workspace's purchases reach LIKYLY and can be counted - on any plan, counts\nonly. A purchase counts in the attributed revenue when it carries the `recommendation_id` of\nthe click it came from, and adds `properties.price` (a JSON number) x `quantity`.",
+        "properties": {
+          "add_to_cart": {
+            "description": "Add-to-cart events received in the window.",
+            "title": "Add To Cart",
+            "type": "integer"
+          },
+          "attributed_purchases": {
+            "description": "Of those, the ones carrying a `recommendation_id`.",
+            "title": "Attributed Purchases",
+            "type": "integer"
+          },
+          "last_purchase_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Purchase At"
+          },
+          "purchases": {
+            "description": "Purchase events received in the window.",
+            "title": "Purchases",
+            "type": "integer"
+          },
+          "purchases_with_price": {
+            "description": "Of those, the ones whose `properties.price` is a number.",
+            "title": "Purchases With Price",
+            "type": "integer"
+          },
+          "recommendation_clicks": {
+            "description": "Clicks on a recommended item (carrying a `recommendation_id`) in the window.",
+            "title": "Recommendation Clicks",
+            "type": "integer"
+          },
+          "window_days": {
+            "title": "Window Days",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "window_days",
+          "purchases",
+          "attributed_purchases",
+          "purchases_with_price",
+          "add_to_cart",
+          "recommendation_clicks"
+        ],
+        "title": "PurchaseTrackingOut",
         "type": "object"
       },
       "PushPayload": {
@@ -6428,6 +6621,7 @@
           "session",
           "popular",
           "content_session",
+          "also_bought",
           "none"
         ],
         "title": "RecommendationStrategy",
@@ -6650,6 +6844,196 @@
         "title": "RequiredEvent",
         "type": "object"
       },
+      "RetentionCounts": {
+        "properties": {
+          "interactions": {
+            "description": "Events older than the retention period",
+            "title": "Interactions",
+            "type": "integer"
+          },
+          "recommendations": {
+            "description": "Recommendation traces older than the retention period",
+            "title": "Recommendations",
+            "type": "integer"
+          },
+          "users": {
+            "description": "Signed-in customers with nothing left within the retention period",
+            "title": "Users",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "interactions",
+          "recommendations",
+          "users"
+        ],
+        "title": "RetentionCounts",
+        "type": "object"
+      },
+      "RetentionRun": {
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "interactions": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interactions"
+          },
+          "recommendations": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recommendations"
+          },
+          "started_at": {
+            "format": "date-time",
+            "title": "Started At",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "running",
+              "succeeded",
+              "failed"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "trigger": {
+            "enum": [
+              "daily",
+              "manual"
+            ],
+            "title": "Trigger",
+            "type": "string"
+          },
+          "triggered_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Triggered By"
+          },
+          "users": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Users"
+          }
+        },
+        "required": [
+          "id",
+          "trigger",
+          "status",
+          "started_at"
+        ],
+        "title": "RetentionRun",
+        "type": "object"
+      },
+      "RetentionStatus": {
+        "properties": {
+          "daily_enabled": {
+            "description": "Whether the daily purge runs (LIKYLY_RETENTION_PURGE is not 'off')",
+            "title": "Daily Enabled",
+            "type": "boolean"
+          },
+          "expired_now": {
+            "$ref": "#/components/schemas/RetentionCounts",
+            "description": "What a purge would delete right now"
+          },
+          "last_success_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Success At"
+          },
+          "next_run_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "When the daily purge runs next (checked hourly); null when it is off",
+            "title": "Next Run At"
+          },
+          "retention_months": {
+            "description": "Visitor data is deleted once older than this",
+            "title": "Retention Months",
+            "type": "integer"
+          },
+          "runs": {
+            "description": "The latest runs, newest first",
+            "items": {
+              "$ref": "#/components/schemas/RetentionRun"
+            },
+            "title": "Runs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "retention_months",
+          "daily_enabled",
+          "expired_now",
+          "runs"
+        ],
+        "title": "RetentionStatus",
+        "type": "object"
+      },
       "SimilarUser": {
         "properties": {
           "name": {
@@ -6742,6 +7126,18 @@
           "name": {
             "title": "Name",
             "type": "string"
+          },
+          "public_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The key itself - public by design (it ships in a site's pages), so it is kept and listed. Null for a revoked key, and for keys created before values were kept.",
+            "title": "Public Key"
           },
           "revoked_at": {
             "anyOf": [
@@ -6843,8 +7239,8 @@
         "required": [
           "id",
           "name",
-          "created_at",
-          "public_key"
+          "public_key",
+          "created_at"
         ],
         "title": "SitePublicKeyCreated",
         "type": "object"
@@ -6929,7 +7325,7 @@
             "type": "integer"
           },
           "strategy": {
-            "description": "The engine that produced the items, after any fallback: hybrid, content, collaborative, session or popular.",
+            "description": "The engine that produced the items, after any fallback: hybrid, content, collaborative, session, also_bought or popular.",
             "title": "Strategy",
             "type": "string"
           }
@@ -8566,6 +8962,348 @@
         ]
       }
     },
+    "/admin/clients/{client_id}/models/jobs/{job_id}": {
+      "get": {
+        "description": "queued, running, completed (with the precision@10 and whether it went live) or failed.",
+        "operationId": "admin_training_job",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateModelJobStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing, invalid or revoked `X-API-Key`."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The public key can't do this (secret key required), or a plan limit was reached."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The referenced resource does not exist for this account."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "description": "Rate limit exceeded at the API gateway - retry shortly."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "A back-office training run's status",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/clients/{client_id}/models/{data_product_type}/overview": {
+      "get": {
+        "description": "Same as the client's GET /models/overview, for the back office: every trained version\n(live, kept, or turned down with its precision@10 and the data it learned from) and what\neach engine did in production over the last `days`.",
+        "operationId": "admin_client_model_overview",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "data_product_type",
+            "required": true,
+            "schema": {
+              "title": "Data Product Type",
+              "type": "string"
+            }
+          },
+          {
+            "description": "How many days of production traffic to count.",
+            "in": "query",
+            "name": "days",
+            "required": false,
+            "schema": {
+              "default": 7,
+              "description": "How many days of production traffic to count.",
+              "maximum": 90,
+              "minimum": 1,
+              "title": "Days",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelOverview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing, invalid or revoked `X-API-Key`."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The public key can't do this (secret key required), or a plan limit was reached."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The referenced resource does not exist for this account."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "description": "Rate limit exceeded at the API gateway - retry shortly."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "A client's model in depth",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/clients/{client_id}/models/{data_product_type}/train": {
+      "post": {
+        "description": "Starts a training run for this client's catalog from the back office - whatever its plan,\nnever counted in its own daily quotas (recorded as triggered_by \"admin\"), and even before\nits first automatic model. Promoted only if it scores at least as well as the live version\non the same data, like every other run. Poll GET /admin/clients/{client_id}/models/jobs/{job_id}.",
+        "operationId": "admin_train_client_model",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "client_id",
+            "required": true,
+            "schema": {
+              "title": "Client Id",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "path",
+            "name": "data_product_type",
+            "required": true,
+            "schema": {
+              "title": "Data Product Type",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateModelJobStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing, invalid or revoked `X-API-Key`."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The public key can't do this (secret key required), or a plan limit was reached."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The referenced resource does not exist for this account."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not possible in the current state - `detail` says what is missing (e.g. no model to retrain yet)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "description": "Rate limit exceeded at the API gateway - retry shortly."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Retrain a client's model",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
     "/admin/clients/{client_id}/regenerate-public-key": {
       "post": {
         "description": "Same as regenerate-secret-key, for the restricted public key.",
@@ -9195,6 +9933,172 @@
         ]
       }
     },
+    "/admin/retention": {
+      "get": {
+        "description": "Visitor data (events, recommendation traces, signed-in customers nothing recent refers to)\nis deleted after 13 months by a daily purge over every workspace. The rule, whether the daily\npurge is on and when it runs next, what a purge would delete right now, and the latest runs.",
+        "operationId": "admin_retention",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetentionStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing, invalid or revoked `X-API-Key`."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The public key can't do this (secret key required), or a plan limit was reached."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "description": "Rate limit exceeded at the API gateway - retry shortly."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Data retention: rule, purges, what is due",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/retention/run": {
+      "post": {
+        "description": "Starts a purge right away, over every workspace - the same one the daily thread runs. Answers\nthe run as 'running'; GET /admin/retention shows its result. 409 if a purge is under way.",
+        "operationId": "admin_retention_run",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetentionRun"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing, invalid or revoked `X-API-Key`."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The public key can't do this (secret key required), or a plan limit was reached."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not possible in the current state - `detail` says what is missing (e.g. no model to retrain yet)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "description": "Rate limit exceeded at the API gateway - retry shortly."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Run the retention purge now",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
     "/admin/upgrade-requests": {
       "get": {
         "description": "Every request for the Pro plan, newest first, with the form's answers and whether the team\nemail went out.",
@@ -9679,7 +10583,7 @@
     },
     "/analytics/plan": {
       "get": {
-        "description": "The account's plan, everything it allows, and the current usage next to each capped\nquantity (products, catalogs, data sources) - enough to show e.g. \"20 / 50 products, Free\"\nand which analytics this plan includes (`limits.analytics_window_days`,\n`limits.analytics_detail`). Every plan.",
+        "description": "The account's plan, everything it allows, and the current usage next to each capped\nquantity (products, catalogs, data sources) - enough to show e.g. \"20 / 50 products, Free\"\nand which analytics this plan includes (`limits.analytics_window_days`,\n`limits.analytics_detail`). Also Free and Pro side by side (`plans`), the workspace and the\nkey the call was made with (never its value) - what `/likyly-info` shows. Every plan.",
         "operationId": "analytics_plan",
         "responses": {
           "200": {
@@ -11540,7 +12444,7 @@
     },
     "/clients/me/event-types": {
       "get": {
-        "description": "Every event type this tenant has registered - \"purchase\"/\"view\" always exist\n(seeded at client creation, see seed_default_event_types in db.py); others appear\neither because the tenant added them here or because an integration auto-registered\nthem by calling POST /events/{event_type} for a new type.",
+        "description": "Every event type this tenant has registered - \"purchase\"/\"view\" always exist\n(seeded at client creation, see seed_default_event_types in db.py); others appear\neither because the tenant added them here or because an integration auto-registered\nthem by calling POST /events/{event_type} for a new type. A default type's label, as long as\nthe tenant hasn't renamed it, comes in the caller's language (Accept-Language).",
         "operationId": "list_my_event_types",
         "parameters": [
           {
@@ -13211,7 +14115,7 @@
     },
     "/clients/me/models/status": {
       "get": {
-        "description": "Website equivalent of `GET /models/status`: the active model version and today's quota usage for one catalog.",
+        "description": "Website equivalent of `GET /models/status`: the active model version and today's quota usage for one catalog\n(`auto_retrain_skip_reason` in the caller's language, French by default).",
         "operationId": "get_my_model_status",
         "parameters": [
           {
@@ -13428,6 +14332,121 @@
           }
         ],
         "summary": "My model versions",
+        "tags": [
+          "selfServiceClient"
+        ]
+      }
+    },
+    "/clients/me/oauth-grants/{oauth_client_id}": {
+      "put": {
+        "description": "Called by likyly.com's consent page, just before the account approves an assistant\n(Claude, ChatGPT) through OAuth: the assistant then acts on the workspace given in\nX-Workspace-Id (the primary one without it). Changing it later: connect the assistant\nagain and pick another workspace.",
+        "operationId": "set_my_oauth_workspace",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "oauth_client_id",
+            "required": true,
+            "schema": {
+              "title": "Oauth Client Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Which of this account's workspaces this call is about. Omitted: the primary (oldest) one.",
+            "in": "header",
+            "name": "X-Workspace-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Which of this account's workspaces this call is about. Omitted: the primary (oldest) one.",
+              "title": "X-Workspace-Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing, invalid or revoked `X-API-Key`."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The public key can't do this (secret key required), or a plan limit was reached."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The referenced resource does not exist for this account."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request is malformed - `detail` lists the offending fields."
+          },
+          "429": {
+            "description": "Rate limit exceeded at the API gateway - retry shortly."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Choose the workspace an assistant acts on",
         "tags": [
           "selfServiceClient"
         ]
@@ -14163,7 +15182,7 @@
     },
     "/clients/me/public-keys": {
       "get": {
-        "description": "Active keys first, then revoked ones. Never the raw value - only its creation shows it.",
+        "description": "Active keys first, then revoked ones, each with its value: a public key is public (it\nships in a site's pages), so the console can put it in the code it hands out. Revoked keys\nand keys created before values were kept have none.",
         "operationId": "list_my_site_public_keys",
         "parameters": [
           {
@@ -14261,7 +15280,7 @@
         ]
       },
       "post": {
-        "description": "One more restricted public key for this workspace - same scope as the workspace's own\npublic key, but the others keep working: a new site or project gets its key without\nbreaking the ones already live (regenerate-public-key replaces the workspace key, so every\nsite using it stops). Shown once - store it now.",
+        "description": "One more restricted public key for this workspace - same scope as the workspace's own\npublic key, but the others keep working: a new site or project gets its key without\nbreaking the ones already live (regenerate-public-key replaces the workspace key, so every\nsite using it stops). Listed again later with its value (it is public).",
         "operationId": "create_my_site_public_key",
         "parameters": [
           {
@@ -14475,6 +15494,116 @@
           }
         ],
         "summary": "Revoke a site public key",
+        "tags": [
+          "selfServiceClient"
+        ]
+      }
+    },
+    "/clients/me/purchase-tracking": {
+      "get": {
+        "description": "The console's \"Suivi des achats\" panel: purchases received, how many carry a\nrecommendation_id and a numeric price (the two things the attributed revenue needs), the add\nto cart and the clicks on recommendations. Counts only, so every plan gets it - it says what\nis missing in an integration, not what it earns.",
+        "operationId": "get_my_purchase_tracking",
+        "parameters": [
+          {
+            "description": "How many days back to count.",
+            "in": "query",
+            "name": "days",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "description": "How many days back to count.",
+              "maximum": 90,
+              "minimum": 1,
+              "title": "Days",
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Which of this account's workspaces this call is about. Omitted: the primary (oldest) one.",
+            "in": "header",
+            "name": "X-Workspace-Id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Which of this account's workspaces this call is about. Omitted: the primary (oldest) one.",
+              "title": "X-Workspace-Id"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PurchaseTrackingOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Missing, invalid or revoked `X-API-Key`."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The referenced resource does not exist for this account."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "The request is malformed - `detail` lists the offending fields."
+          },
+          "429": {
+            "description": "Rate limit exceeded at the API gateway - retry shortly."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Are my purchases reaching LIKYLY?",
         "tags": [
           "selfServiceClient"
         ]
