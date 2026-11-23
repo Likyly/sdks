@@ -3,7 +3,9 @@ import type { ToolAnnotations } from "@modelcontextprotocol/sdk/types.js";
 
 // A human title and the behaviour hints of every tool, as Claude's connector directory and
 // ChatGPT's app directory require: read-only tools run without asking, the others show the
-// user what they change, destructive ones (deletions, a secret replaced) ask first.
+// user what they change, destructive ones ask first: deletions, a secret replaced, and changes that
+// overwrite or remove what was there (a placement or source updated, a full import or a push that
+// removes products).
 // openWorldHint: the tool reaches outside LIKYLY (the merchant's store or API) or changes what
 // the merchant's live site shows.
 
@@ -31,22 +33,25 @@ export const TOOL_META: Record<string, Meta> = {
   create_data_source: { title: "Connect a catalog", ...WRITE },
   test_data_source: { title: "Test a catalog connection", ...READ_EXTERNAL },
   preview_data_source: { title: "Preview catalog products", ...READ_EXTERNAL },
-  configure_field_mapping: { title: "Map catalog fields", ...WRITE, idempotentHint: true },
-  sync_data_source: { title: "Import the catalog", ...WRITE_LIVE },
+  // Its dry run reads the merchant's source.
+  configure_field_mapping: { title: "Map catalog fields", ...WRITE, idempotentHint: true, openWorldHint: true },
+  // A full import removes the products no longer in the source.
+  sync_data_source: { title: "Import the catalog", ...WRITE_LIVE, destructiveHint: true },
   get_sync_status: { title: "Check catalog imports", ...READ },
   list_data_sources: { title: "List connected catalogs", ...READ },
   get_catalog_stats: { title: "Catalog statistics", ...READ },
   search_catalog_items: { title: "Find catalog products", ...READ },
-  update_data_source: { title: "Update a catalog connection", ...WRITE, idempotentHint: true },
+  update_data_source: { title: "Update a catalog connection", ...WRITE, idempotentHint: true, destructiveHint: true },
   delete_data_source: { title: "Delete a catalog connection", ...DESTRUCTIVE },
-  push_items: { title: "Send products to LIKYLY", ...WRITE, idempotentHint: true },
+  // Also removes the products listed in deleted_ids.
+  push_items: { title: "Send products to LIKYLY", ...WRITE, idempotentHint: true, destructiveHint: true },
   rotate_push_secret: { title: "Replace a catalog's push secret", ...DESTRUCTIVE },
 
   // Placements
   list_placements: { title: "List placements", ...READ },
   get_placement: { title: "Show a placement", ...READ },
   create_placement: { title: "Create a placement", ...WRITE_LIVE },
-  update_placement: { title: "Update a placement", ...WRITE_LIVE, idempotentHint: true },
+  update_placement: { title: "Update a placement", ...WRITE_LIVE, idempotentHint: true, destructiveHint: true },
   delete_or_disable_placement: { title: "Disable or delete a placement", ...DESTRUCTIVE },
   preview_placement: { title: "Preview a placement's recommendations", ...READ },
   get_placement_requirements: { title: "What a placement needs from the page", ...READ },

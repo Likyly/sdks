@@ -141,7 +141,9 @@ test("OAuth token: chat tools with titles and annotations, token forwarded to th
     assert.equal(typeof tool.annotations?.readOnlyHint, "boolean", `${tool.name} has readOnlyHint`);
     assert.equal(typeof tool.annotations?.destructiveHint, "boolean", `${tool.name} has destructiveHint`);
   }
-  assert.equal(list.result.tools.find((t) => t.name === "delete_data_source").annotations.destructiveHint, true);
+  for (const name of ["delete_data_source", "update_data_source", "push_items", "sync_data_source", "update_placement"])
+    assert.equal(list.result.tools.find((t) => t.name === name).annotations.destructiveHint, true, `${name} is destructive`);
+  assert.equal(list.result.tools.find((t) => t.name === "configure_field_mapping").annotations.openWorldHint, true);
 
   const call = await (await rpc("tools/call", { name: "list_placements", arguments: {} }, { Authorization: `Bearer ${jwt}` }, "/")).json();
   assert.ok(!call.result.isError, JSON.stringify(call));
