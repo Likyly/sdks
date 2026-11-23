@@ -150,5 +150,8 @@ test("LIKYLY key: every tool, forwarded as is", async () => {
 test("icon and OpenAI domain challenge", async () => {
   const icon = await fetch(`http://127.0.0.1:${MCP_PORT}/icon.png`);
   assert.equal(icon.headers.get("content-type"), "image/png");
+  const favicon = await fetch(`http://127.0.0.1:${MCP_PORT}/favicon.ico`);
+  assert.equal(favicon.status, 200);
+  assert.equal(favicon.headers.get("content-type"), "image/x-icon");
   assert.equal(await (await fetch(`http://127.0.0.1:${MCP_PORT}/.well-known/openai-apps-challenge`)).text(), "challenge-token");
 });

@@ -33,12 +33,16 @@ const openaiChallenge = process.env.OPENAI_APPS_CHALLENGE?.trim();
 const MAX_BODY_BYTES = 1_000_000;
 const MCP_PATHS = new Set(["/", "/mcp"]);
 
-let icon: Buffer | undefined;
-try {
-  icon = readFileSync(new URL("../assets/icon.png", import.meta.url));
-} catch {
-  icon = undefined;
-}
+const asset = (name: string): Buffer | undefined => {
+  try {
+    return readFileSync(new URL(`../assets/${name}`, import.meta.url));
+  } catch {
+    return undefined;
+  }
+};
+const icon = asset("icon.png");
+// Clients that show a connector's logo (Claude) look for the domain's favicon.
+const favicon = asset("favicon.ico");
 
 function setCors(res: ServerResponse) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -138,6 +142,11 @@ const server = createServer(async (req, res) => {
   if (path === "/icon.png" && icon) {
     res.writeHead(200, { "Content-Type": "image/png", "Cache-Control": "public, max-age=86400" });
     res.end(icon);
+    return;
+  }
+  if (path === "/favicon.ico" && favicon) {
+    res.writeHead(200, { "Content-Type": "image/x-icon", "Cache-Control": "public, max-age=86400" });
+    res.end(favicon);
     return;
   }
   if (path === "/.well-known/openai-apps-challenge" && openaiChallenge) {
