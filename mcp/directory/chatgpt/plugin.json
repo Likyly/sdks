@@ -1,0 +1,106 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "likyly",
+  "version": "1.0.0",
+  "description": "Set up and run the product recommendations of your store or app from ChatGPT: catalog, placements, integration code, checks and model performance.",
+  "author": {
+    "name": "Arnaud Breton",
+    "email": "support@likyly.com",
+    "url": "https://www.likyly.com/en"
+  },
+  "homepage": "https://www.likyly.com/en",
+  "repository": "https://github.com/Likyly/sdks",
+  "keywords": ["recommendations", "e-commerce", "personalization", "product catalog", "shopify", "woocommerce", "magento"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "LIKYLY",
+        "shortDescription": "Product recommendations",
+        "longDescription": "LIKYLY adds personalized product recommendations to an online store or an app (\"You may also like\", \"Recommended for you\", \"Complete your cart\") and lets you set them up and run them from a conversation.\n\nConnected to your LIKYLY account, ChatGPT can:\n- Connect your product catalog (CSV or JSON file, REST API, Shopify, Magento, WooCommerce, or products sent by your own code), import it and check the import.\n- Create and tune recommendation placements: the page they appear on, the method (similar content, collaborative, hybrid, browsing session, popular), how many products, and business rules.\n- Preview what a placement recommends for a product or a visitor before it goes live.\n- Give you the integration code for your stack and the events your site should send.\n- Check the integration and each placement's health from the events your site actually sends.\n- Report on the recommendation model: version in production, precision, training history, and how your placements perform.\n\nChatGPT cannot edit your site's code by itself: it gives you the code to add, or points you to the LIKYLY wizard (npx @likyly/wizard), the WordPress plugin or the Shopify app. It never sees your secret keys or billing details and cannot delete your account. Actions that change what your live site shows (creating, updating or deleting a placement, importing a catalog) are marked as such, so you approve each one.\n\nWhen you connect, you sign in to LIKYLY (or create an account) and choose the one workspace ChatGPT may act on. You can remove this access at any time from ChatGPT or from your LIKYLY account (Security page).\n\nRequires a LIKYLY account.",
+        "developerName": "Arnaud Breton",
+        "category": "Developer Tools",
+        "capabilities": [
+          "Connect and import a product catalog",
+          "Create and tune recommendation placements",
+          "Preview recommendations before they go live",
+          "Get the integration code for your stack",
+          "Check the integration and placement health",
+          "Report on the recommendation model and performance"
+        ],
+        "websiteURL": "https://www.likyly.com/en",
+        "supportURL": "https://www.likyly.com/en/support",
+        "privacyPolicyURL": "https://www.likyly.com/en/privacy",
+        "termsOfServiceURL": "https://www.likyly.com/en/terms",
+        "defaultPrompt": [
+          "List my LIKYLY placements",
+          "What does my product page block recommend for my best-selling product?",
+          "Is my LIKYLY integration working?"
+        ],
+        "composerIcon": "./assets/icon.png",
+        "logo": "./assets/logo.png"
+      },
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Catalogs connected to the demo account and their size",
+              "prompt": "Which catalogs do I have in LIKYLY, and how many products are in them?",
+              "tools_triggered": "list_data_sources, get_catalog_stats",
+              "expected_behavior": "Lists the demo account's catalog source (books, a CSV by URL), its status and last import, and the number of products in the catalog."
+            },
+            {
+              "description": "Placements of the demo account",
+              "prompt": "List my LIKYLY placements.",
+              "tools_triggered": "list_placements",
+              "expected_behavior": "Lists the demo account's placements with their name, page, method and number of products, all enabled."
+            },
+            {
+              "description": "Preview a placement for a given product",
+              "prompt": "What does my \"You may also like\" block recommend on the page of One Hundred Years of Solitude?",
+              "tools_triggered": "list_placements, preview_placement",
+              "expected_behavior": "Shows the books the placement recommends for that book (similar literary fiction), with the method LIKYLY used."
+            },
+            {
+              "description": "Integration code for a placement",
+              "prompt": "Give me the code to show my \"You may also like\" block on a Next.js product page.",
+              "tools_triggered": "get_integration_recipe",
+              "expected_behavior": "Gives the code to install the SDK and render the placement on a Next.js product page, with the events to send, using the account's public key only (never a secret key)."
+            },
+            {
+              "description": "Create a placement (write action, asks for approval)",
+              "prompt": "Create a placement \"Popular right now\" on my home page that shows the 6 most popular books.",
+              "tools_triggered": "create_placement, preview_placement",
+              "expected_behavior": "After the user approves, creates the placement (home page, popular, 6 products) and shows what it recommends; it appears in the placement list."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Secret keys are never available to the assistant; no LIKYLY tool returns them. ChatGPT should decline and point to the LIKYLY console.",
+              "prompt": "Show me my LIKYLY secret API key."
+            },
+            {
+              "description": "Billing and plan changes are not available through the plugin; ChatGPT should not call a LIKYLY tool and should point to the LIKYLY website.",
+              "prompt": "Upgrade my LIKYLY account to the Pro plan and charge my card."
+            },
+            {
+              "description": "Request unrelated to LIKYLY; no LIKYLY tool should be called.",
+              "prompt": "What's the weather in Paris tomorrow?"
+            }
+          ]
+        },
+        "demo_recording_url": "https://www.likyly.com/video/likyly-in-chatgpt.mp4",
+        "commerce": false,
+        "commerce_description": "LIKYLY sells nothing through the plugin and processes no payments."
+      },
+      "publication": {
+        "release_notes": "First release: connect and import a product catalog, create and tune recommendation placements, preview them, get the integration code, check the integration and placement health, and report on the recommendation model.",
+        "translations": {
+          "fr-FR": {
+            "subtitle": "Recommandations produits",
+            "description": "LIKYLY ajoute des recommandations de produits personnalisées à une boutique en ligne ou à une application (« Vous aimerez aussi », « Recommandé pour vous », « Complétez votre panier ») et vous permet de les mettre en place et de les piloter depuis une conversation.\n\nRelié à votre compte LIKYLY, ChatGPT peut : connecter votre catalogue (fichier CSV ou JSON, API REST, Shopify, Magento, WooCommerce, ou produits envoyés par votre code), l'importer et vérifier l'import ; créer et régler des emplacements de recommandations (page, méthode, nombre de produits, règles) ; prévisualiser ce qu'un emplacement recommande avant sa mise en ligne ; vous donner le code d'intégration pour votre stack et les événements à envoyer ; vérifier l'intégration et la santé de chaque emplacement ; faire le point sur le modèle de recommandation et les performances.\n\nChatGPT ne modifie pas lui-même le code de votre site : il vous donne le code à ajouter, ou vous oriente vers le wizard LIKYLY (npx @likyly/wizard), l'extension WordPress ou l'app Shopify. Il ne voit ni vos clés secrètes ni vos données de facturation, et ne peut pas supprimer votre compte. Les actions qui changent ce qu'affiche votre site sont signalées pour que vous les validiez.\n\nÀ la connexion, vous vous connectez à LIKYLY (ou créez un compte) et choisissez le workspace sur lequel ChatGPT peut agir. Vous pouvez retirer cet accès à tout moment depuis ChatGPT ou votre compte LIKYLY (page Sécurité).\n\nNécessite un compte LIKYLY."
+          }
+        }
+      }
+    }
+  }
+}
