@@ -279,7 +279,7 @@ Lists are paginated with `limit` and `offset` (the API's default page is 100 ite
 
 - Identifiers are plain strings and are never coerced: `itemId: 42` is a type error, and a JavaScript caller passing a number gets a `ValidationError`.
 - Request and response fields are `camelCase` (`itemId`, `recommendationId`); the keys inside `properties` are yours and are never renamed.
-- Placement recommendations are cached (one hour, per visitor in a browser, `sessionStorage`) and, after a network error, a timeout, a 429 or a 5xx, calls pause for 30 seconds and throw `PausedError` at once, so your page shows its fallback instead of waiting. `likyly.clearRecommendationCache()` forgets the cached answers; the LIKYLY console's "Vider le cache" empties the server side.
+- Placement recommendations are cached (one hour, per visitor in a browser, `sessionStorage`) and, after a network error, a timeout, a 429 or a 5xx, calls pause for 30 seconds and throw `PausedError` at once, so your page shows its fallback instead of waiting. `likyly.clearRecommendationCache()` forgets the cached answers; the LIKYLY console's "Clear cache" button empties the server side.
 
 ## Documentation and support
 
