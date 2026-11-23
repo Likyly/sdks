@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Hosted MCP service: the same tools as the local stdio server, exposed over MCP's
-// Streamable HTTP transport so an LLM client connects by URL (https://mcp.likyly.com/mcp)
+// Streamable HTTP transport so an LLM client connects by URL (https://mcp.likyly.com)
 // instead of running a local process.
 //
 // Two ways in, both stateless (the service stores nothing and holds no secret):
@@ -164,7 +164,7 @@ const server = createServer(async (req, res) => {
     return;
   }
   if (!MCP_PATHS.has(path)) {
-    sendJson(res, 404, { error: "Not found. The MCP endpoint is /mcp." });
+    sendJson(res, 404, { error: "Not found. The MCP endpoint is the root, https://mcp.likyly.com." });
     return;
   }
   if (req.method === "GET" && path === "/" && req.headers.accept?.includes("text/html")) {
@@ -221,5 +221,5 @@ const server = createServer(async (req, res) => {
 });
 
 server.listen(port, () => {
-  console.error(`likyly-mcp HTTP service listening on :${port} (POST /mcp) -> ${baseUrl}; OAuth ${oauthEnabled ? issuer : "off"}`);
+  console.error(`likyly-mcp HTTP service listening on :${port} (POST / or /mcp) -> ${baseUrl}; OAuth ${oauthEnabled ? issuer : "off"}`);
 });

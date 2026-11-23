@@ -27,8 +27,8 @@ async function token(claims = {}, key = privateKey, opts = {}) {
     .sign(key);
 }
 
-function rpc(method, params = {}, headers = {}) {
-  return fetch(`http://127.0.0.1:${MCP_PORT}/mcp`, {
+function rpc(method, params = {}, headers = {}, path = "/mcp") {
+  return fetch(`http://127.0.0.1:${MCP_PORT}${path}`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json, text/event-stream", ...headers },
     body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
@@ -96,6 +96,10 @@ test("no token: 401 with the resource metadata", async () => {
   const res = await rpc("tools/list");
   assert.equal(res.status, 401);
   assert.match(res.headers.get("www-authenticate"), /resource_metadata="https:\/\/mcp\.example\.test\/\.well-known\/oauth-protected-resource\/mcp"/);
+  // The root is the documented address: its own metadata, without /mcp.
+  const root = await rpc("tools/list", {}, {}, "/");
+  assert.equal(root.status, 401);
+  assert.match(root.headers.get("www-authenticate"), /resource_metadata="https:\/\/mcp\.example\.test\/\.well-known\/oauth-protected-resource"$/);
 });
 
 test("forged, expired, foreign or client-less tokens are refused", async () => {
@@ -130,7 +134,7 @@ test("OAuth token: chat tools with titles and annotations, token forwarded to th
   }
   assert.equal(list.result.tools.find((t) => t.name === "delete_data_source").annotations.destructiveHint, true);
 
-  const call = await (await rpc("tools/call", { name: "list_placements", arguments: {} }, { Authorization: `Bearer ${jwt}` })).json();
+  const call = await (await rpc("tools/call", { name: "list_placements", arguments: {} }, { Authorization: `Bearer ${jwt}` }, "/")).json();
   assert.ok(!call.result.isError, JSON.stringify(call));
   assert.equal(apiCalls.at(-1).key, jwt);
 });

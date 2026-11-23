@@ -169,11 +169,12 @@ HTTP call the site's own code makes, safe with the public key, exactly like `POS
 
 ## In Claude and ChatGPT (hosted, OAuth)
 
-The same server runs at **`https://mcp.likyly.com/mcp`** for assistants used in a conversation:
+The same server runs at **`https://mcp.likyly.com`** for assistants used in a conversation
+(`https://mcp.likyly.com/mcp` answers too):
 
 - **Claude** (claude.ai, desktop, mobile): Settings → Connectors → Add custom connector → URL
-  `https://mcp.likyly.com/mcp`. Claude Code: `claude mcp add --transport http likyly https://mcp.likyly.com/mcp`.
-- **ChatGPT**: Settings → Apps → Developer mode → Create → URL `https://mcp.likyly.com/mcp`,
+  `https://mcp.likyly.com`. Claude Code: `claude mcp add --transport http likyly https://mcp.likyly.com`.
+- **ChatGPT**: Settings → Apps → Developer mode → Create → URL `https://mcp.likyly.com`,
   authentication OAuth.
 
 The assistant sends you to www.likyly.com to sign in (or create your free account), pick the
@@ -193,7 +194,7 @@ LIKYLY API, which checks it again and acts on the chosen workspace. It stores no
 A server-side caller can still send a LIKYLY key instead, and gets every tool:
 
 ```
-POST https://mcp.likyly.com/mcp
+POST https://mcp.likyly.com
 Authorization: Bearer <public-secret-or-developer-key>
 X-Likyly-Product-Type: <catalog-namespace>     # optional default catalog, recommendation/event tools only
 ```
@@ -210,8 +211,8 @@ PORT=3200 npm run start:http
 Env: `PORT` (default 3200), `LIKYLY_BASE_URL` (default `https://api.likyly.com`),
 `LIKYLY_MCP_PUBLIC_URL` (default `https://mcp.likyly.com`), `LIKYLY_SUPABASE_URL` (LIKYLY's
 Supabase project by default; `off` = keys only), `OPENAI_APPS_CHALLENGE` (ChatGPT app domain
-verification, served at `/.well-known/openai-apps-challenge`). Stateless: no sessions, `GET /mcp`
-returns 405.
+verification, served at `/.well-known/openai-apps-challenge`). Stateless: no sessions, a `GET`
+returns 405 (a browser opening the root is sent to the docs).
 
 Deployed on the droplet next to the API (`deploy/`, Docker + Caddy).
 
