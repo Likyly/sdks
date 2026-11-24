@@ -37,7 +37,9 @@ export function createLikylyAdminTools(server: McpServer, client: LikylyClient, 
     chat ? CREATE_SOURCE_CHAT : CREATE_SOURCE_FULL,
     {
       name: z.string().min(1).max(200),
-      type: z.string().describe("The source type's id (csv_upload, csv_url, json_url, rest_api, shopify, magento, woocommerce, webhook)."),
+      type: chat
+        ? z.enum(CHAT_SOURCE_TYPES).describe("The source type's id: csv_url, json_url or rest_api (the types that need no secret).")
+        : z.string().describe("The source type's id (csv_upload, csv_url, json_url, rest_api, shopify, magento, woocommerce, webhook)."),
       product_type: z.string().min(1).max(64).regex(/^[a-zA-Z0-9_-]+$/).describe("The catalog namespace this source writes into."),
       config: z.record(z.unknown()).optional(),
       ...(chat ? {} : { credentials: z.record(z.unknown()).optional().describe("Secrets - access tokens, API keys. Encrypted at rest.") }),
@@ -69,24 +71,28 @@ export function createLikylyAdminTools(server: McpServer, client: LikylyClient, 
     async ({ data_source_id }) => textResult(await client.deleteDataSource(data_source_id)),
   );
 
-  server.tool(
-    "push_items",
-    "Sends catalog items to a push-mode source (type 'webhook'), up to 1000 per call, and removes the items whose ids are in `deleted_ids`. Loads a catalog LIKYLY cannot fetch itself: a site on localhost or behind a VPN, or products that exist only in a codebase (an API route, a JSON file, a database seed), mapped to item objects. Needs the source's `push_secret` (returned once when the source was created, or when it was last rotated). Writes to the catalog.",
-    {
-      data_source_id: dataSourceId,
-      push_secret: z.string().min(1),
-      items: z.array(z.record(z.unknown())).max(1000),
-      deleted_ids: z.array(z.string()).max(1000).optional(),
-    },
-    async ({ data_source_id, push_secret, items, deleted_ids }) => textResult(await client.pushItems(data_source_id, push_secret, items, deleted_ids)),
-  );
+  // Push sources carry LIKYLY's own push secret: not offered in a conversation (the wizard and
+  // Claude Code push a project's products).
+  if (!chat) {
+    server.tool(
+      "push_items",
+      "Sends catalog items to a push-mode source (type 'webhook'), up to 1000 per call, and removes the items whose ids are in `deleted_ids`. Loads a catalog LIKYLY cannot fetch itself: a site on localhost or behind a VPN, or products that exist only in a codebase (an API route, a JSON file, a database seed), mapped to item objects. Needs the source's `push_secret` (returned once when the source was created, or when it was last rotated). Writes to the catalog.",
+      {
+        data_source_id: dataSourceId,
+        push_secret: z.string().min(1),
+        items: z.array(z.record(z.unknown())).max(1000),
+        deleted_ids: z.array(z.string()).max(1000).optional(),
+      },
+      async ({ data_source_id, push_secret, items, deleted_ids }) => textResult(await client.pushItems(data_source_id, push_secret, items, deleted_ids)),
+    );
 
-  server.tool(
-    "rotate_push_secret",
-    "Issues and returns a new push secret for a push-mode source. The old secret stops working, so a system still pushing with it is rejected until it gets the new one. For a lost or leaked secret.",
-    { data_source_id: dataSourceId },
-    async ({ data_source_id }) => textResult(await client.rotatePushSecret(data_source_id)),
-  );
+    server.tool(
+      "rotate_push_secret",
+      "Issues and returns a new push secret for a push-mode source. The old secret stops working, so a system still pushing with it is rejected until it gets the new one. For a lost or leaked secret.",
+      { data_source_id: dataSourceId },
+      async ({ data_source_id }) => textResult(await client.rotatePushSecret(data_source_id)),
+    );
+  }
 
   server.tool(
     "test_data_source",
@@ -162,8 +168,11 @@ export function createLikylyAdminTools(server: McpServer, client: LikylyClient, 
   );
 }
 
+// What a conversation may create: sources LIKYLY fetches from a public address, no secret involved.
+const CHAT_SOURCE_TYPES = ["csv_url", "json_url", "rest_api"] as const;
+
 const CREATE_SOURCE_FULL =
     "Registers a new catalog source for this account and saves its configuration; it fetches and imports nothing yet. `type` is a source type id (e.g. 'shopify', 'rest_api', 'csv_url'). `product_type` is the catalog namespace it writes into: an existing one, or a new name to start a new catalog. `config` holds non-secret settings (e.g. {base_url, items_path} for rest_api, {shop_domain} for shopify). `credentials` holds secrets, encrypted at rest and never returned: for shopify {access_token: 'shpat_...'} of a legacy custom app, or {client_id, client_secret} of a Dev Dashboard app installed on the store with read_products (the only kind new stores can create; LIKYLY renews its 24 h tokens); for magento {store_url} and an Integration's {consumer_key, consumer_secret, access_token, access_token_secret}. Shopify and Magento credentials are not meant to be collected in a conversation: `npx @likyly/wizard shopify` / `npx @likyly/wizard magento` sends them to LIKYLY directly. Without `sync_mode` the type's default applies. A push-mode type (woocommerce, webhook) returns a one-time `push_secret` for the upstream system's webhook; it cannot be retrieved again. A source beyond the plan's limit (the Free plan allows one) is refused with a 403 'plan limit reached'.";
 
 const CREATE_SOURCE_CHAT =
-    "Registers a new catalog source for this account and saves its configuration; it fetches and imports nothing yet. `type` is a source type id (e.g. 'csv_url', 'json_url', 'rest_api'). `product_type` is the catalog namespace it writes into: an existing one, or a new name to start a new catalog. `config` holds the source's settings (e.g. {url} for csv_url, {base_url, items_path} for rest_api). Takes no credentials: a source that needs a key, a token or a password (Shopify, Magento, an API behind authentication) is connected with `npx @likyly/wizard` or in the LIKYLY console, which send the secrets to LIKYLY directly. Without `sync_mode` the type's default applies. A push-mode type (webhook) returns a one-time `push_secret`, LIKYLY's own token for sending products to this source; it cannot be retrieved again. A source beyond the plan's limit (the Free plan allows one) is refused with a 403 'plan limit reached'.";
+    "Registers a new catalog source for this account and saves its configuration; it fetches and imports nothing yet. `type` is csv_url, json_url or rest_api: the types that need no secret. `product_type` is the catalog namespace it writes into: an existing one, or a new name to start a new catalog. `config` holds the source's settings (e.g. {url} for csv_url, {base_url, items_path} for rest_api). Takes no credentials: a source that needs a key, a token or a password (Shopify, Magento, an API behind authentication) is connected with `npx @likyly/wizard` or in the LIKYLY console, which send the secrets to LIKYLY directly. Without `sync_mode` the type's default applies. A source beyond the plan's limit (the Free plan allows one) is refused with a 403 'plan limit reached'.";

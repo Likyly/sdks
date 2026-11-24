@@ -141,9 +141,11 @@ test("OAuth token: chat tools with titles and annotations, token forwarded to th
     assert.equal(typeof tool.annotations?.readOnlyHint, "boolean", `${tool.name} has readOnlyHint`);
     assert.equal(typeof tool.annotations?.destructiveHint, "boolean", `${tool.name} has destructiveHint`);
   }
-  for (const name of ["delete_data_source", "update_data_source", "configure_field_mapping", "push_items", "sync_data_source", "update_placement"])
+  for (const name of ["delete_data_source", "update_data_source", "configure_field_mapping", "sync_data_source", "update_placement"])
     assert.equal(list.result.tools.find((t) => t.name === name).annotations.destructiveHint, true, `${name} is destructive`);
   assert.equal(list.result.tools.find((t) => t.name === "configure_field_mapping").annotations.openWorldHint, true);
+  assert.ok(!names.includes("push_items") && !names.includes("rotate_push_secret"), "no push secret in a chat");
+  assert.deepEqual(list.result.tools.find((t) => t.name === "create_data_source").inputSchema.properties.type.enum, ["csv_url", "json_url", "rest_api"]);
   for (const name of ["create_data_source", "update_data_source"])
     assert.ok(!("credentials" in list.result.tools.find((t) => t.name === name).inputSchema.properties), `${name} takes no credentials in a chat`);
 
