@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "likyly",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Set up and run the product recommendations of your store or app from ChatGPT: catalog import, placements, integration code, checks and performance per placement and per product.",
   "author": {
     "name": "Arnaud Breton",
