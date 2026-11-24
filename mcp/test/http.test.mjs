@@ -138,6 +138,8 @@ test("OAuth token: chat tools with titles and annotations, token forwarded to th
   assert.ok(!names.includes("track_event") && !names.includes("get_recommendations"));
   for (const tool of list.result.tools) {
     assert.ok(tool.title, `${tool.name} has a title`);
+    for (const [param, schema] of Object.entries(tool.inputSchema.properties ?? {}))
+      assert.ok(!schema.$ref, `${tool.name}.${param} has its own type, not a $ref`);
     assert.equal(typeof tool.annotations?.readOnlyHint, "boolean", `${tool.name} has readOnlyHint`);
     assert.equal(typeof tool.annotations?.destructiveHint, "boolean", `${tool.name} has destructiveHint`);
   }

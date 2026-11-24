@@ -20,7 +20,11 @@ export function createLikylyPlacementTools(server: McpServer, client: LikylyClie
   }
 
   const slug = z.string().min(1).max(128).describe("The placement's slug, e.g. 'pdp-related'.");
-  const strategy = z.enum(["auto", "content", "session", "collaborative", "hybrid", "popular", "also_bought"]);
+  // A new zod enum per parameter: a schema reused inside one tool is emitted as a $ref to its
+  // first use, a parameter without a type for the directories (Claude flags it).
+  const STRATEGIES = ["auto", "content", "session", "collaborative", "hybrid", "popular", "also_bought"] as const;
+  const strategyEnum = () => z.enum(STRATEGIES);
+  const strategy = strategyEnum();
   const contextType = z.enum([
     "product_page", "listing_page", "category_page", "homepage", "cart", "account", "content_page", "custom",
   ]);
@@ -76,7 +80,7 @@ export function createLikylyPlacementTools(server: McpServer, client: LikylyClie
       audience: z.enum(["all", "anonymous", "identified"]).default("all"),
       strategy: strategy.default("auto"),
       signals: signals.default({ required: [], optional: [] }),
-      fallback_strategy: strategy.optional().describe("Tried if `strategy` returns no results. 'popular' is always the final safety net regardless."),
+      fallback_strategy: strategyEnum().optional().describe("Tried if `strategy` returns no results. 'popular' is always the final safety net regardless."),
       filters: filters.default({}),
       business_rules: businessRules.default({}),
       enabled: z.boolean().default(true),
@@ -103,7 +107,7 @@ export function createLikylyPlacementTools(server: McpServer, client: LikylyClie
       audience: z.enum(["all", "anonymous", "identified"]).optional(),
       strategy: strategy.optional(),
       signals: signals.optional(),
-      fallback_strategy: strategy.optional(),
+      fallback_strategy: strategyEnum().optional(),
       filters: filters.optional(),
       business_rules: businessRules.optional(),
       enabled: z.boolean().optional(),
