@@ -30,9 +30,9 @@ sources créées en chat sont csv_url, json_url ou rest_api sans clé, sans cham
 | Compte de démo `demo@likyly.com` (sans double authentification) : catalogue `books` (20 livres, source « CSV by URL »), emplacements `pdp-you-may-also-like` et `home-for-you` | vous + Claude | ✅ 2026-11-23 |
 | Vidéo de démonstration (exigée par OpenAI) : `https://www.likyly.com/video/likyly-in-chatgpt.mp4` (≈ 75 s, vraie session ChatGPT avec le compte de démo : connexion, import du catalogue, blocs, ce que renvoie un bloc, code, création, vérification de l'intégration, statistiques, suppression ; source : likyly-videos/my-video, composition `ChatGptDemo`) | Claude | ✅ 2026-11-23 |
 | Vérification d'identité OpenAI (Individual, « Arnaud Breton », comme pour ROMKADE) | vous | déjà faite pour ROMKADE ; vérifier qu'elle vaut pour l'organisation choisie |
-| Jeton de vérification du domaine OpenAI → `OPENAI_APPS_CHALLENGE` dans `deploy/compose.yaml`, redéployer | vous + Claude | à la soumission |
+| Jeton de vérification du domaine OpenAI → `OPENAI_APPS_CHALLENGE` dans `deploy/compose.yaml`, redéployer | vous + Claude | ✅ 2026-11-24 (domaine vérifié) |
 | Soumission Claude | vous | à faire |
-| Soumission ChatGPT (ZIP, domaine, identifiants des relecteurs) | vous | à faire |
+| Soumission ChatGPT (ZIP, domaine, identifiants des relecteurs) | vous + Claude | ✅ 2026-11-24 : version 1.0.1 en revue (organisation OpenAI « LIKYLY », ex-ROMKADE renommée ; analyse MCP sans point bloquant, seul avis restant : instructions du serveur à relire par OpenAI) |
 
 ## Compte de démo (les deux annuaires)
 
