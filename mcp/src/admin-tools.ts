@@ -14,7 +14,11 @@ import type { LikylyClient } from "./client.js";
 // preview_data_source -> configure_field_mapping -> sync_data_source -> get_sync_status /
 // get_catalog_stats. That order lives in the server instructions (instructions.ts): a tool's
 // description says what the tool itself does, never which tool to call next (directory rules).
-export function createLikylyAdminTools(server: McpServer, client: LikylyClient): void {
+// `chat`: the surface of an assistant connected through OAuth (Claude, ChatGPT). There, creating
+// or updating a source takes no `credentials`: secrets are never collected in a conversation. A
+// source that needs them (Shopify, Magento, an API behind a key) is connected with the wizard or
+// in the LIKYLY console, which send them to the API directly.
+export function createLikylyAdminTools(server: McpServer, client: LikylyClient, { chat = false }: { chat?: boolean } = {}): void {
   function textResult(data: unknown) {
     return { content: [{ type: "text" as const, text: JSON.stringify(data, null, 2) }] };
   }
@@ -30,13 +34,13 @@ export function createLikylyAdminTools(server: McpServer, client: LikylyClient):
 
   server.tool(
     "create_data_source",
-    "Registers a new catalog source for this account and saves its configuration; it fetches and imports nothing yet. `type` is a source type id (e.g. 'shopify', 'rest_api', 'csv_url'). `product_type` is the catalog namespace it writes into: an existing one, or a new name to start a new catalog. `config` holds non-secret settings (e.g. {base_url, items_path} for rest_api, {shop_domain} for shopify). `credentials` holds secrets, encrypted at rest and never returned: for shopify {access_token: 'shpat_...'} of a legacy custom app, or {client_id, client_secret} of a Dev Dashboard app installed on the store with read_products (the only kind new stores can create; LIKYLY renews its 24 h tokens); for magento {store_url} and an Integration's {consumer_key, consumer_secret, access_token, access_token_secret}. Shopify and Magento credentials are not meant to be collected in a conversation: `npx @likyly/wizard shopify` / `npx @likyly/wizard magento` sends them to LIKYLY directly. Without `sync_mode` the type's default applies. A push-mode type (woocommerce, webhook) returns a one-time `push_secret` for the upstream system's webhook; it cannot be retrieved again. A source beyond the plan's limit (the Free plan allows one) is refused with a 403 'plan limit reached'.",
+    chat ? CREATE_SOURCE_CHAT : CREATE_SOURCE_FULL,
     {
       name: z.string().min(1).max(200),
       type: z.string().describe("The source type's id (csv_upload, csv_url, json_url, rest_api, shopify, magento, woocommerce, webhook)."),
       product_type: z.string().min(1).max(64).regex(/^[a-zA-Z0-9_-]+$/).describe("The catalog namespace this source writes into."),
       config: z.record(z.unknown()).optional(),
-      credentials: z.record(z.unknown()).optional().describe("Secrets - access tokens, API keys. Encrypted at rest."),
+      ...(chat ? {} : { credentials: z.record(z.unknown()).optional().describe("Secrets - access tokens, API keys. Encrypted at rest.") }),
       field_mapping: z.record(z.unknown()).optional().describe("Optional; the mapping can also be set later."),
       sync_mode: z.enum(["full", "incremental"]).optional(),
     },
@@ -45,13 +49,14 @@ export function createLikylyAdminTools(server: McpServer, client: LikylyClient):
 
   server.tool(
     "update_data_source",
-    "Changes an existing data source: its name, `config` (merged shallowly: only the keys sent change, e.g. a new base_url), `credentials` (fully replaced), `sync_mode`, or `product_type` (the catalog it writes into from the next sync on; the next full sync sends every item there). Pointing `product_type` at an existing catalog, such as the one a plan-limit error names, keeps the account within its plan. Suits a source that points at an old URL or catalog, and is the way to change what is connected on the Free plan, which allows a single source. The new settings are saved, not tested.",
+    (chat ? "Changes an existing data source: its name, `config` (merged shallowly: only the keys sent change, e.g. a new base_url; its credentials, if any, are changed with the wizard or in the LIKYLY console), `sync_mode`," : "Changes an existing data source: its name, `config` (merged shallowly: only the keys sent change, e.g. a new base_url), `credentials` (fully replaced), `sync_mode`,") +
+      " or `product_type` (the catalog it writes into from the next sync on; the next full sync sends every item there). Pointing `product_type` at an existing catalog, such as the one a plan-limit error names, keeps the account within its plan. Suits a source that points at an old URL or catalog, and is the way to change what is connected on the Free plan, which allows a single source. The new settings are saved, not tested.",
     {
       data_source_id: dataSourceId,
       name: z.string().min(1).max(200).optional(),
       product_type: z.string().min(1).max(64).regex(/^[a-zA-Z0-9_-]+$/).optional(),
       config: z.record(z.unknown()).optional(),
-      credentials: z.record(z.unknown()).optional(),
+      ...(chat ? {} : { credentials: z.record(z.unknown()).optional() }),
       sync_mode: z.enum(["full", "incremental"]).optional(),
     },
     async ({ data_source_id, ...input }) => textResult(await client.updateDataSource(data_source_id, input)),
@@ -156,3 +161,9 @@ export function createLikylyAdminTools(server: McpServer, client: LikylyClient):
     },
   );
 }
+
+const CREATE_SOURCE_FULL =
+    "Registers a new catalog source for this account and saves its configuration; it fetches and imports nothing yet. `type` is a source type id (e.g. 'shopify', 'rest_api', 'csv_url'). `product_type` is the catalog namespace it writes into: an existing one, or a new name to start a new catalog. `config` holds non-secret settings (e.g. {base_url, items_path} for rest_api, {shop_domain} for shopify). `credentials` holds secrets, encrypted at rest and never returned: for shopify {access_token: 'shpat_...'} of a legacy custom app, or {client_id, client_secret} of a Dev Dashboard app installed on the store with read_products (the only kind new stores can create; LIKYLY renews its 24 h tokens); for magento {store_url} and an Integration's {consumer_key, consumer_secret, access_token, access_token_secret}. Shopify and Magento credentials are not meant to be collected in a conversation: `npx @likyly/wizard shopify` / `npx @likyly/wizard magento` sends them to LIKYLY directly. Without `sync_mode` the type's default applies. A push-mode type (woocommerce, webhook) returns a one-time `push_secret` for the upstream system's webhook; it cannot be retrieved again. A source beyond the plan's limit (the Free plan allows one) is refused with a 403 'plan limit reached'.";
+
+const CREATE_SOURCE_CHAT =
+    "Registers a new catalog source for this account and saves its configuration; it fetches and imports nothing yet. `type` is a source type id (e.g. 'csv_url', 'json_url', 'rest_api'). `product_type` is the catalog namespace it writes into: an existing one, or a new name to start a new catalog. `config` holds the source's settings (e.g. {url} for csv_url, {base_url, items_path} for rest_api). Takes no credentials: a source that needs a key, a token or a password (Shopify, Magento, an API behind authentication) is connected with `npx @likyly/wizard` or in the LIKYLY console, which send the secrets to LIKYLY directly. Without `sync_mode` the type's default applies. A push-mode type (webhook) returns a one-time `push_secret`, LIKYLY's own token for sending products to this source; it cannot be retrieved again. A source beyond the plan's limit (the Free plan allows one) is refused with a 403 'plan limit reached'.";

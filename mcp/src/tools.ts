@@ -62,7 +62,7 @@ export function createLikylyServer(client: LikylyClient, options: LikylyServerOp
   const id = z.string().min(1).max(255);
 
   if (surface === "full") registerRuntimeTools();
-  createLikylyAdminTools(server, client);
+  createLikylyAdminTools(server, client, { chat: surface === "chat" });
   createLikylyAnalyticsTools(server, client);
   createLikylyPlacementTools(server, client);
   createLikylyRecipeTools(server, client);

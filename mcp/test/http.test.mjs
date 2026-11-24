@@ -144,6 +144,8 @@ test("OAuth token: chat tools with titles and annotations, token forwarded to th
   for (const name of ["delete_data_source", "update_data_source", "configure_field_mapping", "push_items", "sync_data_source", "update_placement"])
     assert.equal(list.result.tools.find((t) => t.name === name).annotations.destructiveHint, true, `${name} is destructive`);
   assert.equal(list.result.tools.find((t) => t.name === "configure_field_mapping").annotations.openWorldHint, true);
+  for (const name of ["create_data_source", "update_data_source"])
+    assert.ok(!("credentials" in list.result.tools.find((t) => t.name === name).inputSchema.properties), `${name} takes no credentials in a chat`);
 
   const call = await (await rpc("tools/call", { name: "list_placements", arguments: {} }, { Authorization: `Bearer ${jwt}` }, "/")).json();
   assert.ok(!call.result.isError, JSON.stringify(call));
@@ -158,6 +160,7 @@ test("LIKYLY key: every tool, forwarded as is", async () => {
   const list = await (await rpc("tools/list", {}, { Authorization: "Bearer lk_test_key" })).json();
   const names = list.result.tools.map((t) => t.name);
   assert.ok(names.includes("track_event") && names.includes("create_placement"));
+  assert.ok("credentials" in list.result.tools.find((t) => t.name === "create_data_source").inputSchema.properties);
   await rpc("tools/call", { name: "list_placements", arguments: {} }, { Authorization: "Bearer lk_test_key" });
   assert.equal(apiCalls.at(-1).key, "lk_test_key");
 });

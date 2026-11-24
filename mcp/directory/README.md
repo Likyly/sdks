@@ -80,8 +80,9 @@ Instructions pour les relecteurs (à coller avec les identifiants) :
 > for you", "Complete your cart") and lets you set them up and run them from a conversation.
 >
 > Connected to your LIKYLY account, Claude can:
-> - Connect your product catalog (CSV or JSON file, REST API, Shopify, Magento, WooCommerce, or products sent by your
->   own code), import it and check the import.
+> - Connect a product catalog published at an address (CSV or JSON file, REST API without a key), import it and check
+>   the import. Shopify, Magento, WooCommerce and APIs behind a key are connected with the LIKYLY wizard, plugin or app,
+>   so no password or key goes through the conversation.
 > - Create and tune recommendation placements: the page they appear on, the method (similar content, collaborative,
 >   hybrid, browsing session, popular), how many products, and business rules.
 > - Check which products a placement returns for a given product or visitor, and why.
