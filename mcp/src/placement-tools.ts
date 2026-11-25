@@ -49,6 +49,10 @@ export function createLikylyPlacementTools(server: McpServer, client: LikylyClie
     unknown_current_item: z.enum(["empty", "popular"]).optional().describe("Default 'empty' - on a product page whose product is not in the catalog (not synced, beyond the plan's product limit), return nothing (strategy_used 'none') instead of unrelated popular items; 'popular' shows those."),
     exclude_cart_items: z.boolean().optional().describe("Never recommend an item already in the cart - suits a cart cross-sell placement."),
     exclude_purchased_items: z.boolean().optional().describe("Default true - never recommend to a signed-in visitor (user_id) an item they already bought; false for products bought again and again (consumables, refills)."),
+    one_per_group: z.boolean().optional().describe("One item per model: items sharing the same group_by property count once, and the current item's model is left out (its other colours or sizes are already on its page). For catalogs where each colour or size is its own product."),
+    group_by: z.string().optional().describe("The item property naming the model - default 'group_id'; 'title' groups items with the same title."),
+    closest_color: z.boolean().optional().describe("With one_per_group: each model shown in its variant whose colour is closest to the current item's (a hex code or a colour name in English, French, Spanish, Italian or German)."),
+    color_attribute: z.string().optional().describe("The item property holding the colour - default 'color' (color_hex is read too)."),
   });
   const context = z.record(z.unknown()).describe(
     "Sample context to run the placement against - any of current_item_id, category_id, collection_id, user_id, anonymous_id, session_id, cart_item_ids, locale, custom_context.",
