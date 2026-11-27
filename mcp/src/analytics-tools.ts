@@ -12,13 +12,13 @@ export function createLikylyAnalyticsTools(server: McpServer, client: LikylyClie
   }
 
   const window = {
-    start: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().describe("First day (YYYY-MM-DD). Default: 30 days ago, clamped to the plan (Free: 7 days, Pro: 90)."),
+    start: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().describe("First day (YYYY-MM-DD). Default: 30 days ago, clamped to the plan (Free: 30 days, Pro: 90)."),
     end: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().describe("Last day (YYYY-MM-DD). Default: today."),
   };
 
   server.tool(
     "get_recommendation_performance",
-    "How the account's recommendations performed over a window: blocks served, products seen (impressions), products clicked, CTR, and per placement the same figures with the purchases and revenue attributed to it (a purchase counts when it carries the recommendation_id it came from). On Pro plans, also the day-by-day trend and the attributed revenue; on Free, that part is reported as not included. Revenue is the sum of price x quantity of those purchases, in `currency`: the one the site's purchase events send, or null when they send none or several (LIKYLY converts nothing). The answer says which window and plan were actually used. Read-only.",
+    "How the account's recommendations performed over a window: blocks served, products seen (impressions), products clicked, CTR, and per placement the same figures with the purchases and revenue attributed to it (a purchase counts when it carries the recommendation_id it came from). Also the day-by-day trend and the attributed revenue, on every plan (a plan without them reports that part as not included). Revenue is the sum of price x quantity of those purchases, in `currency`: the one the site's purchase events send, or null when they send none or several (LIKYLY converts nothing). The answer says which window and plan were actually used. Read-only.",
     window,
     async ({ start, end }) => {
       const query = { start, end };
