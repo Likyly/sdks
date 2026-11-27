@@ -51,6 +51,7 @@ export function createLikylyPlacementTools(server: McpServer, client: LikylyClie
     exclude_purchased_items: z.boolean().optional().describe("Default true - never recommend to a signed-in visitor (user_id) an item they already bought; false for products bought again and again (consumables, refills)."),
     one_per_group: z.boolean().optional().describe("One item per model: items sharing the same group_by property count once, and the current item's model is left out (its other colours or sizes are already on its page). For catalogs where each colour or size is its own product."),
     group_by: z.string().optional().describe("The item property naming the model - default 'group_id'; 'title' groups items with the same title."),
+    pinned_item_ids: z.array(z.string()).max(12).optional().describe("Products the merchant puts forward: shown first, in this order, when they pass the same rules (in stock, not the current item, not in the cart). Up to 12; LIKYLY's choice fills the rest."),
     closest_color: z.boolean().optional().describe("With one_per_group: each model shown in its variant whose colour is closest to the current item's (a hex code or a colour name in English, French, Spanish, Italian or German)."),
     color_attribute: z.string().optional().describe("The item property holding the colour - default 'color' (color_hex is read too)."),
   });
