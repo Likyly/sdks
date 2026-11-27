@@ -22,7 +22,7 @@ export function createLikylyPlacementTools(server: McpServer, client: LikylyClie
   const slug = z.string().min(1).max(128).describe("The placement's slug, e.g. 'pdp-related'.");
   // A new zod enum per parameter: a schema reused inside one tool is emitted as a $ref to its
   // first use, a parameter without a type for the directories (Claude flags it).
-  const STRATEGIES = ["auto", "content", "session", "collaborative", "hybrid", "popular", "also_bought"] as const;
+  const STRATEGIES = ["auto", "personalized", "content", "session", "collaborative", "hybrid", "popular", "also_bought"] as const;
   const strategyEnum = () => z.enum(STRATEGIES);
   const strategy = strategyEnum();
   const contextType = z.enum([
@@ -74,7 +74,7 @@ export function createLikylyPlacementTools(server: McpServer, client: LikylyClie
 
   server.tool(
     "create_placement",
-    "Creates a named recommendation configuration: what to recommend, where (context_type), for whom (audience), with which strategy, fallback, filters and business rules; pages request recommendations from it by slug. Strategies run LIKYLY's existing engines (content, session, collaborative, hybrid, popular, and also_bought: \"customers who bought this also bought\", for a product page, with fallback_strategy 'content'); it trains no new model. 'auto' (the default) picks per request from the signals present: hybrid when both a user and an item are known, content from an item alone, session from recent views, collaborative for a known user with a trained model, popular otherwise. `signals.required` lists the context keys the placement can't run without (e.g. current_item_id on a product page); every other key stays optional. `fallback_strategy` is tried when `strategy` returns nothing; 'popular' is always the final safety net. Enabled by default: it serves recommendations as soon as a page requests its slug. A placement beyond the plan's limit is refused with a 403 'plan limit reached'.",
+    "Creates a named recommendation configuration: what to recommend, where (context_type), for whom (audience), with which strategy, fallback, filters and business rules; pages request recommendations from it by slug. Strategies run LIKYLY's existing engines (content, session, collaborative, hybrid, popular, and also_bought: \"customers who bought this also bought\", for a product page, with fallback_strategy 'content'); it trains no new model. 'auto' (the default) picks per request from the signals present: hybrid when both a user and an item are known, content from an item alone, session from recent views, collaborative for a known user with a trained model, popular otherwise. 'personalized' is for \"recommended for you\": the visitor only - a known customer's history, else what this visitor viewed (signed in or not), else popular - never products similar to the one on the page. `signals.required` lists the context keys the placement can't run without (e.g. current_item_id on a product page); every other key stays optional. `fallback_strategy` is tried when `strategy` returns nothing; 'popular' is always the final safety net. Enabled by default: it serves recommendations as soon as a page requests its slug. A placement beyond the plan's limit is refused with a 403 'plan limit reached'.",
     {
       slug,
       name: z.string().min(1).max(200),
