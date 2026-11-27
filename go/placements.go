@@ -65,6 +65,9 @@ func placementContextBody(pc *PlacementContext) map[string]any {
 	if pc.CartItemIDs != nil {
 		body["cart_item_ids"] = pc.CartItemIDs
 	}
+	if pc.ExcludeItemIDs != nil {
+		body["exclude_item_ids"] = pc.ExcludeItemIDs
+	}
 	if pc.CustomContext != nil {
 		body["custom_context"] = pc.CustomContext
 	}

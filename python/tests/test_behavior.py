@@ -179,6 +179,18 @@ def test_lists_report_total_and_only_send_what_was_asked():
     assert dict(script.calls[1].url.params) == {}
 
 
+def test_placement_context_keys_snake_or_camel_case_map_to_the_wire():
+    import json
+    rec = {"recommendation_id": "rec_1", "placement": "cart", "strategy_used": "popular", "items": []}
+    client, script, _ = make_client([{"body": rec}, {"body": rec}])
+    client.placements.recommend("cart", context={"item_id": "i", "cart_item_ids": ["a"], "exclude_item_ids": ["b", "c"]})
+    client.placements.recommend("cart", context={"itemId": "i", "cartItemIds": ["a"], "excludeItemIds": ["b", "c"]})
+    want = {"current_item_id": "i", "cart_item_ids": ["a"], "exclude_item_ids": ["b", "c"]}
+    assert [json.loads(c.content)["context"] for c in script.calls] == [want, want]
+    with pytest.raises(likyly.ValidationError):
+        client.placements.recommend("cart", context={"excluded_item_ids": ["b"]})
+
+
 def test_import_is_an_alias_of_upsert_many():
     client, script, _ = make_client([{"body": {"received": 1, "succeeded": 1, "failed": 0}}])
     client.items.import_([{"item_id": "a", "title": "A"}])

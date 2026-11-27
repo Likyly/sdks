@@ -234,6 +234,9 @@ public sealed record PlacementContext
 
     public IReadOnlyList<string>? CartItemIds { get; init; }
 
+    /// <summary>Products already shown on the page (other blocks): left out of this answer.</summary>
+    public IReadOnlyList<string>? ExcludeItemIds { get; init; }
+
     public string? Locale { get; init; }
 
     /// <summary>Anything else your placement filters on - keys are yours, never renamed.</summary>

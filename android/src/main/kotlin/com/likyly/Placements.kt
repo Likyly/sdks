@@ -117,6 +117,7 @@ public class Placements internal constructor(private val core: Core, internal va
         put("session_id", c.sessionId)
         put("locale", c.locale)
         if (c.cartItemIds != null) body["cart_item_ids"] = c.cartItemIds
+        if (c.excludeItemIds != null) body["exclude_item_ids"] = c.excludeItemIds
         if (c.customContext != null) body["custom_context"] = c.customContext
         return body
     }

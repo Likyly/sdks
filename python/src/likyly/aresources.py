@@ -197,6 +197,7 @@ class Placements:
     ) -> PlacementRecommendation:
         """Recommendations for one placement. ``context`` is what you know about the moment: ``item_id`` (the item
         being viewed), ``user_id``, ``session_id``, ``anonymous_id``, ``category_id``, ``collection_id``,
-        ``cart_item_ids``, ``locale``, ``custom_context`` - the placement decides what it uses. Send
-        ``recommendation_id`` back on the events that follow."""
+        ``cart_item_ids``, ``exclude_item_ids`` (products other blocks of the page already show - left out of this
+        answer), ``locale``, ``custom_context`` - the placement decides what it uses. Send ``recommendation_id`` back
+        on the events that follow."""
         return await self._http.send(_ops.placements_recommend(placement, context, limit), options)

@@ -280,6 +280,19 @@ final class BehaviorTest extends TestCase
         $this->assertSame('', $this->request(1)->getUri()->getQuery());
     }
 
+    public function testPlacementContextKeysMapToTheWire(): void
+    {
+        $rec = ['recommendation_id' => 'rec_1', 'placement' => 'cart', 'strategy_used' => 'popular', 'items' => []];
+        $client = $this->client([self::json(200, $rec)]);
+        $client->placements()->recommend('cart', context: ['itemId' => 'i', 'cartItemIds' => ['a'], 'excludeItemIds' => ['b', 'c']]);
+        $this->assertSame(
+            ['current_item_id' => 'i', 'cart_item_ids' => ['a'], 'exclude_item_ids' => ['b', 'c']],
+            json_decode((string) $this->request()->getBody(), true)['context'],
+        );
+        $this->expectException(ValidationException::class);
+        $client->placements()->recommend('cart', context: ['excludedItemIds' => ['b']]);
+    }
+
     public function testImportIsAnAliasOfUpsertMany(): void
     {
         $client = $this->client([self::json(200, ['received' => 1, 'succeeded' => 1, 'failed' => 0])]);

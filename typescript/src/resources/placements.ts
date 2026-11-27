@@ -64,6 +64,7 @@ function contextBody(context: PlacementContext | undefined): Record<string, unkn
     anonymous_id: context.anonymousId,
     session_id: context.sessionId,
     cart_item_ids: context.cartItemIds,
+    exclude_item_ids: context.excludeItemIds,
     locale: context.locale,
     custom_context: context.customContext,
   });

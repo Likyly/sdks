@@ -167,7 +167,9 @@ type PlacementContext struct {
 	// SessionID is the anonymous browsing session.
 	SessionID   string   `json:"sessionId,omitempty"`
 	CartItemIDs []string `json:"cartItemIds,omitempty"`
-	Locale      string   `json:"locale,omitempty"`
+	// ExcludeItemIDs are products already shown on the page (other blocks): left out of this answer.
+	ExcludeItemIDs []string `json:"excludeItemIds,omitempty"`
+	Locale         string   `json:"locale,omitempty"`
 	// CustomContext is passed through untouched - its keys are yours.
 	CustomContext map[string]any `json:"customContext,omitempty"`
 }

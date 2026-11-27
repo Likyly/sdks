@@ -202,6 +202,28 @@ async fn debug_and_session_are_sent_on_get_and_an_empty_get_sends_an_empty_objec
     assert_eq!(h.body(1), json!({}));
 }
 
+#[tokio::test]
+async fn placement_context_id_lists_map_to_the_wire() {
+    let response = json!({ "recommendation_id": "rec_1", "placement": "cart", "strategy_used": "popular", "items": [] });
+    let h = harness(vec![Step::ok(response)]);
+    let context = PlacementContext {
+        item_id: Some("i".into()),
+        cart_item_ids: Some(vec!["a".into()]),
+        exclude_item_ids: Some(vec!["b".into(), "c".into()]),
+        ..Default::default()
+    };
+    h.client
+        .placements()
+        .recommend(PlacementRecommendOptions { context: Some(context), ..PlacementRecommendOptions::new("cart") })
+        .await
+        .unwrap();
+    assert_eq!(h.body(0)["context"], json!({ "current_item_id": "i", "cart_item_ids": ["a"], "exclude_item_ids": ["b", "c"] }));
+    let blank = PlacementContext { exclude_item_ids: Some(vec!["".into()]), ..Default::default() };
+    let call = PlacementRecommendOptions { context: Some(blank), ..PlacementRecommendOptions::new("cart") };
+    assert!(is_validation(h.client.placements().recommend(call).await));
+    assert_eq!(h.transport.count(), 1);
+}
+
 // ---- errors -----------------------------------------------------------------------------------------
 
 #[tokio::test]

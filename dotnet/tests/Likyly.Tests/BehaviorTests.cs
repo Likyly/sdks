@@ -79,13 +79,14 @@ public class BehaviorTests
             Placement = "cart",
             Context = new PlacementContext
             {
-                CategoryId = "c", CollectionId = "col", AnonymousId = "anon", CartItemIds = ["a", "b"], Locale = "fr-FR",
+                CategoryId = "c", CollectionId = "col", AnonymousId = "anon", CartItemIds = ["a", "b"], ExcludeItemIds = ["d", "e"],
+                Locale = "fr-FR",
                 CustomContext = new Dictionary<string, object?> { ["pageType"] = "cart" },
             },
         });
         var context = Assert.Single(handler.Calls).Body is { } body ? JsonNode.Parse(body)!["context"]! : null;
         Assert.True(JsonNode.DeepEquals(
-            JsonNode.Parse("""{"category_id":"c","collection_id":"col","anonymous_id":"anon","cart_item_ids":["a","b"],"locale":"fr-FR","custom_context":{"pageType":"cart"}}"""),
+            JsonNode.Parse("""{"category_id":"c","collection_id":"col","anonymous_id":"anon","cart_item_ids":["a","b"],"exclude_item_ids":["d","e"],"locale":"fr-FR","custom_context":{"pageType":"cart"}}"""),
             context));
     }
 

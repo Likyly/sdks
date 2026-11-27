@@ -23,6 +23,7 @@ module Likyly
     # @param context [Hash, nil] what you know about this page view, all optional:
     #   +item_id+ (the item being looked at), +category_id+, +collection_id+, +user_id+, +anonymous_id+ (stable
     #   anonymous visitor id, used like +session_id+ when that is omitted), +session_id+, +cart_item_ids+ (Array),
+    #   +exclude_item_ids+ (Array, products already shown on the page by other blocks: left out of this answer),
     #   +locale+, +custom_context+ (Hash, passed through untouched: its keys are yours)
     # @param limit [Integer, nil] overrides the placement's own configured limit for this call
     # @return [PlacementRecommendation]
@@ -42,8 +43,8 @@ module Likyly
     # Context key => wire name.
     CONTEXT_KEYS = {
       item_id: "current_item_id", category_id: "category_id", collection_id: "collection_id", user_id: "user_id",
-      anonymous_id: "anonymous_id", session_id: "session_id", cart_item_ids: "cart_item_ids", locale: "locale",
-      custom_context: "custom_context"
+      anonymous_id: "anonymous_id", session_id: "session_id", cart_item_ids: "cart_item_ids",
+      exclude_item_ids: "exclude_item_ids", locale: "locale", custom_context: "custom_context"
     }.freeze
     private_constant :CONTEXT_KEYS
 

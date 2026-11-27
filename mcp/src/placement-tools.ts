@@ -56,7 +56,7 @@ export function createLikylyPlacementTools(server: McpServer, client: LikylyClie
     color_attribute: z.string().optional().describe("The item property holding the colour - default 'color' (color_hex is read too)."),
   });
   const context = z.record(z.unknown()).describe(
-    "Sample context to run the placement against - any of current_item_id, category_id, collection_id, user_id, anonymous_id, session_id, cart_item_ids, locale, custom_context.",
+    "Sample context to run the placement against - any of current_item_id, category_id, collection_id, user_id, anonymous_id, session_id, cart_item_ids, exclude_item_ids (products other blocks of the page already show), locale, custom_context.",
   );
 
   server.tool(

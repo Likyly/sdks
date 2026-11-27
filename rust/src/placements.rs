@@ -75,6 +75,10 @@ fn context_body(c: &PlacementContext) -> Result<Map<String, Value>, Error> {
         let ids = ids.iter().map(|id| require_id(id, "context.cart_item_ids[]")).collect::<Result<Vec<_>, _>>()?;
         body.insert("cart_item_ids".into(), json!(ids));
     }
+    if let Some(ids) = &c.exclude_item_ids {
+        let ids = ids.iter().map(|id| require_id(id, "context.exclude_item_ids[]")).collect::<Result<Vec<_>, _>>()?;
+        body.insert("exclude_item_ids".into(), json!(ids));
+    }
     if let Some(locale) = &c.locale {
         body.insert("locale".into(), json!(locale));
     }

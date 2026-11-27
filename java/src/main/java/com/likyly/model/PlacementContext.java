@@ -13,6 +13,7 @@ import java.util.Map;
  * @param anonymousId stable anonymous visitor id - used like {@code sessionId} when {@code sessionId} is omitted
  * @param sessionId anonymous visitor / browsing session
  * @param cartItemIds items currently in the cart
+ * @param excludeItemIds products already shown on the page (other blocks): left out of this answer
  * @param locale e.g. {@code fr-FR}
  * @param customContext anything else the placement's filters use - keys are yours, never renamed
  */
@@ -24,8 +25,15 @@ public record PlacementContext(
     String anonymousId,
     String sessionId,
     List<String> cartItemIds,
+    List<String> excludeItemIds,
     String locale,
     Map<String, Object> customContext) {
+
+    /** The constructor before {@code excludeItemIds} - kept so existing code still compiles. */
+    public PlacementContext(String itemId, String categoryId, String collectionId, String userId, String anonymousId,
+                            String sessionId, List<String> cartItemIds, String locale, Map<String, Object> customContext) {
+        this(itemId, categoryId, collectionId, userId, anonymousId, sessionId, cartItemIds, null, locale, customContext);
+    }
 
     public static Builder builder() {
         return new Builder();
@@ -40,6 +48,7 @@ public record PlacementContext(
         private String anonymousId;
         private String sessionId;
         private List<String> cartItemIds;
+        private List<String> excludeItemIds;
         private String locale;
         private Map<String, Object> customContext;
 
@@ -78,6 +87,11 @@ public record PlacementContext(
             return this;
         }
 
+        public Builder excludeItemIds(List<String> value) {
+            this.excludeItemIds = value;
+            return this;
+        }
+
         public Builder locale(String value) {
             this.locale = value;
             return this;
@@ -89,7 +103,7 @@ public record PlacementContext(
         }
 
         public PlacementContext build() {
-            return new PlacementContext(itemId, categoryId, collectionId, userId, anonymousId, sessionId, cartItemIds, locale, customContext);
+            return new PlacementContext(itemId, categoryId, collectionId, userId, anonymousId, sessionId, cartItemIds, excludeItemIds, locale, customContext);
         }
     }
 }

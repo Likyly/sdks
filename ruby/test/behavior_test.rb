@@ -130,12 +130,12 @@ class ValidationTest < Minitest::Test
     h = harness([{ body: { "recommendation_id" => "rec_1", "placement" => "cart", "strategy_used" => "popular", "items" => [] } }])
     result = h.client.placements.recommend(
       placement: "cart",
-      context: { item_id: "i", category_id: "c", cart_item_ids: %w[a b], locale: "fr-FR", session_id: nil,
-                 custom_context: { "pageType" => "cart" } }
+      context: { item_id: "i", category_id: "c", cart_item_ids: %w[a b], exclude_item_ids: %w[c d], locale: "fr-FR",
+                 session_id: nil, custom_context: { "pageType" => "cart" } }
     )
     assert_equal(
-      { "context" => { "current_item_id" => "i", "category_id" => "c", "cart_item_ids" => %w[a b], "locale" => "fr-FR",
-                       "custom_context" => { "pageType" => "cart" } } },
+      { "context" => { "current_item_id" => "i", "category_id" => "c", "cart_item_ids" => %w[a b],
+                       "exclude_item_ids" => %w[c d], "locale" => "fr-FR", "custom_context" => { "pageType" => "cart" } } },
       h.calls[0].json
     )
     assert_equal "popular", result.strategy_used

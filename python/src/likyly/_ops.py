@@ -343,6 +343,8 @@ _CONTEXT_KEYS = {
     "anonymous_id": "anonymous_id", "anonymousId": "anonymous_id",
     "session_id": "session_id", "sessionId": "session_id",
     "cart_item_ids": "cart_item_ids", "cartItemIds": "cart_item_ids",
+    # Products already shown on the page (other blocks): left out of this answer.
+    "exclude_item_ids": "exclude_item_ids", "excludeItemIds": "exclude_item_ids",
     "locale": "locale",
     "custom_context": "custom_context", "customContext": "custom_context",
 }

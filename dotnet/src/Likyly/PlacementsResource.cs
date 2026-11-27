@@ -58,6 +58,17 @@ public sealed class PlacementsResource
             node["cart_item_ids"] = ids;
         }
 
+        if (c.ExcludeItemIds is not null)
+        {
+            var ids = new JsonArray();
+            foreach (var id in c.ExcludeItemIds)
+            {
+                ids.Add(Support.RequireId(id, "excludeItemIds[]"));
+            }
+
+            node["exclude_item_ids"] = ids;
+        }
+
         Support.Put(node, "locale", c.Locale);
         if (c.CustomContext is not null)
         {

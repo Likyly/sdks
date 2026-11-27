@@ -39,6 +39,8 @@ public data class PlacementContext(
     val anonymousId: String? = null,
     val sessionId: String? = null,
     val cartItemIds: List<String>? = null,
+    /** Products already shown on the page (other blocks): left out of this answer. */
+    val excludeItemIds: List<String>? = null,
     val locale: String? = null,
     /** Passed through untouched. */
     val customContext: Map<String, Any?>? = null,

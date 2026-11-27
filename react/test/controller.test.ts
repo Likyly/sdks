@@ -149,4 +149,12 @@ describe("RecommendationsController", () => {
     controller.trackClick("SKU-1");
     assert.equal((eventCalls[0]!.input as { sessionId?: string }).sessionId, "anon_1");
   });
+
+  it("passes the products other blocks of the page already show to the call", async () => {
+    const calls: RecommendCall[] = [];
+    const { client } = fakeLikyly(async (call) => (calls.push(call), RESULT));
+    const controller = new RecommendationsController(client as never);
+    await controller.run({ placement: "pdp-related", context: { itemId: "SKU-1", excludeItemIds: ["SKU-7", "SKU-8"] } });
+    assert.deepEqual(calls[0]!.context, { itemId: "SKU-1", excludeItemIds: ["SKU-7", "SKU-8"] });
+  });
 });

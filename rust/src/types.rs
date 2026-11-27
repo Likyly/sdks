@@ -403,6 +403,9 @@ pub struct PlacementContext {
     pub session_id: Option<String>,
     #[serde(default)]
     pub cart_item_ids: Option<Vec<String>>,
+    /// Products already shown on the page (other blocks): left out of this answer.
+    #[serde(default)]
+    pub exclude_item_ids: Option<Vec<String>>,
     /// e.g. `"fr-FR"`.
     #[serde(default)]
     pub locale: Option<String>,

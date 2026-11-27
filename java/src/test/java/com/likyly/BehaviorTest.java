@@ -20,6 +20,8 @@ import com.likyly.model.EventInput;
 import com.likyly.model.ItemImport;
 import com.likyly.model.ItemInput;
 import com.likyly.model.ListOptions;
+import com.likyly.model.PlacementContext;
+import com.likyly.model.PlacementRecommendOptions;
 import com.likyly.model.RecommendationRequest;
 import com.likyly.model.SessionOptions;
 import com.likyly.model.SimilarOptions;
@@ -246,6 +248,18 @@ class BehaviorTest {
         assertEquals(1, page.limit());
         h.client.items().list();
         assertEquals(null, h.transport.calls.get(1).uri().getRawQuery());
+    }
+
+    @Test
+    void placementContextIdListsMapToTheWire() throws IOException {
+        Harness h = harness(Step.ok("{\"recommendation_id\":\"rec_1\",\"placement\":\"cart\",\"strategy_used\":\"popular\",\"items\":[]}"));
+        PlacementContext context = PlacementContext.builder().itemId("i").cartItemIds(List.of("a")).excludeItemIds(List.of("b", "c")).build();
+        h.client.placements().recommend(PlacementRecommendOptions.builder().placement("cart").context(context).build());
+        assertEquals(MAPPER.readTree("{\"current_item_id\":\"i\",\"cart_item_ids\":[\"a\"],\"exclude_item_ids\":[\"b\",\"c\"]}"),
+            MAPPER.readTree(h.transport.calls.get(0).body()).get("context"));
+        PlacementContext blank = PlacementContext.builder().excludeItemIds(List.of("")).build();
+        assertThrows(ValidationException.class,
+            () -> h.client.placements().recommend(PlacementRecommendOptions.builder().placement("cart").context(blank).build()));
     }
 
     @Test

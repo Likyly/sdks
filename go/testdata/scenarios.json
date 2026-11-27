@@ -1970,6 +1970,69 @@
       }
     },
     {
+      "id": "placements.recommend.page-blocks",
+      "call": {
+        "resource": "placements",
+        "method": "recommend",
+        "args": [
+          {
+            "placement": "cart-cross-sell",
+            "context": {
+              "itemId": "SKU-456",
+              "cartItemIds": [
+                "SKU-1",
+                "SKU-2"
+              ],
+              "excludeItemIds": [
+                "SKU-7",
+                "SKU-8"
+              ]
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "path": "/placements/cart-cross-sell/recommend",
+        "query": {},
+        "body": {
+          "context": {
+            "current_item_id": "SKU-456",
+            "cart_item_ids": [
+              "SKU-1",
+              "SKU-2"
+            ],
+            "exclude_item_ids": [
+              "SKU-7",
+              "SKU-8"
+            ]
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {},
+        "body": {
+          "recommendation_id": "rec_01K5Z3W8Q9M2X7T4N6V1B0C8DG",
+          "placement": "cart-cross-sell",
+          "strategy_used": "also_bought",
+          "items": [
+            {
+              "item_id": "SKU-9",
+              "score": 0.8,
+              "title": "Running socks",
+              "properties": {}
+            }
+          ]
+        }
+      },
+      "expect": {
+        "strategyUsed": "also_bought",
+        "placement": "cart-cross-sell",
+        "items.0.itemId": "SKU-9"
+      }
+    },
+    {
       "id": "placements.recommend.no-context",
       "call": {
         "resource": "placements",

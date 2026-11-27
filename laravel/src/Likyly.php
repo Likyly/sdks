@@ -54,7 +54,7 @@ class Likyly
     /**
      * Recommendations of a placement for the current visitor, or null when LIKYLY cannot answer.
      *
-     * @param  array<string, mixed>  $context  extra context: userId, categoryId, cartItemIds...
+     * @param  array<string, mixed>  $context  extra context: userId, categoryId, cartItemIds, excludeItemIds...
      */
     public function recommend(string $placement, Model|string|null $item = null, array $context = [], ?int $limit = null): ?\Likyly\Model\PlacementRecommendation
     {

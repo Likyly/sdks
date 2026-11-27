@@ -53,6 +53,11 @@ public final class PlacementsResource {
             c.cartItemIds().forEach(id -> ids.add(Support.requireId(id, "cartItemIds[]")));
             node.set("cart_item_ids", ids);
         }
+        if (c.excludeItemIds() != null) {
+            ArrayNode ids = HttpCore.mapper().createArrayNode();
+            c.excludeItemIds().forEach(id -> ids.add(Support.requireId(id, "excludeItemIds[]")));
+            node.set("exclude_item_ids", ids);
+        }
         Support.put(node, "locale", c.locale());
         if (c.customContext() != null) {
             node.set("custom_context", HttpCore.mapper().valueToTree(c.customContext()));

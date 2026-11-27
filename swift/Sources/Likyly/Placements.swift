@@ -118,6 +118,7 @@ public final class Placements: Sendable {
         ]
         for (key, value) in fields { if let value, !value.isEmpty { body[key] = value } }
         if let ids = c.cartItemIds { body["cart_item_ids"] = ids }
+        if let ids = c.excludeItemIds { body["exclude_item_ids"] = ids }
         if let custom = c.customContext { body["custom_context"] = custom.mapValues(\.foundation) }
         return body
     }

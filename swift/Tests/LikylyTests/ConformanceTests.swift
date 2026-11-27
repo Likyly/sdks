@@ -51,7 +51,7 @@ final class ConformanceTests: XCTestCase {
                 XCTAssertEqual(Self.lookup(result, path) as? NSObject, value as? NSObject, "\(id): \(path)")
             }
         }
-        XCTAssertEqual(played, 26)
+        XCTAssertEqual(played, 27)
     }
 
     func testErrorScenarios() async throws {
@@ -106,7 +106,8 @@ final class ConformanceTests: XCTestCase {
             return mirror(r)
         case ("placements", "recommend"):
             let c = a["context"] as? [String: Any]
-            let context = c.map { PlacementContext(itemId: $0["itemId"] as? String, userId: $0["userId"] as? String, sessionId: $0["sessionId"] as? String) }
+            let context = c.map { PlacementContext(itemId: $0["itemId"] as? String, userId: $0["userId"] as? String, sessionId: $0["sessionId"] as? String,
+                                                   cartItemIds: $0["cartItemIds"] as? [String], excludeItemIds: $0["excludeItemIds"] as? [String]) }
             return mirror(try await likyly.placements.recommend(s("placement")!, context: context, limit: i("limit")))
         case ("recommendations", "get"):
             return mirror(try await likyly.recommendations.get(userId: s("userId"), sessionId: s("sessionId"), itemId: s("itemId"),

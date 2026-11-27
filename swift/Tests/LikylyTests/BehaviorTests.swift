@@ -79,6 +79,17 @@ final class BehaviorTests: XCTestCase {
         XCTAssertEqual(transport.count, 3)
     }
 
+    func testProductsOtherBlocksShowAreSentAndCachedApart() async throws {
+        let transport = ScriptedTransport([.init(status: 200, body: ok)])
+        let likyly = try makeClient(transport, cache: RecommendCacheOptions())
+        _ = try await likyly.recommend("home", context: PlacementContext(itemId: "A", cartItemIds: ["C"], excludeItemIds: ["B"]))
+        let context = (bodyJSON(transport.requests[0]) as? [String: Any])?["context"] as? [String: Any]
+        XCTAssertEqual(context?["cart_item_ids"] as? [String], ["C"])
+        XCTAssertEqual(context?["exclude_item_ids"] as? [String], ["B"])
+        _ = try await likyly.recommend("home", context: PlacementContext(itemId: "A", cartItemIds: ["C"], excludeItemIds: ["B", "D"]))
+        XCTAssertEqual(transport.count, 2, "another block's products change the answer: never served from the cache")
+    }
+
     func testCacheExpires() async throws {
         let transport = ScriptedTransport([.init(status: 200, body: ok)])
         let clock = Clock()

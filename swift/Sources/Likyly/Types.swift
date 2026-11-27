@@ -77,12 +77,14 @@ public struct PlacementContext: Sendable, Equatable {
     public var anonymousId: String?
     public var sessionId: String?
     public var cartItemIds: [String]?
+    /// Products already shown on the page (other blocks): left out of this answer.
+    public var excludeItemIds: [String]?
     public var locale: String?
     public var customContext: Properties?
 
     public init(itemId: String? = nil, categoryId: String? = nil, collectionId: String? = nil, userId: String? = nil,
                 anonymousId: String? = nil, sessionId: String? = nil, cartItemIds: [String]? = nil,
-                locale: String? = nil, customContext: Properties? = nil) {
+                excludeItemIds: [String]? = nil, locale: String? = nil, customContext: Properties? = nil) {
         self.itemId = itemId
         self.categoryId = categoryId
         self.collectionId = collectionId
@@ -90,6 +92,7 @@ public struct PlacementContext: Sendable, Equatable {
         self.anonymousId = anonymousId
         self.sessionId = sessionId
         self.cartItemIds = cartItemIds
+        self.excludeItemIds = excludeItemIds
         self.locale = locale
         self.customContext = customContext
     }

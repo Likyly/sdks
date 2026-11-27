@@ -13,6 +13,8 @@ export interface LikylyRecommendationsProps {
   categoryId?: string;
   collectionId?: string;
   cartItemIds?: string[];
+  /** Products already shown on the page (other blocks): left out of this answer. */
+  excludeItemIds?: string[];
   limit?: number;
   /** Skip fetching - e.g. while `itemId`/`userId` aren't known yet. Default true. */
   enabled?: boolean;
@@ -53,6 +55,7 @@ export function LikylyRecommendations({
   categoryId,
   collectionId,
   cartItemIds,
+  excludeItemIds,
   limit,
   enabled,
   className,
@@ -62,7 +65,7 @@ export function LikylyRecommendations({
 }: LikylyRecommendationsProps) {
   const { items, isLoading, error, trackImpression, trackClick } = useRecommendations({
     placement,
-    context: { itemId, userId, sessionId, anonymousId, categoryId, collectionId, cartItemIds },
+    context: { itemId, userId, sessionId, anonymousId, categoryId, collectionId, cartItemIds, excludeItemIds },
     limit,
     enabled,
   });

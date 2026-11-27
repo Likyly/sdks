@@ -229,6 +229,8 @@ export interface PlacementContext {
   /** Anonymous browsing session. */
   sessionId?: string;
   cartItemIds?: string[];
+  /** Products already shown on the page (other blocks): left out of this answer. */
+  excludeItemIds?: string[];
   locale?: string;
   customContext?: Record<string, unknown>;
 }

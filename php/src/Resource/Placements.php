@@ -25,6 +25,8 @@ final class Placements
         'anonymousId' => 'anonymous_id',
         'sessionId' => 'session_id',
         'cartItemIds' => 'cart_item_ids',
+        // Products already shown on the page (other blocks): left out of this answer.
+        'excludeItemIds' => 'exclude_item_ids',
         'locale' => 'locale',
         'customContext' => 'custom_context',
     ];
@@ -36,8 +38,8 @@ final class Placements
     /**
      * Recommendations for one placement. `$context` is what you know about the moment: `itemId` (the item
      * being viewed), `userId`, `sessionId`, `anonymousId`, `categoryId`, `collectionId`, `cartItemIds`,
-     * `locale`, `customContext` - the placement decides what it uses. Send `recommendationId` back on the
-     * events that follow.
+     * `excludeItemIds` (products other blocks of the page already show - left out of this answer), `locale`,
+     * `customContext` - the placement decides what it uses. Send `recommendationId` back on the events that follow.
      *
      * @param array<string, mixed>|null $context
      * @param array{timeout?: float, maxRetries?: int} $options

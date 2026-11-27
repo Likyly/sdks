@@ -21,7 +21,7 @@ class ConformanceTest {
     @Test
     fun publicKeyScenarios() = runBlocking {
         val publicOnes = scenarios.filter { (it["call"] as Map<String, Any?>)["resource"] in setOf("events", "recommendations", "placements") }
-        assertTrue(publicOnes.size >= 26, "expected the public-key scenarios, got ${publicOnes.size}")
+        assertTrue(publicOnes.size >= 27, "expected the public-key scenarios, got ${publicOnes.size}")
         for (s in publicOnes) {
             val id = s["id"] as String
             val response = s["response"] as Map<String, Any?>
@@ -110,7 +110,8 @@ class ConformanceTest {
                     PlacementContext(
                         itemId = it["itemId"] as String?, categoryId = it["categoryId"] as String?, collectionId = it["collectionId"] as String?,
                         userId = it["userId"] as String?, anonymousId = it["anonymousId"] as String?, sessionId = it["sessionId"] as String?,
-                        cartItemIds = it["cartItemIds"] as List<String>?, locale = it["locale"] as String?,
+                        cartItemIds = it["cartItemIds"] as List<String>?, excludeItemIds = it["excludeItemIds"] as List<String>?,
+                        locale = it["locale"] as String?,
                         customContext = it["customContext"] as Map<String, Any?>?,
                     )
                 }
