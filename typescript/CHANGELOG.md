@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/Likyly/sdks/compare/typescript-v1.2.0...typescript-v1.3.0) (2026-11-28)
+
+
+### Features
+
+* placement context exclude_item_ids in every SDK - a product never twice on one page ([26daea9](https://github.com/Likyly/sdks/commit/26daea9001bbad8847f8fad29e4690b0e942e7e3))
+
+
+### Documentation
+
+* **typescript:** name the console's Clear cache button in English ([a49c42f](https://github.com/Likyly/sdks/commit/a49c42ffa497c0780cbdd307caf610a2412ed9eb))
+
 ## [1.2.0](https://github.com/Likyly/sdks/compare/typescript-v1.1.4...typescript-v1.2.0) (2026-11-20)
 
 

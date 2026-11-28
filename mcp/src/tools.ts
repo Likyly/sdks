@@ -32,7 +32,7 @@ export interface LikylyServerOptions {
 export const SERVER_INFO = {
   name: "likyly-recsys",
   title: "LIKYLY",
-  version: "0.13.0", // x-release-please-version
+  version: "0.14.0", // x-release-please-version
   websiteUrl: "https://www.likyly.com",
   icons: [{ src: "https://mcp.likyly.com/icon.png", mimeType: "image/png", sizes: ["512x512"] }],
 };
