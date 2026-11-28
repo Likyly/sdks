@@ -1660,7 +1660,7 @@
         "type": "object"
       },
       "AnalyticsPlanOut": {
-        "description": "The account's plan, what it allows and what is used - e.g. \"20 / 50 products, Free\".",
+        "description": "The account's plan, what it allows and what is used - e.g. \"40 / 100 orders this month, Free\".",
         "properties": {
           "key": {
             "anyOf": [
@@ -2028,7 +2028,7 @@
               {
                 "id": "SKU-OLD-9",
                 "index": 2,
-                "message": "Free plan limit reached: 50 products max"
+                "message": "Free plan limit reached: 1 catalog max"
               }
             ],
             "failed": 1,
@@ -2580,7 +2580,7 @@
         "type": "object"
       },
       "ClientUsageSummary": {
-        "description": "Account-wide (not per-product_type) quota numbers for the self-service dashboard -\nseparate from ModelStatus, which is inherently scoped to one product_type. Backs the\nworkspace view: how many catalogs/products this account has connected/pushed, and how\nmany its plan allows - free is 1 catalog / 1 data source / 50 products, Pro raises all three.",
+        "description": "Account-wide (not per-product_type) quota numbers for the self-service dashboard -\nseparate from ModelStatus, which is inherently scoped to one product_type. Backs the\nworkspace view: how many catalogs/products this account has connected/pushed, and how\nmany its plan allows - free is 100 orders a month / 1 catalog / 1 data source, Pro raises\nthem. `order_count` is the orders sent to LIKYLY this calendar month (UTC); past\n`order_limit` nothing is cut, Pro is just needed.",
         "properties": {
           "data_source_count": {
             "title": "Data Source Count",
@@ -2611,6 +2611,22 @@
               }
             ],
             "title": "Index Limit"
+          },
+          "order_count": {
+            "default": 0,
+            "title": "Order Count",
+            "type": "integer"
+          },
+          "order_limit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Limit"
           },
           "plan": {
             "title": "Plan",
@@ -6110,6 +6126,18 @@
             "description": "Manual model trainings per day, per index.",
             "title": "Manual Training Daily Limit"
           },
+          "monthly_order_limit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Orders per calendar month this plan is for. Soft: past it nothing is cut.",
+            "title": "Monthly Order Limit"
+          },
           "plan": {
             "title": "Plan",
             "type": "string"
@@ -6123,6 +6151,7 @@
                 "type": "null"
               }
             ],
+            "description": "Technical guard on the catalog size, the same on Free and Pro.",
             "title": "Product Limit"
           },
           "workspace_limit": {
@@ -10842,7 +10871,7 @@
     },
     "/analytics/plan": {
       "get": {
-        "description": "The account's plan, everything it allows, and the current usage next to each capped\nquantity (products, catalogs, data sources) - enough to show e.g. \"20 / 50 products, Free\"\nand which analytics this plan includes (`limits.analytics_window_days`,\n`limits.analytics_detail`). Also Free and Pro side by side (`plans`), the workspace and the\nkey the call was made with (never its value) - what `/likyly-info` shows. Every plan.",
+        "description": "The account's plan, everything it allows, and the current usage next to each capped\nquantity (orders this month, products, catalogs, data sources) - enough to show e.g.\n\"40 / 100 orders this month, Free\"\nand which analytics this plan includes (`limits.analytics_window_days`,\n`limits.analytics_detail`). Also Free and Pro side by side (`plans`), the workspace and the\nkey the call was made with (never its value) - what `/likyly-info` shows. Every plan.",
         "operationId": "analytics_plan",
         "responses": {
           "200": {
