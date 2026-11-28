@@ -5130,7 +5130,7 @@
           },
           "one_per_group": {
             "default": false,
-            "description": "One item per model: items sharing the same `group_by` property count once, in the ranked order, and the models of the current item and of the cart's items are left out (their other colours or sizes are already on the page). An item without the property is a model of its own.",
+            "description": "One item per model: items sharing the same `group_by` property count once, in the ranked order, and the models of the current item, of the cart's items and of context.exclude_item_ids (what other blocks of the page show) are left out - their other colours or sizes are already on the page; products put forward follow the same rule. An item without the property is a model of its own.",
             "title": "One Per Group",
             "type": "boolean"
           },
