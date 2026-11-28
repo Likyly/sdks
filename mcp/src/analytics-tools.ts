@@ -42,7 +42,7 @@ export function createLikylyAnalyticsTools(server: McpServer, client: LikylyClie
 
   server.tool(
     "get_plan_and_usage",
-    "The account's plan, what it allows (products, catalogs, data sources, syncs and trainings per day, analytics window) and the current usage next to each limit, with the Free and Pro plans side by side. Read-only.",
+    "The account's plan, what it allows (orders per month - what sets Free and Pro apart -, catalogs, data sources, syncs and trainings per day, analytics window; every plan takes the whole catalog) and the current usage next to each limit, orders this month included, with the Free and Pro plans side by side. Read-only.",
     {},
     async () => jsonResult(await client.analytics("plan")),
   );
