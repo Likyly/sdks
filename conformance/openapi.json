@@ -5116,6 +5116,21 @@
             "title": "Exclude Purchased Items",
             "type": "boolean"
           },
+          "excluded_item_ids": {
+            "description": "Products this placement never shows (a gift card, a sample, a product the merchant doesn't want pushed) - whatever the strategy ranks, pinned ones included. Up to 500.",
+            "examples": [
+              [
+                "GIFT-CARD",
+                "SAMPLE-1"
+              ]
+            ],
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 500,
+            "title": "Excluded Item Ids",
+            "type": "array"
+          },
           "group_by": {
             "default": "group_id",
             "description": "The item property naming the model (`group_id` by default). `title` groups items with the same title (case and spaces ignored).",
