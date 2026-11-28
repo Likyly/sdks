@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/Likyly/sdks/compare/go-v1.0.3...go-v1.1.0) (2026-11-28)
+
+
+### Features
+
+* placement context exclude_item_ids in every SDK - a product never twice on one page ([26daea9](https://github.com/Likyly/sdks/commit/26daea9001bbad8847f8fad29e4690b0e942e7e3))
+
 ## [1.0.3](https://github.com/Likyly/sdks/compare/go-v1.0.2...go-v1.0.3) (2026-11-20)
 
 

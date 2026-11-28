@@ -1,6 +1,6 @@
 [package]
 name = "likyly"
-version = "1.0.2"
+version = "1.1.0"
 edition = "2021"
 description = "Product recommendations for your site (\"You may also like\", \"Recommended for you\"), learned from what your visitors do. Official LIKYLY client."
 license = "MIT"
